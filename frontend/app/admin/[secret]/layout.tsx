@@ -124,7 +124,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     className="text-xs text-white font-medium truncate max-w-full" 
                     title={session.user?.email || undefined}
                   >
-                    {session.user?.email}
+                    {session.user?.email ?? ''}
                   </p>
                 </div>
               </div>
@@ -221,7 +221,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="text-sm text-white font-medium truncate max-w-full" 
               title={session.user?.email || undefined}
             >
-              {session.user?.email}
+              {session.user?.email ?? ''}
             </p>
           </div>
         </div>
@@ -231,3 +231,4 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
+
