@@ -122,7 +122,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   <p className="text-xs text-gray-400">مرحباً بك</p>
                   <p 
                     className="text-xs text-white font-medium truncate max-w-full" 
-                    title={session.user?.email}
+                    title={session.user?.email || undefined}
                   >
                     {session.user?.email}
                   </p>
@@ -219,7 +219,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <p className="text-xs text-gray-400">مرحباً بك</p>
             <p 
               className="text-sm text-white font-medium truncate max-w-full" 
-              title={session.user?.email}
+              title={session.user?.email || undefined}
             >
               {session.user?.email}
             </p>
