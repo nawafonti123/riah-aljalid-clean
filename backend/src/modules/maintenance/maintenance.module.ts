@@ -1,0 +1,13 @@
+// backend/src/modules/maintenance/maintenance.module.ts
+import { Module } from '@nestjs/common';
+import { MaintenanceService } from './maintenance.service';
+import { MaintenanceController } from './maintenance.controller';
+import { PrismaModule } from '../../prisma/prisma.module';
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [MaintenanceController],
+  providers: [MaintenanceService],
+  exports: [MaintenanceService],
+})
+export class MaintenanceModule {}

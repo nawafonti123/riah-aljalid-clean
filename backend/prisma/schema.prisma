@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  role          String    @default("ADMIN")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  activityLogs  ActivityLog[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  images      String[]
+  videos      String[]
+  category    String?
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  icon        String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Hero {
+  id              String   @id @default(cuid())
+  title           String
+  subtitle        String
+  backgroundImage String?
+}
+
+model Setting {
+  id                String @id @default(cuid())
+  phone             String
+  email             String
+  address           String
+  commercialRegister String
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  timestamp DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Maintenance {
+  id        String   @id @default(cuid())
+  isEnabled Boolean  @default(false)
+  message   String   @default("الموقع تحت الصيانة حالياً، نعمل على تحسين تجربتك، شكراً لصبرك.")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
