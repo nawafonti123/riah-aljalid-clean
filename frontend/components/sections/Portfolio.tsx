@@ -29,7 +29,7 @@ export default function Portfolio() {
   }, []);
 
   return (
-    <section id="portfolio" ref={ref} className="py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section id="portfolio" ref={ref} className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-gray-50 dark:from-[#203A43] dark:to-[#2C5364] transition-colors duration-300">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -42,7 +42,7 @@ export default function Portfolio() {
         </motion.div>
 
         {loading ? (
-          <div className="text-center text-gray-600 dark:text-gray-300 text-sm">جاري التحميل...</div>
+          <div className="text-center text-gray-600 dark:text-gray-300">جاري التحميل...</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {projects.map((project, index) => (
@@ -51,7 +51,7 @@ export default function Portfolio() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="bg-gray-50 dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
+                className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
               >
                 {project.images?.[0] && (
                   <img
