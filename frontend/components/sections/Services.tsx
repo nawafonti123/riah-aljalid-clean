@@ -36,6 +36,9 @@ export default function Services() {
       publicApi.getServiceDetails()
     ])
       .then(([servicesData, detailsData]) => {
+        console.log('Services data:', servicesData); // للتأكد من وصول البيانات
+        console.log('Details data:', detailsData); // للتأكد من وصول البيانات
+        
         // ترتيب الخدمات حسب حقل order
         const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
         setServices(sortedServices);
@@ -60,10 +63,10 @@ export default function Services() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">خدماتنا</h2>
-          <div className="text-center text-gray-600 dark:text-gray-300">جاري التحميل...</div>
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">خدماتنا</h2>
+          <div className="text-center text-gray-600 dark:text-gray-300">جاري تحميل الخدمات...</div>
         </div>
       </section>
     );
@@ -84,8 +87,9 @@ export default function Services() {
 
         {/* الخدمات الرئيسية - كروت */}
         {services.length === 0 ? (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-10">
-            لا توجد خدمات متاحة حالياً
+          <div className="text-center text-gray-500 dark:text-gray-400 py-10 bg-white dark:bg-gray-800 rounded-xl shadow-md mb-10">
+            <p className="text-lg mb-2">لا توجد خدمات متاحة حالياً</p>
+            <p className="text-sm">يرجى إضافة خدمات من لوحة التحكم</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-16">
@@ -96,7 +100,11 @@ export default function Services() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <ServiceCard {...service} />
+                <ServiceCard 
+                  title={service.title} 
+                  description={service.description} 
+                  icon={service.icon} 
+                />
               </motion.div>
             ))}
           </div>

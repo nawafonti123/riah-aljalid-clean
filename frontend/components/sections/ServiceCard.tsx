@@ -8,7 +8,7 @@ const iconMap: Record<string, JSX.Element> = {
   '❄️': <FaSnowflake className="w-5 h-5 sm:w-6 md:w-7 text-[#01AEBE] dark:text-[#00c6ff]" />,
   '💨': <FaWind className="w-5 h-5 sm:w-6 md:w-7 text-[#01AEBE] dark:text-[#00c6ff]" />,
   '🧊': <FaTemperatureLow className="w-5 h-5 sm:w-6 md:w-7 text-[#01AEBE] dark:text-[#00c6ff]" />,
-  
+  '🔧': <FaSnowflake className="w-5 h-5 sm:w-6 md:w-7 text-[#01AEBE] dark:text-[#00c6ff]" />, // رمز افتراضي
 };
 
 interface ServiceCardProps {
