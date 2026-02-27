@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { publicApi } from '@/lib/api';
 import MaintenancePage from './maintenance/page';
 
-// استيراد المكونات بشكل طبيعي
 import Hero from '@/components/sections/Hero';
 import WhyUs from '@/components/sections/WhyUs';
 import Achievements from '@/components/sections/Achievements';

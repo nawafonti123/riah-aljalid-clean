@@ -69,9 +69,11 @@ export default function Portfolio() {
             {/* قسم الصور */}
             {projectsWithImages.length > 0 && (
               <div className="mb-16">
-                <div className="flex items-center gap-2 mb-6">
-                  <FaImage className="text-2xl text-[#01AEBE] dark:text-[#00c6ff]" />
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">معرض الصور</h3>
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center gap-2 mb-2">
+                    <FaImage className="text-3xl text-[#01AEBE] dark:text-[#00c6ff]" />
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">معرض الصور</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {projectsWithImages.map((project, index) => (
@@ -111,9 +113,11 @@ export default function Portfolio() {
             {/* قسم الفيديوهات */}
             {projectsWithVideos.length > 0 && (
               <div className="mb-16">
-                <div className="flex items-center gap-2 mb-6">
-                  <FaVideo className="text-2xl text-[#01AEBE] dark:text-[#00c6ff]" />
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">مكتبة الفيديو</h3>
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center gap-2 mb-2">
+                    <FaVideo className="text-3xl text-[#01AEBE] dark:text-[#00c6ff]" />
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">مكتبة الفيديو</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {projectsWithVideos.map((project, index) => (
