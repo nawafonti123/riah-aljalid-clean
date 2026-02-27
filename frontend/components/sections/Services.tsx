@@ -7,7 +7,6 @@ import { publicApi } from '@/lib/api';
 import { FaTruck, FaIndustry, FaRuler, FaUniversity, FaSchool, FaLandmark, FaHome, FaCoffee, FaHotel, FaBuilding } from 'react-icons/fa';
 import ServiceCard from './ServiceCard';
 
-// ... (واجهات Service و ServiceDetail كما هي) ...
 interface Service {
   id: string;
   title: string;
@@ -46,19 +45,25 @@ export default function Services() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching services and details...');
+        console.log('🔍 Fetching services and details...');
+        
         const [servicesData, detailsData] = await Promise.all([
           publicApi.getServices(),
           publicApi.getServiceDetails()
         ]);
-        console.log('Services received:', servicesData);
-        console.log('Details received:', detailsData);
+        
+        console.log('✅ Services received:', servicesData);
+        console.log('✅ Details received:', detailsData);
 
+        // ترتيب الخدمات حسب الترتيب
         if (servicesData && servicesData.length > 0) {
           const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
           setServices(sortedServices);
+        } else {
+          console.log('⚠️ No services data received');
         }
 
+        // تجميع التفاصيل حسب الخدمة
         if (detailsData && detailsData.length > 0) {
           const groupedDetails = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
             if (!acc[detail.serviceId]) {
@@ -68,9 +73,12 @@ export default function Services() {
             return acc;
           }, {});
           setDetails(groupedDetails);
+          console.log('✅ Grouped details:', groupedDetails);
+        } else {
+          console.log('⚠️ No details data received');
         }
       } catch (err) {
-        console.error('Error fetching services:', err);
+        console.error('❌ Error fetching services:', err);
         setServices([]);
         setDetails({});
       } finally {
@@ -81,19 +89,21 @@ export default function Services() {
     fetchData();
   }, []);
 
+  // أيقونات الخدمات المخصصة
   const serviceIcons: Record<string, JSX.Element> = {
     'التوريد': <FaTruck className="w-6 h-6" />,
     'التصنيع والتركيب': <FaIndustry className="w-6 h-6" />,
     'التصميم': <FaRuler className="w-6 h-6" />,
   };
 
+  // حالة التحميل
   if (loading) {
     return (
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
         <div className="container mx-auto px-4">
           <div className="text-center text-gray-600 dark:text-gray-300 py-20">
             <div className="inline-block w-12 h-12 border-4 border-[#01AEBE] border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p>جاري تحميل الخدمات...</p>
+            <p className="text-lg">جاري تحميل الخدمات...</p>
           </div>
         </div>
       </section>
@@ -116,7 +126,7 @@ export default function Services() {
           </p>
         </motion.div>
 
-        {/* --- الخدمات الرئيسية - كروت --- هذا الجزء كان يظهر بشكل خاطئ */}
+        {/* الخدمات الرئيسية - كروت */}
         {services.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400 py-10 bg-white dark:bg-gray-800 rounded-xl shadow-md mb-10">
             <p className="text-lg mb-2">لا توجد خدمات متاحة حالياً</p>
@@ -124,29 +134,32 @@ export default function Services() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-16">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <ServiceCard
-                  title={service.title}
-                  description={service.description}
-                  icon={service.icon}
-                  customIcon={serviceIcons[service.title]}
-                />
-              </motion.div>
-            ))}
+            {services.map((service, index) => {
+              console.log(`📦 Rendering service: ${service.title}`);
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                >
+                  <ServiceCard 
+                    title={service.title} 
+                    description={service.description} 
+                    icon={service.icon}
+                    customIcon={serviceIcons[service.title]}
+                  />
+                </motion.div>
+              );
+            })}
           </div>
         )}
 
-        {/* --- تفاصيل الخدمات مع الصور --- (الجزء الذي كان يظهر بشكل صحيح) */}
+        {/* تفاصيل الخدمات مع الصور */}
         {Object.entries(details).map(([serviceId, detailList]) => {
           const service = services.find(s => s.id === serviceId);
           if (!service || detailList.length === 0) return null;
-
+          
           return (
             <div key={serviceId} className="mb-16">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center border-b border-gray-200 dark:border-gray-700 pb-4">
@@ -154,15 +167,15 @@ export default function Services() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {detailList.map((detail) => (
-                  <div
-                    key={detail.id}
+                  <div 
+                    key={detail.id} 
                     className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:scale-[1.02]"
                   >
                     {detail.image && (
                       <div className="w-full h-48 mb-3 overflow-hidden rounded-lg">
-                        <img
-                          src={detail.image}
-                          alt={detail.title}
+                        <img 
+                          src={detail.image} 
+                          alt={detail.title} 
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
                             console.error('Failed to load image:', detail.image);
@@ -180,7 +193,7 @@ export default function Services() {
           );
         })}
 
-        {/* قائمة المشاريع التي نخدمها */}
+        {/* قائمة المشاريع التي نخدمها - مع أيقونات احترافية */}
         <div className="text-center mt-12">
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">أسعار خاصة بالمشاريع</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">

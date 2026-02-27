@@ -8,10 +8,12 @@ interface ServiceCardProps {
   title: string;
   description: string;
   icon: string;
-  customIcon?: JSX.Element; // إضافة هذه الخاصية
+  customIcon?: JSX.Element;
 }
 
 export default function ServiceCard({ title, description, icon, customIcon }: ServiceCardProps) {
+  console.log(`🎴 ServiceCard rendering: ${title}`);
+  
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
