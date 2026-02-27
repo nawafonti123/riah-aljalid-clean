@@ -1,23 +1,80 @@
+/* frontend/app/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 196 100% 50%;
-    --primary-foreground: 210 40% 98%;
+    /* الألوان للوضع الفاتح - حسب طلبك */
+    --background: 185 99% 100%;
+    --foreground: 185 99% 10%;
+    
+    --primary: 185 99% 34%;
+    --primary-foreground: 185 99% 98%;
+    
+    --secondary: 78 57% 53%;
+    --secondary-foreground: 78 57% 10%;
+    
+    --accent: 185 99% 95%;
+    --accent-foreground: 185 99% 30%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 185 99% 10%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 185 99% 10%;
+    
+    --muted: 185 99% 96%;
+    --muted-foreground: 185 99% 40%;
+    
+    --border: 185 99% 85%;
+    --input: 185 99% 85%;
+    --ring: 185 99% 34%;
+    
+    --radius: 0.5rem;
   }
 
   .dark {
+    /* الألوان للوضع الداكن - الألوان الجليدية الأصلية */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+    
+    --primary: 196 100% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 78 57% 53%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
 @layer utilities {
   .glass-card {
     @apply bg-white/5 backdrop-blur-md border border-white/20 shadow-[0_8px_32px_0_rgba(0,198,255,0.1)];
+  }
+  
+  /* تحسينات للوضع الفاتح */
+  .light .glass-card {
+    @apply bg-[#01AEBE]/5 backdrop-blur-md border border-[#01AEBE]/20 shadow-[0_8px_32px_0_rgba(1,174,190,0.1)];
+  }
+  
+  .light .text-gradient-primary {
+    @apply bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] bg-clip-text text-transparent;
+  }
+  
+  .dark .text-gradient-primary {
+    @apply bg-gradient-to-r from-[#00c6ff] to-[#2C5364] bg-clip-text text-transparent;
   }
 }
