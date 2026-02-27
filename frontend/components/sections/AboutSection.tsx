@@ -1,9 +1,10 @@
-// frontend/components/sections/AboutSection.tsx
+// frontend/components/sections/AboutSection.tsx (محدث)
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { publicApi } from '@/lib/api';
+import Image from 'next/image';
 
 interface TeamMember {
   id: string;
@@ -36,7 +37,12 @@ export default function AboutSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8 sm:mb-10"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">عن رياح الجليد</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            رياح الجليد
+            <span className="block text-lg sm:text-xl text-[#01AEBE] dark:text-[#00c6ff] mt-2">
+              لأعمال التكييف المركزي
+            </span>
+          </h2>
         </motion.div>
 
         {/* نبذة عنا */}

@@ -22,6 +22,7 @@ export default async function HomePage() {
 
   const Hero = (await import('@/components/sections/Hero')).default;
   const WhyUs = (await import('@/components/sections/WhyUs')).default;
+  const Achievements = (await import('@/components/sections/Achievements')).default;
   const AboutSection = (await import('@/components/sections/AboutSection')).default;
   const Services = (await import('@/components/sections/Services')).default;
   const Portfolio = (await import('@/components/sections/Portfolio')).default;
@@ -34,6 +35,9 @@ export default async function HomePage() {
       </Suspense>
       <Suspense fallback={<div className="h-40 bg-gray-50 dark:bg-gray-900" />}>
         <WhyUs />
+      </Suspense>
+      <Suspense fallback={<div className="h-40 bg-white dark:bg-gray-800" />}>
+        <Achievements />
       </Suspense>
       <Suspense fallback={<div className="h-80 bg-white dark:bg-gray-900" />}>
         <AboutSection />
