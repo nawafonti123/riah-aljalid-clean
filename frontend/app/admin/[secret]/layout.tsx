@@ -103,14 +103,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   );
                 })}
               </nav>
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-                  <p className="text-xs text-gray-400">مرحباً بك</p>
-                  <p className="text-xs text-white font-medium truncate max-w-full" title={session.user?.email}>
-                    {session.user?.email}
-                  </p>
+              <div className="p-2 bg-white/5 rounded-lg border border-white/10">
+                <p className="text-xs text-gray-400">مرحباً بك</p>
+                <p 
+                    className="text-xs text-white font-medium truncate max-w-full" 
+                    title={session.user?.email ?? undefined}
+                >
+                    {session.user?.email ?? ''}
+                </p>
                 </div>
-              </div>
             </motion.div>
           </motion.div>
         )}
@@ -186,14 +187,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="absolute bottom-6 left-6 right-6">
-          <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+        <div className="p-2 bg-white/5 rounded-lg border border-white/10">
             <p className="text-xs text-gray-400">مرحباً بك</p>
-            <p className="text-sm text-white font-medium truncate max-w-full" title={session.user?.email}>
-              {session.user?.email}
+            <p 
+                className="text-xs text-white font-medium truncate max-w-full" 
+                title={session.user?.email ?? undefined}
+            >
+                {session.user?.email ?? ''}
             </p>
-          </div>
-        </div>
+            </div>
       </motion.aside>
 
       <main className="flex-1 p-8 overflow-y-auto">{children}</main>
