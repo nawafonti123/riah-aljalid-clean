@@ -4,6 +4,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { publicApi } from '@/lib/api';
+import { FaTruck, FaIndustry, FaRuler, FaUniversity, FaSchool, FaPalace, FaHome, FaCoffee, FaHotel, FaBuilding } from 'react-icons/fa';
 import ServiceCard from './ServiceCard';
 
 interface Service {
@@ -23,6 +24,16 @@ interface ServiceDetail {
   serviceId: string;
 }
 
+const projectIcons = [
+  { icon: FaUniversity, name: 'جامعات' },
+  { icon: FaSchool, name: 'مدارس' },
+  { icon: FaPalace, name: 'قصور' },
+  { icon: FaHome, name: 'فلل' },
+  { icon: FaCoffee, name: 'كافيهات' },
+  { icon: FaHotel, name: 'فنادق' },
+  { icon: FaBuilding, name: 'أبراج' },
+];
+
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [details, setDetails] = useState<Record<string, ServiceDetail[]>>({});
@@ -36,14 +47,12 @@ export default function Services() {
       publicApi.getServiceDetails()
     ])
       .then(([servicesData, detailsData]) => {
-        console.log('Services data:', servicesData); // للتأكد من وصول البيانات
-        console.log('Details data:', detailsData); // للتأكد من وصول البيانات
+        console.log('Services data:', servicesData);
+        console.log('Details data:', detailsData);
         
-        // ترتيب الخدمات حسب حقل order
         const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
         setServices(sortedServices);
 
-        // تجميع التفاصيل حسب serviceId
         const groupedDetails = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
           if (!acc[detail.serviceId]) {
             acc[detail.serviceId] = [];
@@ -60,6 +69,12 @@ export default function Services() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  const serviceIcons: Record<string, JSX.Element> = {
+    'التوريد': <FaTruck className="w-6 h-6" />,
+    'التصنيع والتركيب': <FaIndustry className="w-6 h-6" />,
+    'التصميم': <FaRuler className="w-6 h-6" />,
+  };
 
   if (loading) {
     return (
@@ -82,7 +97,9 @@ export default function Services() {
           className="text-center mb-8 sm:mb-10"
         >
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">خدماتنا</h2>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2">نقدم حلولاً متكاملة ومتطورة في مجال التكييف والتبريد</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2 max-w-3xl mx-auto">
+            تقدم شركتنا خدمات عالية الجودة وشاملة لتلبية احتياجات عملائنا
+          </p>
         </motion.div>
 
         {/* الخدمات الرئيسية - كروت */}
@@ -103,7 +120,8 @@ export default function Services() {
                 <ServiceCard 
                   title={service.title} 
                   description={service.description} 
-                  icon={service.icon} 
+                  icon={service.icon}
+                  customIcon={serviceIcons[service.title]}
                 />
               </motion.div>
             ))}
@@ -124,7 +142,7 @@ export default function Services() {
                 {detailList.map((detail) => (
                   <div 
                     key={detail.id} 
-                    className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow"
+                    className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:scale-[1.02]"
                   >
                     {detail.image && (
                       <div className="w-full h-48 mb-3 overflow-hidden rounded-lg">
@@ -148,12 +166,28 @@ export default function Services() {
           );
         })}
 
-        {/* قائمة المشاريع التي نخدمها (ثابتة من ملف PDF) */}
+        {/* قائمة المشاريع التي نخدمها - مع أيقونات احترافية */}
         <div className="text-center mt-12">
-          <p className="text-xs sm:text-sm text-[#01AEBE] dark:text-[#00c6ff] bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 inline-block px-4 py-2 rounded-full">
-            جامعات - مدارس - قصور - فلل - كافيهات - فنادق - أبراج
-          </p>
-          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-2">أسعار خاصة بالمشاريع</p>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">أسعار خاصة بالمشاريع</p>
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+            {projectIcons.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  className="flex flex-col items-center gap-2"
+                >
+                  <div className="w-12 h-12 rounded-full bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
+                    <Icon className="w-6 h-6 text-[#01AEBE] dark:text-[#00c6ff]" />
+                  </div>
+                  <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">{item.name}</span>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
