@@ -90,7 +90,12 @@ export default function CompanyImagesPage() {
 
   const handleEdit = (img: CompanyImage) => {
     setEditing(img);
-    setFormData(img);
+    setFormData({
+      title: img.title || '',
+      image: img.image,
+      category: img.category || '',
+      order: img.order,
+    });
     setShowForm(true);
   };
 

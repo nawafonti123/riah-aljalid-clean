@@ -98,7 +98,13 @@ export default function ServiceDetailsPage() {
 
   const handleEdit = (detail: ServiceDetail) => {
     setEditing(detail);
-    setFormData(detail);
+    setFormData({
+      title: detail.title,
+      description: detail.description,
+      image: detail.image || '',
+      order: detail.order,
+      serviceId: detail.serviceId,
+    });
     setShowForm(true);
   };
 
