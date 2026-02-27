@@ -34,42 +34,60 @@ const projectIcons = [
   { icon: FaBuilding, name: 'أبراج' },
 ];
 
-// ... باقي الكود كما هو
-
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [details, setDetails] = useState<Record<string, ServiceDetail[]>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.1 });
 
   useEffect(() => {
-    Promise.all([
-      publicApi.getServices(),
-      publicApi.getServiceDetails()
-    ])
-      .then(([servicesData, detailsData]) => {
-        console.log('Services data:', servicesData);
-        console.log('Details data:', detailsData);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
         
-        const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
-        setServices(sortedServices);
+        console.log('Fetching services and details...');
+        
+        const [servicesData, detailsData] = await Promise.all([
+          publicApi.getServices(),
+          publicApi.getServiceDetails()
+        ]);
+        
+        console.log('Services received:', servicesData);
+        console.log('Details received:', detailsData);
+        
+        if (servicesData && servicesData.length > 0) {
+          const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
+          setServices(sortedServices);
+        } else {
+          console.log('No services received from API');
+        }
 
-        const groupedDetails = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
-          if (!acc[detail.serviceId]) {
-            acc[detail.serviceId] = [];
-          }
-          acc[detail.serviceId].push(detail);
-          return acc;
-        }, {});
-        setDetails(groupedDetails);
-      })
-      .catch(err => {
+        if (detailsData && detailsData.length > 0) {
+          const groupedDetails = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
+            if (!acc[detail.serviceId]) {
+              acc[detail.serviceId] = [];
+            }
+            acc[detail.serviceId].push(detail);
+            return acc;
+          }, {});
+          setDetails(groupedDetails);
+        } else {
+          console.log('No details received from API');
+        }
+      } catch (err) {
         console.error('Error fetching services:', err);
+        setError('فشل تحميل الخدمات');
         setServices([]);
         setDetails({});
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const serviceIcons: Record<string, JSX.Element> = {
@@ -82,8 +100,22 @@ export default function Services() {
     return (
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">خدماتنا</h2>
-          <div className="text-center text-gray-600 dark:text-gray-300">جاري تحميل الخدمات...</div>
+          <div className="text-center text-gray-600 dark:text-gray-300 py-20">
+            <div className="inline-block w-12 h-12 border-4 border-[#01AEBE] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p>جاري تحميل الخدمات...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
+        <div className="container mx-auto px-4">
+          <div className="text-center text-red-500 py-20">
+            <p>{error}</p>
+          </div>
         </div>
       </section>
     );
@@ -92,13 +124,14 @@ export default function Services() {
   return (
     <section id="services" ref={ref} className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43] transition-colors duration-300">
       <div className="container mx-auto px-4">
+        {/* عنوان القسم الرئيسي */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
           className="text-center mb-8 sm:mb-10"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">خدماتنا</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">خدماتنا</h2>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2 max-w-3xl mx-auto">
             تقدم شركتنا خدمات عالية الجودة وشاملة لتلبية احتياجات عملائنا
           </p>
