@@ -1,4 +1,5 @@
 // frontend/lib/api.ts
+// frontend/lib/api.ts (تأكد من وجود هذه الدوال)
 import { getSession } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -13,10 +14,12 @@ export const publicApi = {
   getServices: () => fetchPublic('/services'),
   getProjects: () => fetchPublic('/projects'),
   getMaintenance: () => fetchPublic('/maintenance'),
-  getTeamMembers: () => fetchPublic('/team'),
+  getTeamMembers: () => fetchPublic('/team'), // هذه الدالة مهمة
   getServiceDetails: () => fetchPublic('/service-details'),
   getCompanyImages: () => fetchPublic('/company-images'),
 };
+
+// باقي الدوال كما هي...
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const session = await getSession();
