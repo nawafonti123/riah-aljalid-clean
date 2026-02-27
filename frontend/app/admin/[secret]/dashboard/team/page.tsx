@@ -1,4 +1,4 @@
-// admin/[secret]/dashboard/team/page.tsx
+// app/admin/[secret]/dashboard/team/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -88,7 +88,13 @@ export default function TeamPage() {
 
   const handleEdit = (member: TeamMember) => {
     setEditing(member);
-    setFormData(member);
+    setFormData({
+      name: member.name,
+      role: member.role,
+      bio: member.bio || '',
+      image: member.image || '',
+      order: member.order,
+    });
     setShowForm(true);
   };
 

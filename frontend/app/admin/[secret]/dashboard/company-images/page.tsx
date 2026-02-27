@@ -1,4 +1,4 @@
-// admin/[secret]/dashboard/company-images/page.tsx
+// app/admin/[secret]/dashboard/company-images/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';

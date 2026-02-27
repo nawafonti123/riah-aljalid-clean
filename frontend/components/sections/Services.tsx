@@ -1,4 +1,4 @@
-// Services.tsx
+// components/sections/Services.tsx
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -34,12 +34,15 @@ export default function Services() {
   useEffect(() => {
     Promise.all([publicApi.getServices(), publicApi.getServiceDetails()])
       .then(([servicesData, detailsData]) => {
-        setServices(servicesData.sort((a, b) => a.order - b.order));
-        const grouped = detailsData.reduce((acc, detail) => {
-          if (!acc[detail.serviceId]) acc[detail.serviceId] = [];
+        // إضافة أنواع صريحة لمعاملات sort
+        setServices(servicesData.sort((a: Service, b: Service) => a.order - b.order));
+        const grouped = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
+          if (!acc[detail.serviceId]) {
+            acc[detail.serviceId] = [];
+          }
           acc[detail.serviceId].push(detail);
           return acc;
-        }, {} as Record<string, ServiceDetail[]>);
+        }, {});
         setDetails(grouped);
       })
       .catch(console.error)

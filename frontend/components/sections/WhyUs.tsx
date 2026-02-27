@@ -1,4 +1,4 @@
-// WhyUs.tsx
+// components/sections/WhyUs.tsx
 'use client';
 
 import { useRef } from 'react';

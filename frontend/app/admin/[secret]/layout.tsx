@@ -1,4 +1,4 @@
-// admin/[secret]/layout.tsx
+// app/admin/[secret]/layout.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,7 +33,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // إذا كان المسار هو صفحة الدخول، اعرض المحتوى بدون تخطيط الإدارة
   if (pathname === `/admin/${secret}/login`) {
     return <>{children}</>;
   }
@@ -81,11 +80,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     },
   ];
 
-  // تخطيط الهاتف
   if (isMobile) {
     return (
       <div className="min-h-screen bg-gray-900 pb-16">
-        {/* شريط علوي */}
         <div className="fixed top-0 left-0 right-0 bg-gray-800/90 backdrop-blur-md z-50 px-4 py-3 flex items-center justify-between border-b border-white/10">
           <h2 className="text-white text-lg font-bold">لوحة التحكم</h2>
           <button
@@ -96,7 +93,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
 
-        {/* القائمة الجانبية المنسدلة */}
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -148,7 +144,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="p-2 bg-white/5 rounded-lg border border-white/10">
                   <p className="text-xs text-gray-400">مرحباً بك</p>
-                  <p className="text-xs text-white font-medium truncate max-w-full" title={session.user?.email}>
+                  <p
+                    className="text-xs text-white font-medium truncate max-w-full"
+                    title={session.user?.email ?? ''}
+                  >
                     {session.user?.email}
                   </p>
                 </div>
@@ -159,7 +158,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <main className="pt-16">{children}</main>
 
-        {/* شريط سفلي */}
         <div className="fixed bottom-0 left-0 right-0 bg-gray-800/90 backdrop-blur-md border-t border-white/10 z-40">
           <nav className="flex justify-around items-center h-16">
             {navItems.slice(0, 4).map((item) => {
@@ -186,7 +184,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // تخطيط سطح المكتب
   return (
     <div className="flex min-h-screen bg-gray-900">
       <motion.aside
@@ -234,7 +231,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="absolute bottom-6 left-6 right-6">
           <div className="p-3 bg-white/5 rounded-xl border border-white/10">
             <p className="text-xs text-gray-400">مرحباً بك</p>
-            <p className="text-sm text-white font-medium truncate max-w-full" title={session.user?.email}>
+            <p
+              className="text-sm text-white font-medium truncate max-w-full"
+              title={session.user?.email ?? ''}
+            >
               {session.user?.email}
             </p>
           </div>
