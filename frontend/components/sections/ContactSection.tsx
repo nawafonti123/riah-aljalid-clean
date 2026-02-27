@@ -10,7 +10,7 @@ export default function ContactSection() {
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section id="contact" ref={ref} className="py-12 sm:py-16 md:py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <section id="contact" ref={ref} className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#2C5364] dark:to-[#0F2027] transition-colors duration-300">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
