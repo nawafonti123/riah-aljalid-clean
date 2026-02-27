@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String        @id @default(cuid())
+  email         String        @unique
   password      String
-  role          String    @default("ADMIN")
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  role          String        @default("ADMIN")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   activityLogs  ActivityLog[]
 }
 
@@ -48,10 +48,10 @@ model Hero {
 }
 
 model Setting {
-  id                String @id @default(cuid())
-  phone             String
-  email             String
-  address           String
+  id                 String @id @default(cuid())
+  phone              String
+  email              String
+  address            String
   commercialRegister String
 
   // صور/محتوى صفحات عامة (يتم التحكم بها من لوحة الإدارة)
@@ -59,6 +59,14 @@ model Setting {
   aboutImage         String?
   footerIceImage     String?
   googleMapsEmbedUrl String?
+
+  // ✅ NEW: صور لكل قسم تقريبًا
+  servicesImage      String?
+  portfolioImage     String?
+  contactImage       String?
+  faqImage           String?
+  processImage       String?
+  brandsImage        String?
 }
 
 model ActivityLog {
