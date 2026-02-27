@@ -1,4 +1,3 @@
-// backend/src/modules/company-images/dto/create-company-image.dto.ts
 import { IsString, IsOptional, IsNumber, IsUrl, Min } from 'class-validator';
 
 export class CreateCompanyImageDto {
