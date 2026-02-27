@@ -1,4 +1,3 @@
-// backend/src/modules/uploads/uploads.service.ts (تعديل لدعم الفيديو)
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
@@ -8,6 +7,7 @@ import { existsSync } from 'fs';
 @Injectable()
 export class UploadsService {
   private readonly uploadDir = join(process.cwd(), 'uploads');
+  // استخدم BACKEND_URL من متغيرات البيئة، مع قيمة افتراضية للتطوير المحلي
   private readonly baseUrl = process.env.BACKEND_URL || 'http://localhost:4000';
 
   constructor() {
@@ -21,8 +21,7 @@ export class UploadsService {
       throw new BadRequestException('No file provided');
     }
 
-    // التحقق من النوع
-    const allowedMimeTypes = type === 'image' 
+    const allowedMimeTypes = type === 'image'
       ? ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
       : ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
 
@@ -30,13 +29,13 @@ export class UploadsService {
       throw new BadRequestException(`Invalid file type. Allowed ${type} types: ${allowedMimeTypes.join(', ')}`);
     }
 
-    // إنشاء اسم فريد
     const fileExtension = file.originalname.split('.').pop();
     const fileName = `${uuidv4()}.${fileExtension}`;
     const filePath = join(this.uploadDir, fileName);
 
     await writeFile(filePath, file.buffer);
 
+    // إرجاع الرابط الكامل باستخدام baseUrl
     return `${this.baseUrl}/uploads/${fileName}`;
   }
 }
