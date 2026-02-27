@@ -14,23 +14,46 @@ interface Service {
   order: number;
 }
 
+interface ServiceDetail {
+  id: string;
+  title: string;
+  description: string;
+  image?: string;
+  order: number;
+  serviceId: string;
+}
+
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
+  const [details, setDetails] = useState<Record<string, ServiceDetail[]>>({});
   const [loading, setLoading] = useState(true);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.1 });
 
   useEffect(() => {
-    publicApi.getServices()
-      .then(data => {
+    Promise.all([
+      publicApi.getServices(),
+      publicApi.getServiceDetails()
+    ])
+      .then(([servicesData, detailsData]) => {
         // ترتيب الخدمات حسب حقل order
-        const sorted = data.sort((a: Service, b: Service) => a.order - b.order);
-        setServices(sorted);
+        const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
+        setServices(sortedServices);
+
+        // تجميع التفاصيل حسب serviceId
+        const groupedDetails = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
+          if (!acc[detail.serviceId]) {
+            acc[detail.serviceId] = [];
+          }
+          acc[detail.serviceId].push(detail);
+          return acc;
+        }, {});
+        setDetails(groupedDetails);
       })
       .catch(err => {
         console.error('Error fetching services:', err);
-        // في حالة الخطأ، استخدم بيانات افتراضية (اختياري)
         setServices([]);
+        setDetails({});
       })
       .finally(() => setLoading(false));
   }, []);
@@ -59,12 +82,13 @@ export default function Services() {
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2">نقدم حلولاً متكاملة ومتطورة في مجال التكييف والتبريد</p>
         </motion.div>
 
+        {/* الخدمات الرئيسية - كروت */}
         {services.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400 py-10">
             لا توجد خدمات متاحة حالياً
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-16">
             {services.map((service, index) => (
               <motion.div
                 key={service.id}
@@ -77,6 +101,44 @@ export default function Services() {
             ))}
           </div>
         )}
+
+        {/* تفاصيل الخدمات مع الصور */}
+        {Object.entries(details).map(([serviceId, detailList]) => {
+          const service = services.find(s => s.id === serviceId);
+          if (!service || detailList.length === 0) return null;
+          
+          return (
+            <div key={serviceId} className="mb-16">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center border-b border-gray-200 dark:border-gray-700 pb-4">
+                {service.title} - تفاصيل إضافية
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {detailList.map((detail) => (
+                  <div 
+                    key={detail.id} 
+                    className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow"
+                  >
+                    {detail.image && (
+                      <div className="w-full h-48 mb-3 overflow-hidden rounded-lg">
+                        <img 
+                          src={detail.image} 
+                          alt={detail.title} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            console.error('Failed to load image:', detail.image);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2">{detail.title}</h4>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{detail.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
 
         {/* قائمة المشاريع التي نخدمها (ثابتة من ملف PDF) */}
         <div className="text-center mt-12">
