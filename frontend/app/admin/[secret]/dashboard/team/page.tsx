@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaSnowflake, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { teamApi, uploadApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
-import Image from 'next/image';
 
 interface TeamMember {
   id: string;
@@ -173,12 +172,11 @@ export default function TeamPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">صورة العضو</label>
                   <input type="file" accept="image/*" onChange={handleImageUpload} />
                   {formData.image && (
-                    <div className="relative mt-2 w-20 h-20">
-                      <Image
+                    <div className="mt-2 w-20 h-20">
+                      <img
                         src={formData.image}
                         alt="preview"
-                        fill
-                        className="object-cover rounded"
+                        className="w-full h-full object-cover rounded"
                       />
                     </div>
                   )}
@@ -221,12 +219,11 @@ export default function TeamPage() {
               <tr key={member.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {member.image ? (
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                      <Image
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      <img
                         src={member.image}
                         alt={member.name}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   ) : (
