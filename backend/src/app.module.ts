@@ -1,4 +1,3 @@
-// backend/src/app.module.ts (أضف MaintenanceModule للواردات)
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
@@ -15,7 +14,10 @@ import { HeroModule } from './modules/hero/hero.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { ActivityLogModule } from './modules/activity-log/activity-log.module';
 import { ContactModule } from './modules/contact/contact.module';
-import { MaintenanceModule } from './modules/maintenance/maintenance.module'; // <-- أضف هذا
+import { MaintenanceModule } from './modules/maintenance/maintenance.module';
+import { TeamModule } from './modules/team/team.module';
+import { ServiceDetailsModule } from './modules/service-details/service-details.module';
+import { CompanyImagesModule } from './modules/company-images/company-images.module';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { MaintenanceModule } from './modules/maintenance/maintenance.module'; //
       serveRoot: '/uploads',
       serveStaticOptions: {
         setHeaders: (res, path, stat) => {
-          res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+          res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
           res.setHeader('Access-Control-Allow-Credentials', 'true');
         },
       },
@@ -50,7 +52,10 @@ import { MaintenanceModule } from './modules/maintenance/maintenance.module'; //
     SettingsModule,
     ActivityLogModule,
     ContactModule,
-    MaintenanceModule, // <-- أضف هذا
+    MaintenanceModule,
+    TeamModule,
+    ServiceDetailsModule,
+    CompanyImagesModule,
   ],
 })
 export class AppModule {}
