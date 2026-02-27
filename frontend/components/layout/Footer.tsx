@@ -1,4 +1,3 @@
-// frontend/components/layout/Footer.tsx
 import Link from 'next/link';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaRegBuilding } from 'react-icons/fa';
 import Image from 'next/image';
@@ -28,7 +27,6 @@ export default async function Footer() {
 
   return (
     <footer className="relative bg-white dark:bg-[#0F2027] text-gray-800 dark:text-white pt-12 pb-6 transition-colors duration-300 overflow-hidden">
-      {/* زخرفة خفيفة أسفل الفوتر (صورة قابلة للتغيير من لوحة الإدارة) */}
       <div className="pointer-events-none absolute -bottom-10 -left-10 opacity-10 dark:opacity-[0.08]">
         <div className="relative w-[220px] h-[220px] sm:w-[280px] sm:h-[280px]">
           <Image
@@ -44,7 +42,6 @@ export default async function Footer() {
 
       <div className="container mx-auto px-4 sm:px-6 relative">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          {/* حول الشركة */}
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5">
@@ -53,7 +50,8 @@ export default async function Footer() {
                   alt="رياح الجليد"
                   fill
                   sizes="64px"
-                  className="object-contain p-1"
+                  // ✅ نفس حل الأعلى: Mask دائري
+                  className="object-cover [mask-image:radial-gradient(circle,#000_62%,transparent_63%)] [-webkit-mask-image:radial-gradient(circle,#000_62%,transparent_63%)]"
                 />
               </div>
               <h3 className="text-xl font-bold text-gradient-primary">رياح الجليد</h3>
@@ -63,7 +61,6 @@ export default async function Footer() {
             </p>
           </div>
 
-          {/* روابط سريعة */}
           <div>
             <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">روابط سريعة</h4>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
@@ -75,7 +72,6 @@ export default async function Footer() {
             </ul>
           </div>
 
-          {/* خدماتنا */}
           <div>
             <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">خدماتنا</h4>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
@@ -86,7 +82,6 @@ export default async function Footer() {
             </ul>
           </div>
 
-          {/* تواصل */}
           <div>
             <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">تواصل</h4>
             <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
@@ -112,7 +107,6 @@ export default async function Footer() {
           </div>
         </div>
 
-        {/* حقوق النشر وتوقيع التطوير */}
         <div className="flex flex-col sm:flex-row justify-between items-center text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
           <p>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</p>
           <div className="flex flex-col items-center gap-1 mt-2 sm:mt-0">

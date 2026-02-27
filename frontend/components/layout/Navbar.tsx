@@ -1,4 +1,3 @@
-// frontend/components/layout/Navbar.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,16 +22,12 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-
-      // تحديد القسم النشط بناءً على موضع التمرير
-      const sections = navLinks.map(link => link.section);
+      const sections = navLinks.map((link) => link.section);
       for (const section of sections) {
         const element = document.getElementById(section);
         if (element) {
@@ -50,19 +45,13 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+    document.body.style.overflow = menuOpen ? 'hidden' : 'unset';
   }, [menuOpen]);
 
   const scrollToSection = (sectionId: string) => {
     setMenuOpen(false);
     const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (element) element.scrollIntoView({ behavior: 'smooth' });
   };
 
   if (!mounted) return null;
@@ -85,9 +74,11 @@ export default function Navbar() {
                   alt="رياح الجليد"
                   fill
                   sizes="40px"
-                  className="object-contain p-1"
+                  // ✅ Mask دائري على نفس الصورة (يحذف أي خلفية/حدود مربعة)
+                  className="object-cover [mask-image:radial-gradient(circle,#000_62%,transparent_63%)] [-webkit-mask-image:radial-gradient(circle,#000_62%,transparent_63%)]"
                 />
               </div>
+
               <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
                 رياح الجليد
               </span>
