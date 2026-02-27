@@ -19,13 +19,18 @@ export default function ContactSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
-  const [settings, setSettings] = useState<SiteSettings>({
-    address: 'الرياض - طريق الملك عبدالعزيز',
+  // ✅ قيم افتراضية (Fallback) لو الإعدادات فاضية في قاعدة البيانات
+  const DEFAULT_SETTINGS: SiteSettings = {
+    address: '8246 طريق الملك عبدالعزيز الفرعي، الملك فهد، 3988، الرياض 12274، المملكة العربية السعودية',
     phone: '+966 56 524 7407',
     email: 'RiaHaljalid@icloud.com',
     commercialRegister: '1010632725',
-    googleMapsEmbedUrl: null,
-  });
+    // ✅ خريطة للموقع المطلوب (يمكن تغييره من الأدمن لاحقاً)
+    googleMapsEmbedUrl:
+      'https://www.google.com/maps?q=8246%20%D8%B7%D8%B1%D9%8A%D9%82%20%D8%A7%D9%84%D9%85%D9%84%D9%83%20%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2%20%D8%A7%D9%84%D9%81%D8%B1%D8%B9%D9%8A%D8%8C%20%D8%A7%D9%84%D9%85%D9%84%D9%83%20%D9%81%D9%87%D8%AF%D8%8C%203988%D8%8C%20%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6%2012274%D8%8C%20%D8%A7%D9%84%D9%85%D9%85%D9%84%D9%83%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9%20%D8%A7%D9%84%D8%B3%D8%B9%D9%88%D8%AF%D9%8A%D8%A9&output=embed',
+  };
+
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sending, setSending] = useState(false);
@@ -33,8 +38,22 @@ export default function ContactSection() {
   useEffect(() => {
     publicApi
       .getSettings()
-      .then((data: SiteSettings) => setSettings((prev) => ({ ...prev, ...data })))
-      .catch(() => {});
+      .then((data: SiteSettings) => {
+        // ✅ دمج الإعدادات القادمة من السيرفر مع الافتراضية
+        setSettings((prev) => ({
+          ...prev,
+          ...data,
+          // لو السيرفر رجّع قيم فاضية نخلي الافتراضي
+          address: data?.address?.trim() ? data.address : prev.address,
+          phone: data?.phone?.trim() ? data.phone : prev.phone,
+          email: data?.email?.trim() ? data.email : prev.email,
+          commercialRegister: data?.commercialRegister?.trim() ? data.commercialRegister : prev.commercialRegister,
+          googleMapsEmbedUrl: data?.googleMapsEmbedUrl?.trim() ? data.googleMapsEmbedUrl : prev.googleMapsEmbedUrl,
+        }));
+      })
+      .catch(() => {
+        // خلّي الافتراضي
+      });
   }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -81,7 +100,10 @@ export default function ContactSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
           >
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">معلومات الاتصال</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">
+              معلومات الاتصال
+            </h3>
+
             <div className="space-y-3 sm:space-y-4">
               <div className="flex items-start gap-3">
                 <FaMapMarkerAlt className="w-4 h-4 sm:w-5 sm:h-5 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
@@ -128,7 +150,9 @@ export default function ContactSection() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
           >
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">موقعنا على الخريطة</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">
+              موقعنا على الخريطة
+            </h3>
 
             <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
               <div className="relative w-full aspect-[16/9]">
@@ -142,13 +166,16 @@ export default function ContactSection() {
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-600 dark:text-gray-300">
-                    لم يتم ضبط رابط خرائط Google بعد (يمكنك ضبطه من لوحة الإدارة).
+                    لا يوجد رابط خريطة حالياً
                   </div>
                 )}
               </div>
             </div>
 
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3 mt-6">أرسل رسالة</h3>
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3 mt-6">
+              أرسل رسالة
+            </h3>
+
             <form onSubmit={onSubmit} className="space-y-3 sm:space-y-4">
               <input
                 value={form.name}
