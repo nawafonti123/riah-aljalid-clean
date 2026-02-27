@@ -1,5 +1,4 @@
 // frontend/lib/api.ts
-// frontend/lib/api.ts (تأكد من وجود هذه الدوال)
 import { getSession } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -14,12 +13,10 @@ export const publicApi = {
   getServices: () => fetchPublic('/services'),
   getProjects: () => fetchPublic('/projects'),
   getMaintenance: () => fetchPublic('/maintenance'),
-  getTeamMembers: () => fetchPublic('/team'), // هذه الدالة مهمة
+  getTeamMembers: () => fetchPublic('/team'),
   getServiceDetails: () => fetchPublic('/service-details'),
   getCompanyImages: () => fetchPublic('/company-images'),
 };
-
-// باقي الدوال كما هي...
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   const session = await getSession();
@@ -118,7 +115,6 @@ export const maintenanceApi = {
     fetchWithAuth('/maintenance', { method: 'PATCH', body: JSON.stringify(data) }),
 };
 
-// جديد: Team
 export const teamApi = {
   getAll: () => fetchWithAuth('/team'),
   create: (data: any) => fetchWithAuth('/team', { method: 'POST', body: JSON.stringify(data) }),
@@ -126,7 +122,6 @@ export const teamApi = {
   delete: (id: string) => fetchWithAuth(`/team/${id}`, { method: 'DELETE' }),
 };
 
-// جديد: ServiceDetails
 export const serviceDetailsApi = {
   getAll: () => fetchWithAuth('/service-details'),
   create: (data: any) => fetchWithAuth('/service-details', { method: 'POST', body: JSON.stringify(data) }),
@@ -134,7 +129,6 @@ export const serviceDetailsApi = {
   delete: (id: string) => fetchWithAuth(`/service-details/${id}`, { method: 'DELETE' }),
 };
 
-// جديد: CompanyImages
 export const companyImagesApi = {
   getAll: () => fetchWithAuth('/company-images'),
   create: (data: any) => fetchWithAuth('/company-images', { method: 'POST', body: JSON.stringify(data) }),

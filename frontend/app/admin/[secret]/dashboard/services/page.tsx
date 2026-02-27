@@ -1,4 +1,4 @@
-// frontend/app/admin/[secret]/dashboard/services/page.tsx
+// frontend/app/admin/[secret]/dashboard/services/page.tsx (صفحة إدارة الخدمات في لوحة التحكم)
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -190,7 +190,7 @@ export default function ServicesPage() {
           <tbody className="divide-y divide-gray-700">
             {services.map((service) => (
               <tr key={service.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-2xl">{service.icon}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-2xl">{service.icon || '❄️'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{service.title}</td>
                 <td className="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">{service.description}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{service.order}</td>

@@ -38,55 +38,68 @@ export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [details, setDetails] = useState<Record<string, ServiceDetail[]>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.1 });
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log('🔍 Fetching services and details...');
+        setError(null);
+        
+        console.log('Fetching services and details...');
         
         const [servicesData, detailsData] = await Promise.all([
           publicApi.getServices(),
           publicApi.getServiceDetails()
         ]);
         
-        console.log('✅ Services received:', servicesData);
-        console.log('✅ Details received:', detailsData);
+        console.log('Services received:', servicesData);
+        console.log('Details received:', detailsData);
+
+        if (!isMounted) return;
 
         // ترتيب الخدمات حسب الترتيب
-        if (servicesData && servicesData.length > 0) {
-          const sortedServices = servicesData.sort((a: Service, b: Service) => a.order - b.order);
-          setServices(sortedServices);
-        } else {
-          console.log('⚠️ No services data received');
-        }
+        const sortedServices = servicesData?.length 
+          ? [...servicesData].sort((a: Service, b: Service) => a.order - b.order)
+          : [];
+        setServices(sortedServices);
 
-        // تجميع التفاصيل حسب الخدمة
-        if (detailsData && detailsData.length > 0) {
-          const groupedDetails = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
+        // تجميع التفاصيل حسب الخدمة مع تحديد الأنواع بشكل صريح
+        if (detailsData?.length) {
+          const grouped = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
             if (!acc[detail.serviceId]) {
               acc[detail.serviceId] = [];
             }
             acc[detail.serviceId].push(detail);
             return acc;
-          }, {});
-          setDetails(groupedDetails);
-          console.log('✅ Grouped details:', groupedDetails);
+          }, {} as Record<string, ServiceDetail[]>);
+          setDetails(grouped);
         } else {
-          console.log('⚠️ No details data received');
+          setDetails({});
         }
       } catch (err) {
-        console.error('❌ Error fetching services:', err);
-        setServices([]);
-        setDetails({});
+        console.error('Error fetching services:', err);
+        if (isMounted) {
+          setError('فشل تحميل الخدمات');
+          setServices([]);
+          setDetails({});
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // أيقونات الخدمات المخصصة
@@ -104,6 +117,19 @@ export default function Services() {
           <div className="text-center text-gray-600 dark:text-gray-300 py-20">
             <div className="inline-block w-12 h-12 border-4 border-[#01AEBE] border-t-transparent rounded-full animate-spin mb-4"></div>
             <p className="text-lg">جاري تحميل الخدمات...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // حالة الخطأ
+  if (error) {
+    return (
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
+        <div className="container mx-auto px-4">
+          <div className="text-center text-red-500 py-20">
+            <p>{error}</p>
           </div>
         </div>
       </section>
@@ -134,24 +160,21 @@ export default function Services() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-16">
-            {services.map((service, index) => {
-              console.log(`📦 Rendering service: ${service.title}`);
-              return (
-                <motion.div
-                  key={service.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <ServiceCard 
-                    title={service.title} 
-                    description={service.description} 
-                    icon={service.icon}
-                    customIcon={serviceIcons[service.title]}
-                  />
-                </motion.div>
-              );
-            })}
+            {services.map((service, index) => (
+              <motion.div
+                key={service.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+              >
+                <ServiceCard 
+                  title={service.title} 
+                  description={service.description} 
+                  icon={service.icon}
+                  customIcon={serviceIcons[service.title]}
+                />
+              </motion.div>
+            ))}
           </div>
         )}
 
@@ -166,7 +189,7 @@ export default function Services() {
                 {service.title} - تفاصيل إضافية
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {detailList.map((detail) => (
+                {detailList.map((detail: ServiceDetail) => (
                   <div 
                     key={detail.id} 
                     className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:scale-[1.02]"

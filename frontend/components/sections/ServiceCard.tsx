@@ -12,8 +12,6 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ title, description, icon, customIcon }: ServiceCardProps) {
-  console.log(`🎴 ServiceCard rendering: ${title}`);
-  
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
