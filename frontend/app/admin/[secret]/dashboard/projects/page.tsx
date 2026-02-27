@@ -1,7 +1,7 @@
 // frontend/app/admin/[secret]/dashboard/projects/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaSnowflake, FaPlus, FaEdit, FaTrash, FaImage, FaVideo } from 'react-icons/fa';
 import { projectsApi } from '@/lib/api';
@@ -24,7 +24,7 @@ export default function ProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | undefined>(undefined);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       const data = await projectsApi.getAll();
       setProjects(data);
@@ -33,13 +33,13 @@ export default function ProjectsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
     try {
       await projectsApi.delete(id);
@@ -48,24 +48,29 @@ export default function ProjectsPage() {
     } catch (error) {
       toast.error('فشل في الحذف');
     }
-  };
+  }, [fetchProjects]);
 
-  const handleEdit = (project: Project) => {
+  const handleEdit = useCallback((project: Project) => {
     setEditingProject(project);
     setShowForm(true);
-  };
+  }, []);
 
-  const handleFormSuccess = () => {
+  const handleFormSuccess = useCallback(() => {
     setShowForm(false);
     setEditingProject(undefined);
     fetchProjects();
     toast.success(editingProject ? 'تم التحديث بنجاح' : 'تمت الإضافة بنجاح');
-  };
+  }, [editingProject, fetchProjects]);
 
   if (loading) return <div className="text-center py-10 text-white">جاري التحميل...</div>;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 sm:p-6">
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      transition={{ duration: 0.2 }}
+      className="p-4 sm:p-6"
+    >
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
           <FaSnowflake className="text-[#00c6ff]" />
@@ -73,19 +78,20 @@ export default function ProjectsPage() {
         </h1>
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-[#00c6ff] text-white rounded hover:bg-[#00a0cc] flex items-center gap-2 text-sm sm:text-base"
+          className="px-4 py-2 bg-[#00c6ff] text-white rounded hover:bg-[#00a0cc] flex items-center gap-2 text-sm sm:text-base transition-colors"
         >
           <FaPlus /> إضافة مشروع
         </button>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showForm && (
           <motion.div
+            key="modal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
             onClick={() => {
               setShowForm(false);
@@ -96,7 +102,7 @@ export default function ProjectsPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
+              transition={{ duration: 0.1, ease: 'easeOut' }}
               className="bg-white rounded-lg p-5 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
@@ -192,14 +198,14 @@ export default function ProjectsPage() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleEdit(project)}
-                    className="text-blue-400 hover:text-blue-300"
+                    className="text-blue-400 hover:text-blue-300 transition p-2 rounded-full hover:bg-gray-700"
                     aria-label="تعديل"
                   >
                     <FaEdit size={18} />
                   </button>
                   <button
                     onClick={() => handleDelete(project.id)}
-                    className="text-red-400 hover:text-red-300"
+                    className="text-red-400 hover:text-red-300 transition p-2 rounded-full hover:bg-gray-700"
                     aria-label="حذف"
                   >
                     <FaTrash size={18} />

@@ -1,11 +1,19 @@
-// frontend/components/admin/ProjectForm.tsx (تحسين الأداء)
+// frontend/components/admin/ProjectForm.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, lazy, Suspense, memo, useCallback, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
-import ImageUpload from './ImageUpload';
-import VideoUpload from './VideoUpload';
 import { projectsApi } from '@/lib/api';
+import { motion } from 'framer-motion';
+
+// تحميل المكونات الثقيلة بشكل غير متزامن
+const ImageUpload = lazy(() => import('./ImageUpload'));
+const VideoUpload = lazy(() => import('./VideoUpload'));
+
+// مكون مؤقت بسيط أثناء التحميل
+const LoadingFallback = () => (
+  <div className="w-full p-4 text-center text-gray-500">جاري التحميل...</div>
+);
 
 interface Project {
   id?: string;
@@ -23,7 +31,7 @@ interface ProjectFormProps {
   initialData?: Project;
 }
 
-export default function ProjectForm({ onSuccess, onCancel, initialData }: ProjectFormProps) {
+function ProjectForm({ onSuccess, onCancel, initialData }: ProjectFormProps) {
   const [formData, setFormData] = useState<Project>({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -34,7 +42,7 @@ export default function ProjectForm({ onSuccess, onCancel, initialData }: Projec
   });
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -52,29 +60,33 @@ export default function ProjectForm({ onSuccess, onCancel, initialData }: Projec
     } finally {
       setLoading(false);
     }
-  };
+  }, [formData, initialData, onSuccess]);
 
-  const addImage = (url: string) => {
+  const addImage = useCallback((url: string) => {
     setFormData(prev => ({ ...prev, images: [...(prev.images || []), url] }));
-  };
+  }, []);
 
-  const removeImage = (index: number) => {
+  const removeImage = useCallback((index: number) => {
     setFormData(prev => ({
       ...prev,
       images: prev.images?.filter((_, i) => i !== index) || [],
     }));
-  };
+  }, []);
 
-  const addVideo = (url: string) => {
+  const addVideo = useCallback((url: string) => {
     setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), url] }));
-  };
+  }, []);
 
-  const removeVideo = (index: number) => {
+  const removeVideo = useCallback((index: number) => {
     setFormData(prev => ({
       ...prev,
       videos: prev.videos?.filter((_, i) => i !== index) || [],
     }));
-  };
+  }, []);
+
+  // استخدام useMemo لمنع إعادة إنشاء هذه القيم في كل رندر
+  const imagesList = useMemo(() => formData.images || [], [formData.images]);
+  const videosList = useMemo(() => formData.videos || [], [formData.videos]);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -122,10 +134,12 @@ export default function ProjectForm({ onSuccess, onCancel, initialData }: Projec
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">الصور</label>
-        <ImageUpload onUpload={addImage} />
-        {formData.images && formData.images.length > 0 && (
+        <Suspense fallback={<LoadingFallback />}>
+          <ImageUpload onUpload={addImage} />
+        </Suspense>
+        {imagesList.length > 0 && (
           <div className="mt-2 grid grid-cols-4 gap-2">
-            {formData.images.map((url, i) => (
+            {imagesList.map((url, i) => (
               <div key={i} className="relative group">
                 <img
                   src={url}
@@ -148,10 +162,12 @@ export default function ProjectForm({ onSuccess, onCancel, initialData }: Projec
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">الفيديوهات</label>
-        <VideoUpload onUpload={addVideo} />
-        {formData.videos && formData.videos.length > 0 && (
+        <Suspense fallback={<LoadingFallback />}>
+          <VideoUpload onUpload={addVideo} />
+        </Suspense>
+        {videosList.length > 0 && (
           <div className="mt-2 grid grid-cols-4 gap-2">
-            {formData.videos.map((url, i) => (
+            {videosList.map((url, i) => (
               <div key={i} className="relative group">
                 <video
                   src={url}
@@ -193,3 +209,5 @@ export default function ProjectForm({ onSuccess, onCancel, initialData }: Projec
     </form>
   );
 }
+
+export default memo(ProjectForm);
