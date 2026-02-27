@@ -13,20 +13,21 @@ async function checkMaintenance() {
   }
 }
 
+// استيراد المكونات بشكل طبيعي بدلاً من الاستيراد الديناميكي
+import Hero from '@/components/sections/Hero';
+import WhyUs from '@/components/sections/WhyUs';
+import Achievements from '@/components/sections/Achievements';
+import AboutSection from '@/components/sections/AboutSection';
+import Services from '@/components/sections/Services';
+import Portfolio from '@/components/sections/Portfolio';
+import ContactSection from '@/components/sections/ContactSection';
+
 export default async function HomePage() {
   const maintenance = await checkMaintenance();
 
   if (maintenance.isEnabled) {
     return <MaintenancePage message={maintenance.message} />;
   }
-
-  const Hero = (await import('@/components/sections/Hero')).default;
-  const WhyUs = (await import('@/components/sections/WhyUs')).default;
-  const Achievements = (await import('@/components/sections/Achievements')).default;
-  const AboutSection = (await import('@/components/sections/AboutSection')).default;
-  const Services = (await import('@/components/sections/Services')).default;
-  const Portfolio = (await import('@/components/sections/Portfolio')).default;
-  const ContactSection = (await import('@/components/sections/ContactSection')).default;
 
   return (
     <>
