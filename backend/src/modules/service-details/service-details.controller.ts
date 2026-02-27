@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
 import { ServiceDetailsService } from './service-details.service';
-import { CreateServiceDetailDto, UpdateServiceDetailDto } from './dto';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateServiceDetailDto } from './dto/create-service-detail.dto';
+import { UpdateServiceDetailDto } from './dto/update-service-detail.dto';import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 

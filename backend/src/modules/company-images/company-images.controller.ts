@@ -1,7 +1,8 @@
 // backend/src/modules/company-images/company-images.controller.ts
 import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
 import { CompanyImagesService } from './company-images.service';
-import { CreateCompanyImageDto, UpdateCompanyImageDto } from './dto';
+import { CreateCompanyImageDto } from './dto/create-company-image.dto';
+import { UpdateCompanyImageDto } from './dto/update-company-image.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';

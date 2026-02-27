@@ -1,7 +1,8 @@
 // backend/src/modules/company-images/company-images.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateCompanyImageDto, UpdateCompanyImageDto } from './dto';
+import { CreateCompanyImageDto } from './dto/create-company-image.dto';
+import { UpdateCompanyImageDto } from './dto/update-company-image.dto';
 
 @Injectable()
 export class CompanyImagesService {
