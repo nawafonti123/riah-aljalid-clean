@@ -68,6 +68,10 @@ export default function ServiceDetailsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.serviceId) {
+      toast.error('يرجى اختيار الخدمة');
+      return;
+    }
     try {
       if (editing) {
         await serviceDetailsApi.update(editing.id, formData);
@@ -149,58 +153,81 @@ export default function ServiceDetailsPage() {
                 {editing ? 'تعديل تفصيل' : 'إضافة تفصيل جديد'}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-3">
-                <select
-                  value={formData.serviceId}
-                  onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
-                  className="w-full p-2 border rounded"
-                  required
-                >
-                  <option value="">اختر الخدمة</option>
-                  {services.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.title}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  placeholder="عنوان التفصيل"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-                <textarea
-                  placeholder="الوصف"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full p-2 border rounded"
-                  rows={3}
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="الترتيب"
-                  value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                  className="w-full p-2 border rounded"
-                />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    صورة توضيحية
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">الخدمة</label>
+                  <select
+                    value={formData.serviceId}
+                    onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
+                    className="w-full p-2 border rounded"
+                    required
+                  >
+                    <option value="">اختر الخدمة</option>
+                    {services.length === 0 ? (
+                      <option value="" disabled>لا توجد خدمات متاحة - أضف خدمة أولاً</option>
+                    ) : (
+                      services.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.title}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                  {services.length === 0 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      لا توجد خدمات. يرجى إضافة خدمة أولاً من صفحة الخدمات.
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">عنوان التفصيل</label>
+                  <input
+                    type="text"
+                    placeholder="عنوان التفصيل"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full p-2 border rounded"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">الوصف</label>
+                  <textarea
+                    placeholder="الوصف"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">الترتيب</label>
+                  <input
+                    type="number"
+                    placeholder="الترتيب"
+                    value={formData.order}
+                    onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">صورة توضيحية</label>
                   <input type="file" accept="image/*" onChange={handleImageUpload} />
                   {formData.image && (
                     <div className="relative mt-2 w-20 h-20">
-                      <Image
+                      <img
                         src={formData.image}
                         alt="preview"
-                        fill
-                        className="object-cover rounded"
+                        className="w-full h-full object-cover rounded"
                       />
                     </div>
                   )}
                 </div>
+
                 <div className="flex justify-end gap-2 mt-4">
                   <button
                     type="button"
@@ -241,14 +268,15 @@ export default function ServiceDetailsPage() {
                 <tr key={d.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {d.image ? (
-                      <div className="relative w-10 h-10">
-                        <Image
-                          src={d.image}
-                          alt={d.title}
-                          fill
-                          className="object-cover rounded"
-                        />
-                      </div>
+                      <img
+                        src={d.image}
+                        alt={d.title}
+                        className="w-10 h-10 object-cover rounded"
+                        onError={(e) => {
+                          console.error('Failed to load image:', d.image);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
                     ) : (
                       '—'
                     )}
