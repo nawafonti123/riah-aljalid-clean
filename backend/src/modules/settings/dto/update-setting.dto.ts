@@ -1,6 +1,9 @@
 import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateSettingDto {
+  // ======================
+  // Contact / Info
+  // ======================
   @IsOptional()
   @IsString()
   phone?: string;
@@ -17,7 +20,13 @@ export class UpdateSettingDto {
   @IsString()
   commercialRegister?: string;
 
-  // ✅ NEW: صور/محتوى صفحات عامة
+  @IsOptional()
+  @IsString()
+  googleMapsEmbedUrl?: string | null;
+
+  // ======================
+  // Section Images (Admin Controlled)
+  // ======================
   @IsOptional()
   @IsString()
   whyUsImage?: string | null;
@@ -30,7 +39,33 @@ export class UpdateSettingDto {
   @IsString()
   footerIceImage?: string | null;
 
+  // ✅ NEW: صورة لقسم الخدمات
   @IsOptional()
   @IsString()
-  googleMapsEmbedUrl?: string | null;
+  servicesImage?: string | null;
+
+  // ✅ NEW: صورة لقسم أعمالنا
+  @IsOptional()
+  @IsString()
+  portfolioImage?: string | null;
+
+  // ✅ NEW: صورة لقسم اتصل بنا (اختياري)
+  @IsOptional()
+  @IsString()
+  contactImage?: string | null;
+
+  // ✅ NEW: صورة لقسم الأسئلة الشائعة
+  @IsOptional()
+  @IsString()
+  faqImage?: string | null;
+
+  // ✅ NEW: صورة لقسم خطوات العمل
+  @IsOptional()
+  @IsString()
+  processImage?: string | null;
+
+  // ✅ NEW: صورة لقسم الشركاء/العلامات التجارية
+  @IsOptional()
+  @IsString()
+  brandsImage?: string | null;
 }
