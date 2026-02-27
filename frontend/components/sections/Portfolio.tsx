@@ -1,173 +1,163 @@
 // frontend/components/sections/Portfolio.tsx
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
+import Image from 'next/image';
 import { publicApi } from '@/lib/api';
-import Lightbox from '@/components/ui/Lightbox';
-import { FaImage, FaVideo } from 'react-icons/fa';
+import { FaImages, FaPlay } from 'react-icons/fa';
 
-interface Project {
+type Project = {
   id: string;
   title: string;
-  description: string;
-  images: string[];
-  videos: string[];
+  description?: string;
+  images?: string[];
+  videos?: string[];
   category?: string;
-}
+  isFeatured?: boolean;
+};
 
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [currentMedia, setCurrentMedia] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.1 });
+  const inView = useInView(ref, { once: true, amount: 0.15 });
 
   useEffect(() => {
-    publicApi.getProjects()
-      .then(data => setProjects(data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+    const run = async () => {
+      try {
+        const data = await publicApi.getProjects();
+        setProjects(Array.isArray(data) ? data : []);
+      } catch {
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
   }, []);
 
-  const openLightbox = (media: string[], index: number) => {
-    setCurrentMedia(media);
-    setCurrentIndex(index);
-    setLightboxOpen(true);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % currentMedia.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + currentMedia.length) % currentMedia.length);
-  };
-
-  const projectsWithImages = projects.filter(p => p.images && p.images.length > 0);
-  const projectsWithVideos = projects.filter(p => p.videos && p.videos.length > 0);
+  const hasProjects = useMemo(() => !loading && projects.length > 0, [loading, projects.length]);
 
   return (
-    <section id="portfolio" ref={ref} className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-gray-50 dark:from-[#203A43] dark:to-[#2C5364] transition-colors duration-300">
+    <section
+      id="portfolio"
+      ref={ref}
+      className={[
+        // ✅ يقلل الفراغ لما ما فيه مشاريع
+        hasProjects ? 'py-14 sm:py-18 md:py-20' : 'py-10 sm:py-12',
+        'bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-[#0F2027] transition-colors duration-300 overflow-hidden',
+      ].join(' ')}
+    >
       <div className="container mx-auto px-4">
+        {/* العنوان */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8 sm:mb-10"
+          transition={{ duration: 0.45 }}
+          className="text-center mb-6 sm:mb-8"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">أعمالنا</h2>
-          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-2">نماذج من مشاريعنا الناجحة</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            أعمالنا
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            نماذج من مشاريعنا الناجحة
+          </p>
         </motion.div>
 
-        {loading ? (
-          <div className="text-center text-gray-600 dark:text-gray-300">جاري التحميل...</div>
-        ) : (
-          <>
-            {/* قسم الصور */}
-            {projectsWithImages.length > 0 && (
-              <div className="mb-16">
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center gap-2 mb-2">
-                    <FaImage className="text-3xl text-[#01AEBE] dark:text-[#00c6ff]" />
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">معرض الصور</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {projectsWithImages.map((project, index) => (
-                    <motion.div
-                      key={project.id}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
-                    >
-                      {project.images[0] && (
-                        <img
-                          src={project.images[0]}
-                          alt={project.title}
-                          className="w-full h-40 sm:h-48 object-cover rounded-md mb-2 cursor-pointer hover:opacity-80 transition"
-                          onClick={() => openLightbox(project.images, 0)}
-                        />
-                      )}
-                      <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">{project.title}</h3>
-                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{project.description}</p>
-                      {project.category && (
-                        <span className="inline-block mt-1 text-[10px] sm:text-xs px-2 py-0.5 rounded bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 text-[#01AEBE] dark:text-[#00c6ff]">
-                          {project.category}
-                        </span>
-                      )}
-                      {project.images.length > 1 && (
-                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                          + {project.images.length - 1} صور أخرى
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
+        {/* ✅ حالة التحميل */}
+        {loading && (
+          <div className="max-w-xl mx-auto">
+            <div className="bg-white/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 text-center">
+              <div className="inline-flex items-center gap-2 text-gray-700 dark:text-gray-200">
+                <FaImages className="opacity-70" />
+                <span className="text-sm">جاري تحميل المشاريع...</span>
               </div>
-            )}
+            </div>
+          </div>
+        )}
 
-            {/* قسم الفيديوهات */}
-            {projectsWithVideos.length > 0 && (
-              <div className="mb-16">
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center gap-2 mb-2">
-                    <FaVideo className="text-3xl text-[#01AEBE] dark:text-[#00c6ff]" />
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">مكتبة الفيديو</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {projectsWithVideos.map((project, index) => (
-                    <motion.div
-                      key={project.id}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"
-                    >
-                      {project.videos[0] && (
-                        <video
-                          src={project.videos[0]}
-                          controls
-                          className="w-full h-40 sm:h-48 object-cover rounded-md mb-2"
-                        />
-                      )}
-                      <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">{project.title}</h3>
-                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{project.description}</p>
-                      {project.category && (
-                        <span className="inline-block mt-1 text-[10px] sm:text-xs px-2 py-0.5 rounded bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 text-[#01AEBE] dark:text-[#00c6ff]">
-                          {project.category}
-                        </span>
-                      )}
-                      {project.videos.length > 1 && (
-                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                          + {project.videos.length - 1} فيديوهات أخرى
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
+        {/* ✅ حالة عدم وجود مشاريع — بدون فراغ كبير */}
+        {!loading && projects.length === 0 && (
+          <div className="max-w-xl mx-auto">
+            <div className="bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 text-center">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center mb-3">
+                <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
               </div>
-            )}
+              <p className="text-gray-700 dark:text-gray-200 font-semibold">لا توجد مشاريع حالياً</p>
+              <p className="text-gray-500 dark:text-gray-300 text-sm mt-2">
+                سيتم إضافة أعمالنا قريبًا بإذن الله.
+              </p>
+            </div>
 
-            {projectsWithImages.length === 0 && projectsWithVideos.length === 0 && (
-              <p className="text-center text-gray-500 dark:text-gray-400">لا توجد مشاريع حالياً</p>
-            )}
-          </>
+            {/* ✅ لمسة لطيفة بدل الفراغ: فاصل خفيف */}
+            <div className="mt-8 flex justify-center">
+              <div className="h-[2px] w-40 rounded-full bg-gradient-to-r from-transparent via-[#01AEBE]/60 to-transparent dark:via-[#00c6ff]/60" />
+            </div>
+          </div>
+        )}
+
+        {/* ✅ عرض المشاريع */}
+        {hasProjects && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {projects.map((p, idx) => {
+              const cover =
+                (p.images && p.images.length > 0 && p.images[0]) ||
+                '/logo.png';
+
+              const hasVideo = (p.videos?.length || 0) > 0;
+
+              return (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.08 + idx * 0.05 }}
+                  className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg"
+                >
+                  <div className="relative h-44 sm:h-48">
+                    <Image
+                      src={cover}
+                      alt={p.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-black/0" />
+
+                    {hasVideo && (
+                      <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/55 text-white text-xs flex items-center gap-2">
+                        <FaPlay className="text-[10px]" />
+                        فيديو
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-4 sm:p-5">
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                      {p.title}
+                    </h3>
+                    {p.description && (
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
+                        {p.description}
+                      </p>
+                    )}
+
+                    {p.category && (
+                      <div className="mt-3">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-[#01AEBE]/10 text-[#017f8b] dark:bg-[#00c6ff]/10 dark:text-[#7fe8ff]">
+                          {p.category}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         )}
       </div>
-
-      <Lightbox
-        images={currentMedia}
-        currentIndex={currentIndex}
-        isOpen={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
-        onNext={handleNext}
-        onPrev={handlePrev}
-      />
     </section>
   );
 }
