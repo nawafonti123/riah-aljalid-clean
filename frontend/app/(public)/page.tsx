@@ -30,27 +30,47 @@ export default async function HomePage() {
 
   return (
     <>
-      <Suspense fallback={<div className="h-screen bg-gradient-to-b from-[#01AEBE] to-[#9DCC40] dark:from-[#0F2027] dark:to-[#2C5364]" />}>
-        <Hero />
-      </Suspense>
-      <Suspense fallback={<div className="h-40 bg-gray-50 dark:bg-gray-900" />}>
-        <WhyUs />
-      </Suspense>
-      <Suspense fallback={<div className="h-40 bg-white dark:bg-gray-800" />}>
-        <Achievements />
-      </Suspense>
-      <Suspense fallback={<div className="h-80 bg-white dark:bg-gray-900" />}>
-        <AboutSection />
-      </Suspense>
-      <Suspense fallback={<div className="h-80 bg-gray-50 dark:bg-gray-900" />}>
-        <Services />
-      </Suspense>
-      <Suspense fallback={<div className="h-80 bg-white dark:bg-gray-900" />}>
-        <Portfolio />
-      </Suspense>
-      <Suspense fallback={<div className="h-80 bg-gray-50 dark:bg-gray-900" />}>
-        <ContactSection />
-      </Suspense>
+      <section id="hero">
+        <Suspense fallback={<div className="h-screen bg-gradient-to-b from-[#01AEBE] to-[#9DCC40] dark:from-[#0F2027] dark:to-[#2C5364]" />}>
+          <Hero />
+        </Suspense>
+      </section>
+      
+      <section id="about">
+        <Suspense fallback={<div className="h-96 bg-white dark:bg-gray-900" />}>
+          <AboutSection />
+        </Suspense>
+      </section>
+
+      <section id="why-us">
+        <Suspense fallback={<div className="h-80 bg-gray-50 dark:bg-gray-800" />}>
+          <WhyUs />
+        </Suspense>
+      </section>
+
+      <section id="achievements">
+        <Suspense fallback={<div className="h-80 bg-white dark:bg-gray-900" />}>
+          <Achievements />
+        </Suspense>
+      </section>
+
+      <section id="services">
+        <Suspense fallback={<div className="h-96 bg-gray-50 dark:bg-gray-800" />}>
+          <Services />
+        </Suspense>
+      </section>
+
+      <section id="portfolio">
+        <Suspense fallback={<div className="h-96 bg-white dark:bg-gray-900" />}>
+          <Portfolio />
+        </Suspense>
+      </section>
+
+      <section id="contact">
+        <Suspense fallback={<div className="h-96 bg-gray-50 dark:bg-gray-800" />}>
+          <ContactSection />
+        </Suspense>
+      </section>
     </>
   );
 }
