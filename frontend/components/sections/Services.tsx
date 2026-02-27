@@ -1,28 +1,61 @@
 // frontend/components/sections/Services.tsx
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { publicApi } from '@/lib/api';
 import { FaTruck, FaIndustry, FaRuler, FaUniversity, FaSchool, FaLandmark, FaHome, FaCoffee, FaHotel, FaBuilding } from 'react-icons/fa';
-import ServiceCard from './ServiceCard';
 
-interface Service {
+// تعريف واجهات الخدمات الثابتة
+interface StaticService {
   id: string;
   title: string;
   description: string;
-  icon: string;
-  order: number;
+  icon: JSX.Element;
+  details: {
+    title: string;
+    description: string;
+  }[];
 }
 
-interface ServiceDetail {
-  id: string;
-  title: string;
-  description: string;
-  image?: string;
-  order: number;
-  serviceId: string;
-}
+// البيانات الثابتة للخدمات من ملف PDF
+const servicesData: StaticService[] = [
+  {
+    id: '1',
+    title: 'التوريد',
+    icon: <FaTruck className="w-8 h-8 text-white" />,
+    description: 'نحن نقدم خدمات توريد وتركيب الجريلات ذات الجودة العالية',
+    details: [
+      {
+        title: 'جودة عالية',
+        description: 'نولي اهتماماً كبيراً لتلبية متطلبات عملائنا وضمان رضاهم التام. نحرص على اختيار جريلات عالية الجودة المصنوعة تتميز بمتانتها وقدرتها على تحمل ظروف التشغيل الصعبة وتوفير تدفق هواء مثالي.'
+      }
+    ]
+  },
+  {
+    id: '2',
+    title: 'التصنيع والتركيب',
+    icon: <FaIndustry className="w-8 h-8 text-white" />,
+    description: 'تصنيع وتركيب جميع مجاري الهواء (الدكت) بأعلى المواصفات',
+    details: [
+      {
+        title: 'مواصفات عالمية',
+        description: 'تصنيع وتركيب مجاري الهواء الدكت والروند دكت الدائري بأعلى المواصفات ومن مواد ذات جودة عالية مقاومة للصدأ والحرارة والتآكل والتسريب. يتم اختيارها بعناية لضمان جودة العمل.'
+      }
+    ]
+  },
+  {
+    id: '3',
+    title: 'التصميم',
+    icon: <FaRuler className="w-8 h-8 text-white" />,
+    description: 'أفضل الأسعار وسرعة في التنفيذ بأيدي ماهرة تحت إشراف هندسي',
+    details: [
+      {
+        title: 'خدمات شاملة',
+        description: 'نقدم خدمات شاملة لعمل المشاريع، تصاميم ومخططات بالإضافة إلى تنفيذها بكفاءة وجودة عالية. لدينا فريق من المهندسين والمصممين ذوي الخبرة والمهارات العالية في مجال التصميم والهندسة، نعمل بجد لتحقيق رؤية عملائنا وتلبية احتياجاتهم.'
+      }
+    ]
+  }
+];
 
 const projectIcons = [
   { icon: FaUniversity, name: 'جامعات' },
@@ -35,106 +68,8 @@ const projectIcons = [
 ];
 
 export default function Services() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [details, setDetails] = useState<Record<string, ServiceDetail[]>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.1 });
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        console.log('Fetching services and details...');
-        
-        const [servicesData, detailsData] = await Promise.all([
-          publicApi.getServices(),
-          publicApi.getServiceDetails()
-        ]);
-        
-        console.log('Services received:', servicesData);
-        console.log('Details received:', detailsData);
-
-        if (!isMounted) return;
-
-        // ترتيب الخدمات حسب الترتيب
-        const sortedServices = servicesData?.length 
-          ? [...servicesData].sort((a: Service, b: Service) => a.order - b.order)
-          : [];
-        setServices(sortedServices);
-
-        // تجميع التفاصيل حسب الخدمة مع تحديد الأنواع بشكل صريح
-        if (detailsData?.length) {
-          const grouped = detailsData.reduce((acc: Record<string, ServiceDetail[]>, detail: ServiceDetail) => {
-            if (!acc[detail.serviceId]) {
-              acc[detail.serviceId] = [];
-            }
-            acc[detail.serviceId].push(detail);
-            return acc;
-          }, {} as Record<string, ServiceDetail[]>);
-          setDetails(grouped);
-        } else {
-          setDetails({});
-        }
-      } catch (err) {
-        console.error('Error fetching services:', err);
-        if (isMounted) {
-          setError('فشل تحميل الخدمات');
-          setServices([]);
-          setDetails({});
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // أيقونات الخدمات المخصصة
-  const serviceIcons: Record<string, JSX.Element> = {
-    'التوريد': <FaTruck className="w-6 h-6" />,
-    'التصنيع والتركيب': <FaIndustry className="w-6 h-6" />,
-    'التصميم': <FaRuler className="w-6 h-6" />,
-  };
-
-  // حالة التحميل
-  if (loading) {
-    return (
-      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-gray-600 dark:text-gray-300 py-20">
-            <div className="inline-block w-12 h-12 border-4 border-[#01AEBE] border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-lg">جاري تحميل الخدمات...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // حالة الخطأ
-  if (error) {
-    return (
-      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43]">
-        <div className="container mx-auto px-4">
-          <div className="text-center text-red-500 py-20">
-            <p>{error}</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section id="services" ref={ref} className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#0F2027] dark:to-[#203A43] transition-colors duration-300">
@@ -153,68 +88,61 @@ export default function Services() {
         </motion.div>
 
         {/* الخدمات الرئيسية - كروت */}
-        {services.length === 0 ? (
-          <div className="text-center text-gray-500 dark:text-gray-400 py-10 bg-white dark:bg-gray-800 rounded-xl shadow-md mb-10">
-            <p className="text-lg mb-2">لا توجد خدمات متاحة حالياً</p>
-            <p className="text-sm">يرجى إضافة خدمات من لوحة التحكم</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-16">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <ServiceCard 
-                  title={service.title} 
-                  description={service.description} 
-                  icon={service.icon}
-                  customIcon={serviceIcons[service.title]}
-                />
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {/* تفاصيل الخدمات مع الصور */}
-        {Object.entries(details).map(([serviceId, detailList]) => {
-          const service = services.find(s => s.id === serviceId);
-          if (!service || detailList.length === 0) return null;
-          
-          return (
-            <div key={serviceId} className="mb-16">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center border-b border-gray-200 dark:border-gray-700 pb-4">
-                {service.title} - تفاصيل إضافية
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {detailList.map((detail: ServiceDetail) => (
-                  <div 
-                    key={detail.id} 
-                    className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover:scale-[1.02]"
-                  >
-                    {detail.image && (
-                      <div className="w-full h-48 mb-3 overflow-hidden rounded-lg">
-                        <img 
-                          src={detail.image} 
-                          alt={detail.title} 
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            console.error('Failed to load image:', detail.image);
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    )}
-                    <h4 className="text-base font-bold text-gray-900 dark:text-white mb-2">{detail.title}</h4>
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{detail.description}</p>
-                  </div>
-                ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 mb-16">
+          {servicesData.map((service, index) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="bg-white dark:bg-gray-800 p-4 sm:p-5 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all h-full flex flex-col"
+            >
+              <div className="flex justify-center mb-2 md:mb-3">
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] flex items-center justify-center text-white">
+                  {service.icon}
+                </div>
               </div>
-            </div>
-          );
-        })}
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 dark:text-white mb-1 text-center">
+                {service.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 text-center flex-grow">
+                {service.description}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* تفاصيل الخدمات مع النصوص الطويلة */}
+        <div className="space-y-12">
+          {servicesData.map((service, idx) => (
+            <motion.div
+              key={`details-${service.id}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] flex items-center justify-center text-white">
+                  {service.icon}
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
+                  {service.title}
+                </h3>
+              </div>
+              {service.details.map((detail, i) => (
+                <div key={i} className="mb-3 last:mb-0">
+                  <h4 className="text-base font-semibold text-[#01AEBE] dark:text-[#00c6ff] mb-2">
+                    {detail.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {detail.description}
+                  </p>
+                </div>
+              ))}
+            </motion.div>
+          ))}
+        </div>
 
         {/* قائمة المشاريع التي نخدمها - مع أيقونات احترافية */}
         <div className="text-center mt-12">
