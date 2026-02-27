@@ -1,3 +1,4 @@
+// admin/[secret]/dashboard/service-details/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -5,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaSnowflake, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { serviceDetailsApi, servicesApi, uploadApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 interface Service {
   id: string;
@@ -109,16 +111,37 @@ export default function ServiceDetailsPage() {
           <FaSnowflake className="text-[#00c6ff]" />
           تفاصيل الخدمات
         </h1>
-        <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#00c6ff] text-white rounded hover:bg-[#00a0cc] flex items-center gap-2">
+        <button
+          onClick={() => setShowForm(true)}
+          className="px-4 py-2 bg-[#00c6ff] text-white rounded hover:bg-[#00a0cc] flex items-center gap-2"
+        >
           <FaPlus /> إضافة تفصيل
         </button>
       </div>
 
       <AnimatePresence>
         {showForm && (
-          <motion.div ... className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <motion.div ... className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">{editing ? 'تعديل تفصيل' : 'إضافة تفصيل جديد'}</h2>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowForm(false);
+              setEditing(null);
+              setFormData({ title: '', description: '', image: '', order: 0, serviceId: '' });
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold mb-4">
+                {editing ? 'تعديل تفصيل' : 'إضافة تفصيل جديد'}
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-3">
                 <select
                   value={formData.serviceId}
@@ -127,7 +150,11 @@ export default function ServiceDetailsPage() {
                   required
                 >
                   <option value="">اختر الخدمة</option>
-                  {services.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                  {services.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.title}
+                    </option>
+                  ))}
                 </select>
                 <input
                   type="text"
@@ -149,17 +176,40 @@ export default function ServiceDetailsPage() {
                   type="number"
                   placeholder="الترتيب"
                   value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                   className="w-full p-2 border rounded"
                 />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">صورة توضيحية</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    صورة توضيحية
+                  </label>
                   <input type="file" accept="image/*" onChange={handleImageUpload} />
-                  {formData.image && <img src={formData.image} alt="preview" className="mt-2 w-20 h-20 object-cover rounded" />}
+                  {formData.image && (
+                    <div className="relative mt-2 w-20 h-20">
+                      <Image
+                        src={formData.image}
+                        alt="preview"
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button type="button" onClick={() => { setShowForm(false); setEditing(null); setFormData({ title: '', description: '', image: '', order: 0, serviceId: '' }); }} className="px-4 py-2 bg-gray-300 rounded">إلغاء</button>
-                  <button type="submit" className="px-4 py-2 bg-[#00c6ff] text-white rounded">{editing ? 'تحديث' : 'إضافة'}</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForm(false);
+                      setEditing(null);
+                      setFormData({ title: '', description: '', image: '', order: 0, serviceId: '' });
+                    }}
+                    className="px-4 py-2 bg-gray-300 rounded"
+                  >
+                    إلغاء
+                  </button>
+                  <button type="submit" className="px-4 py-2 bg-[#00c6ff] text-white rounded">
+                    {editing ? 'تحديث' : 'إضافة'}
+                  </button>
                 </div>
               </form>
             </motion.div>
@@ -180,23 +230,52 @@ export default function ServiceDetailsPage() {
           </thead>
           <tbody className="divide-y divide-gray-700">
             {details.map((d) => {
-              const service = services.find(s => s.id === d.serviceId);
+              const service = services.find((s) => s.id === d.serviceId);
               return (
                 <tr key={d.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {d.image ? <img src={d.image} alt={d.title} className="w-10 h-10 object-cover rounded" /> : '—'}
+                    {d.image ? (
+                      <div className="relative w-10 h-10">
+                        <Image
+                          src={d.image}
+                          alt={d.title}
+                          fill
+                          className="object-cover rounded"
+                        />
+                      </div>
+                    ) : (
+                      '—'
+                    )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{service?.title || '—'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                    {service?.title || '—'}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{d.title}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{d.order}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button onClick={() => handleEdit(d)} className="text-blue-400 hover:text-blue-300 ml-4"><FaEdit /></button>
-                    <button onClick={() => handleDelete(d.id)} className="text-red-400 hover:text-red-300"><FaTrash /></button>
+                    <button
+                      onClick={() => handleEdit(d)}
+                      className="text-blue-400 hover:text-blue-300 ml-4"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(d.id)}
+                      className="text-red-400 hover:text-red-300"
+                    >
+                      <FaTrash />
+                    </button>
                   </td>
                 </tr>
               );
             })}
-            {details.length === 0 && <tr><td colSpan={5} className="text-center py-8 text-gray-500">لا توجد تفاصيل</td></tr>}
+            {details.length === 0 && (
+              <tr>
+                <td colSpan={5} className="text-center py-8 text-gray-500">
+                  لا توجد تفاصيل
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

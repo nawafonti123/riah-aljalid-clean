@@ -1,11 +1,21 @@
-// frontend/app/admin/[secret]/layout.tsx (مع إضافة الروابط الجديدة)
+// admin/[secret]/layout.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { FaHome, FaProjectDiagram, FaCog, FaBars, FaTimes, FaSnowflake, FaUsers, FaList, FaImage } from 'react-icons/fa';
+import {
+  FaHome,
+  FaProjectDiagram,
+  FaCog,
+  FaBars,
+  FaTimes,
+  FaSnowflake,
+  FaUsers,
+  FaList,
+  FaImage,
+} from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -23,21 +33,52 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // إذا كان المسار هو صفحة الدخول، اعرض المحتوى بدون تخطيط الإدارة
   if (pathname === `/admin/${secret}/login`) {
     return <>{children}</>;
   }
 
-  if (status === 'loading') return <p className="text-center text-white py-10">جاري التحميل...</p>;
+  if (status === 'loading')
+    return <p className="text-center text-white py-10">جاري التحميل...</p>;
   if (!session) redirect(`/admin/${secret}/login`);
 
-  // روابط التنقل الرئيسية مع إضافة الصفحات الجديدة
   const navItems = [
-    { href: `/admin/${secret}/dashboard`, label: 'الرئيسية', icon: FaHome, isActive: pathname === `/admin/${secret}/dashboard` },
-    { href: `/admin/${secret}/dashboard/projects`, label: 'المشاريع', icon: FaProjectDiagram, isActive: pathname.startsWith(`/admin/${secret}/dashboard/projects`) },
-    { href: `/admin/${secret}/dashboard/team`, label: 'الفريق', icon: FaUsers, isActive: pathname.startsWith(`/admin/${secret}/dashboard/team`) },
-    { href: `/admin/${secret}/dashboard/service-details`, label: 'تفاصيل الخدمات', icon: FaList, isActive: pathname.startsWith(`/admin/${secret}/dashboard/service-details`) },
-    { href: `/admin/${secret}/dashboard/company-images`, label: 'صور الشركة', icon: FaImage, isActive: pathname.startsWith(`/admin/${secret}/dashboard/company-images`) },
-    { href: `/admin/${secret}/dashboard/settings`, label: 'الإعدادات', icon: FaCog, isActive: pathname.startsWith(`/admin/${secret}/dashboard/settings`) },
+    {
+      href: `/admin/${secret}/dashboard`,
+      label: 'الرئيسية',
+      icon: FaHome,
+      isActive: pathname === `/admin/${secret}/dashboard`,
+    },
+    {
+      href: `/admin/${secret}/dashboard/projects`,
+      label: 'المشاريع',
+      icon: FaProjectDiagram,
+      isActive: pathname.startsWith(`/admin/${secret}/dashboard/projects`),
+    },
+    {
+      href: `/admin/${secret}/dashboard/team`,
+      label: 'الفريق',
+      icon: FaUsers,
+      isActive: pathname.startsWith(`/admin/${secret}/dashboard/team`),
+    },
+    {
+      href: `/admin/${secret}/dashboard/service-details`,
+      label: 'تفاصيل الخدمات',
+      icon: FaList,
+      isActive: pathname.startsWith(`/admin/${secret}/dashboard/service-details`),
+    },
+    {
+      href: `/admin/${secret}/dashboard/company-images`,
+      label: 'صور الشركة',
+      icon: FaImage,
+      isActive: pathname.startsWith(`/admin/${secret}/dashboard/company-images`),
+    },
+    {
+      href: `/admin/${secret}/dashboard/settings`,
+      label: 'الإعدادات',
+      icon: FaCog,
+      isActive: pathname.startsWith(`/admin/${secret}/dashboard/settings`),
+    },
   ];
 
   // تخطيط الهاتف
@@ -55,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
 
-        {/* قائمة جانبية منسدلة للهاتف */}
+        {/* القائمة الجانبية المنسدلة */}
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -118,7 +159,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <main className="pt-16">{children}</main>
 
-        {/* شريط سفلي للتنقل السريع */}
+        {/* شريط سفلي */}
         <div className="fixed bottom-0 left-0 right-0 bg-gray-800/90 backdrop-blur-md border-t border-white/10 z-40">
           <nav className="flex justify-around items-center h-16">
             {navItems.slice(0, 4).map((item) => {
@@ -133,7 +174,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 >
                   <Icon className={`text-xl ${item.isActive ? 'scale-110' : ''}`} />
                   <span className="text-xs mt-1 font-medium">{item.label}</span>
-                  {item.isActive && <motion.div layoutId="bottomIndicator" className="w-1 h-1 bg-[#00c6ff] rounded-full mt-0.5" />}
+                  {item.isActive && (
+                    <motion.div layoutId="bottomIndicator" className="w-1 h-1 bg-[#00c6ff] rounded-full mt-0.5" />
+                  )}
                 </Link>
               );
             })}

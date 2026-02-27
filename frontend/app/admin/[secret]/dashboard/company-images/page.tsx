@@ -1,3 +1,4 @@
+// admin/[secret]/dashboard/company-images/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -5,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaSnowflake, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { companyImagesApi, uploadApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 interface CompanyImage {
   id: string;
@@ -101,16 +103,37 @@ export default function CompanyImagesPage() {
           <FaSnowflake className="text-[#00c6ff]" />
           صور الشركة
         </h1>
-        <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#00c6ff] text-white rounded hover:bg-[#00a0cc] flex items-center gap-2">
+        <button
+          onClick={() => setShowForm(true)}
+          className="px-4 py-2 bg-[#00c6ff] text-white rounded hover:bg-[#00a0cc] flex items-center gap-2"
+        >
           <FaPlus /> إضافة صورة
         </button>
       </div>
 
       <AnimatePresence>
         {showForm && (
-          <motion.div ... className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <motion.div ... className="bg-white rounded-lg p-6 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">{editing ? 'تعديل صورة' : 'إضافة صورة جديدة'}</h2>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowForm(false);
+              setEditing(null);
+              setFormData({ title: '', image: '', category: '', order: 0 });
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-bold mb-4">
+                {editing ? 'تعديل صورة' : 'إضافة صورة جديدة'}
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-3">
                 <input
                   type="text"
@@ -130,17 +153,38 @@ export default function CompanyImagesPage() {
                   type="number"
                   placeholder="الترتيب"
                   value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                   className="w-full p-2 border rounded"
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">الصورة</label>
                   <input type="file" accept="image/*" onChange={handleImageUpload} required={!editing} />
-                  {formData.image && <img src={formData.image} alt="preview" className="mt-2 w-20 h-20 object-cover rounded" />}
+                  {formData.image && (
+                    <div className="relative mt-2 w-20 h-20">
+                      <Image
+                        src={formData.image}
+                        alt="preview"
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button type="button" onClick={() => { setShowForm(false); setEditing(null); setFormData({ title: '', image: '', category: '', order: 0 }); }} className="px-4 py-2 bg-gray-300 rounded">إلغاء</button>
-                  <button type="submit" className="px-4 py-2 bg-[#00c6ff] text-white rounded">{editing ? 'تحديث' : 'إضافة'}</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForm(false);
+                      setEditing(null);
+                      setFormData({ title: '', image: '', category: '', order: 0 });
+                    }}
+                    className="px-4 py-2 bg-gray-300 rounded"
+                  >
+                    إلغاء
+                  </button>
+                  <button type="submit" className="px-4 py-2 bg-[#00c6ff] text-white rounded">
+                    {editing ? 'تحديث' : 'إضافة'}
+                  </button>
                 </div>
               </form>
             </motion.div>
@@ -150,19 +194,36 @@ export default function CompanyImagesPage() {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {images.map((img) => (
-          <div key={img.id} className="bg-gray-800 p-3 rounded-lg border border-gray-700 relative group">
-            <img src={img.image} alt={img.title || 'صورة'} className="w-full h-32 object-cover rounded" />
+          <div
+            key={img.id}
+            className="bg-gray-800 p-3 rounded-lg border border-gray-700 relative group"
+          >
+            <div className="relative w-full h-32">
+              <Image src={img.image} alt={img.title || 'صورة'} fill className="object-cover rounded" />
+            </div>
             <div className="mt-2">
               <p className="text-sm text-white truncate">{img.title}</p>
               <p className="text-xs text-gray-400">{img.category}</p>
             </div>
             <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition">
-              <button onClick={() => handleEdit(img)} className="bg-blue-600 text-white p-1 rounded"><FaEdit /></button>
-              <button onClick={() => handleDelete(img.id)} className="bg-red-600 text-white p-1 rounded"><FaTrash /></button>
+              <button
+                onClick={() => handleEdit(img)}
+                className="bg-blue-600 text-white p-1 rounded"
+              >
+                <FaEdit />
+              </button>
+              <button
+                onClick={() => handleDelete(img.id)}
+                className="bg-red-600 text-white p-1 rounded"
+              >
+                <FaTrash />
+              </button>
             </div>
           </div>
         ))}
-        {images.length === 0 && <p className="col-span-4 text-center text-gray-500 py-10">لا توجد صور</p>}
+        {images.length === 0 && (
+          <p className="col-span-4 text-center text-gray-500 py-10">لا توجد صور</p>
+        )}
       </div>
     </motion.div>
   );

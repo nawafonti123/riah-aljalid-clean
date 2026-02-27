@@ -1,4 +1,4 @@
-// frontend/app/admin/[secret]/dashboard/team/page.tsx
+// admin/[secret]/dashboard/team/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaSnowflake, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { teamApi, uploadApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 
 interface TeamMember {
   id: string;
@@ -115,14 +116,22 @@ export default function TeamPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => {
+              setShowForm(false);
+              setEditing(null);
+              setFormData({ name: '', role: '', bio: '', image: '', order: 0 });
+            }}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-white rounded-lg p-6 max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
             >
-              <h2 className="text-xl font-bold mb-4">{editing ? 'تعديل عضو' : 'إضافة عضو جديد'}</h2>
+              <h2 className="text-xl font-bold mb-4">
+                {editing ? 'تعديل عضو' : 'إضافة عضو جديد'}
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-3">
                 <input
                   type="text"
@@ -151,14 +160,21 @@ export default function TeamPage() {
                   type="number"
                   placeholder="الترتيب"
                   value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
                   className="w-full p-2 border rounded"
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">صورة العضو</label>
                   <input type="file" accept="image/*" onChange={handleImageUpload} />
                   {formData.image && (
-                    <img src={formData.image} alt="preview" className="mt-2 w-20 h-20 object-cover rounded" />
+                    <div className="relative mt-2 w-20 h-20">
+                      <Image
+                        src={formData.image}
+                        alt="preview"
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
                   )}
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
@@ -199,7 +215,14 @@ export default function TeamPage() {
               <tr key={member.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {member.image ? (
-                    <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gray-600" />
                   )}
@@ -208,17 +231,27 @@ export default function TeamPage() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{member.role}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{member.order}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button onClick={() => handleEdit(member)} className="text-blue-400 hover:text-blue-300 ml-4">
+                  <button
+                    onClick={() => handleEdit(member)}
+                    className="text-blue-400 hover:text-blue-300 ml-4"
+                  >
                     <FaEdit />
                   </button>
-                  <button onClick={() => handleDelete(member.id)} className="text-red-400 hover:text-red-300">
+                  <button
+                    onClick={() => handleDelete(member.id)}
+                    className="text-red-400 hover:text-red-300"
+                  >
                     <FaTrash />
                   </button>
                 </td>
               </tr>
             ))}
             {members.length === 0 && (
-              <tr><td colSpan={5} className="text-center py-8 text-gray-500">لا يوجد أعضاء</td></tr>
+              <tr>
+                <td colSpan={5} className="text-center py-8 text-gray-500">
+                  لا يوجد أعضاء
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
