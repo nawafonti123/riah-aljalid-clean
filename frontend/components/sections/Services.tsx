@@ -4,7 +4,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { publicApi } from '@/lib/api';
-import { FaTruck, FaIndustry, FaRuler, FaUniversity, FaSchool, FaPalace, FaHome, FaCoffee, FaHotel, FaBuilding } from 'react-icons/fa';
+import { FaTruck, FaIndustry, FaRuler, FaUniversity, FaSchool, FaLandmark, FaHome, FaCoffee, FaHotel, FaBuilding } from 'react-icons/fa';
 import ServiceCard from './ServiceCard';
 
 interface Service {
@@ -27,12 +27,14 @@ interface ServiceDetail {
 const projectIcons = [
   { icon: FaUniversity, name: 'جامعات' },
   { icon: FaSchool, name: 'مدارس' },
-  { icon: FaPalace, name: 'قصور' },
+  { icon: FaLandmark, name: 'قصور' },
   { icon: FaHome, name: 'فلل' },
   { icon: FaCoffee, name: 'كافيهات' },
   { icon: FaHotel, name: 'فنادق' },
   { icon: FaBuilding, name: 'أبراج' },
 ];
+
+// ... باقي الكود كما هو
 
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
