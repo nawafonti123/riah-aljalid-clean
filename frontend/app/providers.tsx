@@ -1,3 +1,4 @@
+// frontend/app/providers.tsx
 'use client';
 
 import { ThemeProvider } from 'next-themes';
@@ -23,7 +24,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      <ThemeProvider attribute="class">
+      <ThemeProvider 
+        attribute="class" 
+        defaultTheme="dark"
+        enableSystem={false}
+        themes={['dark', 'light']}
+      >
         <Toaster position="top-center" reverseOrder={false} />
         {children}
       </ThemeProvider>
