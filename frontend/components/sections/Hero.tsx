@@ -1,12 +1,10 @@
 // frontend/components/sections/Hero.tsx
 'use client';
 
-import { Suspense, lazy } from 'react';
-import { Canvas } from '@react-three/fiber';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
-
-const ParticleWind = lazy(() => import('../three/ParticleWind'));
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Hero() {
   const { theme } = useTheme();
@@ -21,19 +19,19 @@ export default function Hero() {
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* خلفية متدرجة حسب الوضع */}
-      <div className={`absolute inset-0 ${
+      <div className={`absolute inset-0 transition-colors duration-500 ${
         theme === 'dark' 
           ? 'bg-gradient-to-b from-[#0F2027] to-[#2C5364]' 
           : 'bg-gradient-to-b from-[#01AEBE] to-[#9DCC40]'
       }`} />
 
-      {/* جسيمات ثلجية خفيفة جداً (في الوضع الداكن فقط) */}
+      {/* عناصر زخرفية بسيطة (بدون Three.js) */}
       {theme === 'dark' && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(8)].map((_, i) => (
+          {[...Array(20)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-0.5 h-0.5 bg-white/20 rounded-full animate-float"
+              className="absolute w-1 h-1 bg-white/20 rounded-full animate-float"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -45,43 +43,45 @@ export default function Hero() {
         </div>
       )}
 
-      {/* Canvas يحتوي على Suspense */}
-      {theme === 'dark' && (
-        <Canvas camera={{ position: [0, 0, 5] }} className="absolute inset-0">
-          <Suspense fallback={null}>
-            <ParticleWind />
-          </Suspense>
-        </Canvas>
+      {theme === 'light' && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(15)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-white/30 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 3}s`,
+                animationDuration: `${3 + Math.random() * 4}s`,
+              }}
+            />
+          ))}
+        </div>
       )}
 
-      {/* طبقة التعتيم */}
-      <div className={`absolute inset-0 ${
-        theme === 'dark'
-          ? 'bg-gradient-to-b from-[#0F2027]/80 via-[#203A43]/60 to-[#2C5364]/80'
-          : 'bg-gradient-to-b from-[#01AEBE]/20 via-[#9DCC40]/10 to-transparent'
-      } backdrop-blur-sm`} />
-
-      {/* المحتوى */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center text-center px-4">
-        <div className="relative w-32 h-32 mb-6">
-          <img
+        <div className="relative w-32 h-32 mb-6 rounded-full overflow-hidden border-4 border-white/30 dark:border-white/20 shadow-xl">
+          <Image
             src="/logo.png"
             alt="رياح الجليد"
-            className="w-full h-full object-contain"
+            fill
+            className="object-cover"
           />
         </div>
         <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight">
-          <span className={`block ${theme === 'dark' ? 'text-white' : 'text-[#FFFFFF]'}`}>رياح</span>
-          <span className={`block ${theme === 'dark' ? 'text-white' : 'text-[#FFFFFF]'}`}>الجليد</span>
+          <span className="block text-white">رياح</span>
+          <span className="block text-white">الجليد</span>
         </h1>
-        <p className={`mt-3 text-sm sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-sm md:max-w-md ${
-          theme === 'dark' ? 'text-[#a0e7ff]' : 'text-white'
-        }`}>
+        <p className="mt-3 text-sm sm:text-base md:text-lg lg:text-xl max-w-xs sm:max-w-sm md:max-w-md text-white/90">
           حلول تبريد متكاملة لهندسة المستقبل
         </p>
-        <button className="mt-6 rounded-full bg-white/10 px-5 py-2 text-xs sm:text-sm backdrop-blur-sm border border-white/20 shadow-[0_0_15px_rgba(1,174,190,0.5)] dark:shadow-[0_0_15px_#00c6ff] hover:shadow-[0_0_25px_rgba(1,174,190,0.8)] dark:hover:shadow-[0_0_25px_#00c6ff] transition-shadow duration-300 text-white">
+        <Link
+          href="#services"
+          className="mt-6 rounded-full bg-white/10 px-6 py-3 text-sm sm:text-base backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 text-white hover:bg-white/20"
+        >
           اكتشف خدماتنا
-        </button>
+        </Link>
       </div>
 
       <style jsx>{`
