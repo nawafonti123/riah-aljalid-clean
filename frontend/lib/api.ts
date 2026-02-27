@@ -4,6 +4,7 @@ import { getSession } from 'next-auth/react';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 async function fetchPublic(endpoint: string) {
+  if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
   const res = await fetch(`${API_URL}${endpoint}`, { cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch');
   return res.json();
@@ -20,11 +21,13 @@ export const publicApi = {
 };
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
+  if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
+
   const session = await getSession();
-  const headers = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(session?.accessToken && { Authorization: `Bearer ${session.accessToken}` }),
-    ...options.headers,
+    ...(session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {}),
+    ...(options.headers ? (options.headers as Record<string, string>) : {}),
   };
 
   const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
@@ -42,33 +45,59 @@ export const usersApi = {
 export const projectsApi = {
   getAll: () => fetchWithAuth('/projects'),
   getOne: (id: string) => fetchWithAuth(`/projects/${id}`),
-  create: (data: any) => fetchWithAuth('/projects', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: any) => fetchWithAuth(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  create: (data: any) =>
+    fetchWithAuth('/projects', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) =>
+    fetchWithAuth(`/projects/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: string) => fetchWithAuth(`/projects/${id}`, { method: 'DELETE' }),
 };
 
 export const servicesApi = {
   getAll: () => fetchWithAuth('/services'),
   getOne: (id: string) => fetchWithAuth(`/services/${id}`),
-  create: (data: any) => fetchWithAuth('/services', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: any) => fetchWithAuth(`/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  create: (data: any) =>
+    fetchWithAuth('/services', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) =>
+    fetchWithAuth(`/services/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: string) => fetchWithAuth(`/services/${id}`, { method: 'DELETE' }),
+};
+
+// ✅ FIX: Company Images (Admin)
+export const companyImagesApi = {
+  getAll: () => fetchWithAuth('/company-images'),
+  create: (data: any) =>
+    fetchWithAuth('/company-images', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) =>
+    fetchWithAuth(`/company-images/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => fetchWithAuth(`/company-images/${id}`, { method: 'DELETE' }),
+};
+
+// ✅ FIX: Service Details (Admin)
+export const serviceDetailsApi = {
+  getAll: () => fetchWithAuth('/service-details'),
+  create: (data: any) =>
+    fetchWithAuth('/service-details', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) =>
+    fetchWithAuth(`/service-details/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => fetchWithAuth(`/service-details/${id}`, { method: 'DELETE' }),
 };
 
 export const uploadApi = {
   uploadImage: async (file: File) => {
+    if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
+
     const session = await getSession();
     const formData = new FormData();
     formData.append('file', file);
 
     const res = await fetch(`${API_URL}/uploads/image`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${session?.accessToken}` },
+      headers: session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {},
       body: formData,
     });
 
     if (!res.ok) {
-      const error = await res.json();
+      const error = await res.json().catch(() => ({}));
       throw new Error(error.message || 'Upload failed');
     }
     const data = await res.json();
@@ -76,18 +105,20 @@ export const uploadApi = {
   },
 
   uploadVideo: async (file: File) => {
+    if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
+
     const session = await getSession();
     const formData = new FormData();
     formData.append('file', file);
 
     const res = await fetch(`${API_URL}/uploads/video`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${session?.accessToken}` },
+      headers: session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {},
       body: formData,
     });
 
     if (!res.ok) {
-      const error = await res.json();
+      const error = await res.json().catch(() => ({}));
       throw new Error(error.message || 'Upload failed');
     }
     const data = await res.json();
@@ -97,13 +128,16 @@ export const uploadApi = {
 
 export const contactApi = {
   sendMessage: async (data: { name: string; email: string; message: string }) => {
+    if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
+
     const res = await fetch(`${API_URL}/contact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+
     if (!res.ok) {
-      const error = await res.json();
+      const error = await res.json().catch(() => ({}));
       throw new Error(error.message || 'Failed to send message');
     }
     return res.json();
@@ -124,6 +158,7 @@ export const settingsApi = {
 export const teamApi = {
   getAll: () => fetchWithAuth('/team'),
   create: (data: any) => fetchWithAuth('/team', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: any) => fetchWithAuth(`/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  update: (id: string, data: any) =>
+    fetchWithAuth(`/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: string) => fetchWithAuth(`/team/${id}`, { method: 'DELETE' }),
 };
