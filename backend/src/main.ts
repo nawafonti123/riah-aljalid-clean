@@ -1,4 +1,3 @@
-// backend/src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
@@ -28,11 +27,24 @@ async function bootstrap() {
 
   app.use(compression());
 
-  // تحديث إعدادات CORS لتشمل PATCH
+  // إعدادات CORS معدلة - الأهم هنا
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // قائمة بالأصول المسموح بها (بدون شرطة مائلة في النهاية)
+      const allowedOrigins = [
+        'http://localhost:3000',
+        process.env.FRONTEND_URL?.replace(/\/$/, ''), // نزيل أي شرطة مائلة في النهاية
+      ].filter(Boolean); // نزيل أي قيم فارغة
+
+      // إذا كان الطلب من أصل مسموح به أو لم يكن هناك أصل (طلب من Postman مثلًا)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], // أضفنا PATCH
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
