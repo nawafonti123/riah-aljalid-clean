@@ -71,86 +71,58 @@ export default function Navbar() {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled 
-            ? 'backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 border-b border-gray-200 dark:border-gray-800 shadow-lg' 
-            : 'bg-transparent'
+          scrolled
+            ? 'backdrop-blur-xl bg-white/90 dark:bg-[#0F2027]/90 shadow-lg py-2'
+            : 'bg-transparent py-4'
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 group" onClick={() => scrollToSection('hero')}>
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#01AEBE] dark:border-[#00c6ff] group-hover:scale-110 transition-transform duration-300">
-              <Image
-                src="/logo.png"
-                alt="رياح الجليد"
-                width={40}
-                height={40}
-                className="object-cover"
-              />
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 group" onClick={() => scrollToSection('hero')}>
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#01AEBE] dark:border-[#00c6ff] group-hover:scale-110 transition-transform duration-300 bg-white/70 dark:bg-white/5">
+                <Image
+                  src="/logo.png"
+                  alt="رياح الجليد"
+                  fill
+                  sizes="40px"
+                  className="object-contain p-1"
+                />
+              </div>
+              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
+                رياح الجليد
+              </span>
+            </Link>
+
+            <div className="hidden md:flex items-center gap-2">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <button
+                    key={link.section}
+                    onClick={() => scrollToSection(link.section)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
+                      activeSection === link.section
+                        ? 'bg-[#01AEBE] dark:bg-[#00c6ff] text-white shadow-md'
+                        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="text-sm" />
+                    <span className="text-sm font-medium">{link.label}</span>
+                  </button>
+                );
+              })}
+
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="ml-2 w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-white/10 hover:scale-110 transition-transform duration-300"
+              >
+                {theme === 'dark' ? <FaSun className="text-yellow-300" /> : <FaMoon className="text-gray-700" />}
+              </button>
             </div>
-            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
-              رياح الجليد
-            </span>
-          </Link>
 
-          {/* روابط سطح المكتب */}
-          <div className="hidden md:flex gap-1 items-center">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = activeSection === link.section;
-              return (
-                <button
-                  key={link.href}
-                  onClick={() => scrollToSection(link.section)}
-                  className={`relative px-4 py-2 rounded-lg flex items-center gap-2 transition-all duration-300 group ${
-                    isActive
-                      ? 'text-[#01AEBE] dark:text-[#00c6ff]'
-                      : 'text-gray-700 dark:text-gray-200 hover:text-[#01AEBE] dark:hover:text-[#00c6ff]'
-                  }`}
-                >
-                  <Icon className={`text-lg transition-transform duration-300 group-hover:scale-110 ${
-                    isActive ? 'scale-110' : ''
-                  }`} />
-                  <span className="text-sm lg:text-base font-medium">{link.label}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeSection"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364]"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-            
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="mr-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <FaSun className="text-yellow-400 text-xl" />
-              ) : (
-                <FaMoon className="text-gray-700 text-xl" />
-              )}
-            </button>
-          </div>
-
-          {/* زر القائمة للجوال */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <FaSun className="text-yellow-400 text-xl" />
-              ) : (
-                <FaMoon className="text-gray-700 dark:text-gray-200 text-xl" />
-              )}
-            </button>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-700 dark:text-gray-200 text-2xl focus:outline-none p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-white/10"
             >
               {menuOpen ? <FaTimes /> : <FaBars />}
             </button>
@@ -158,61 +130,60 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* قائمة جانبية للجوال */}
       <AnimatePresence>
         {menuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
-            />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
+            onClick={() => setMenuOpen(false)}
+          >
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-white dark:bg-gray-900 z-50 md:hidden shadow-2xl"
+              className="absolute top-0 right-0 h-full w-80 bg-white dark:bg-[#0F2027] p-6"
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-8 border-b border-gray-200 dark:border-gray-800 pb-4">
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-[#01AEBE] dark:border-[#00c6ff]">
-                    <Image
-                      src="/logo.png"
-                      alt="رياح الجليد"
-                      width={48}
-                      height={48}
-                      className="object-cover"
-                    />
-                  </div>
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
-                    رياح الجليد
-                  </h2>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2">
+                  <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
+                  <span className="font-bold text-gray-900 dark:text-white">القائمة</span>
                 </div>
-                <nav className="flex flex-col gap-2">
-                  {navLinks.map((link) => {
-                    const Icon = link.icon;
-                    return (
-                      <button
-                        key={link.href}
-                        onClick={() => scrollToSection(link.section)}
-                        className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
-                          activeSection === link.section
-                            ? 'bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] text-white shadow-lg'
-                            : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                        }`}
-                      >
-                        <Icon className="text-xl" />
-                        <span className="font-medium">{link.label}</span>
-                      </button>
-                    );
-                  })}
-                </nav>
+                <button onClick={() => setMenuOpen(false)} className="text-gray-600 dark:text-gray-300">
+                  <FaTimes />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <button
+                      key={link.section}
+                      onClick={() => scrollToSection(link.section)}
+                      className="w-full flex items-center gap-3 p-4 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition"
+                    >
+                      <Icon />
+                      <span className="font-medium">{link.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6">
+                <button
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200"
+                >
+                  {theme === 'dark' ? <FaSun className="text-yellow-300" /> : <FaMoon />}
+                  <span>{theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}</span>
+                </button>
               </div>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </>

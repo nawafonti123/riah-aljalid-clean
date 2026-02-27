@@ -16,6 +16,10 @@ export class SettingsService {
           email: '',
           address: '',
           commercialRegister: '',
+          whyUsImage: null,
+          aboutImage: null,
+          footerIceImage: null,
+          googleMapsEmbedUrl: null,
         },
       });
     }

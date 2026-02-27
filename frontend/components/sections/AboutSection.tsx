@@ -1,4 +1,4 @@
-// frontend/components/sections/AboutSection.tsx (محدث)
+// frontend/components/sections/AboutSection.tsx
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
@@ -15,17 +15,37 @@ interface TeamMember {
   order: number;
 }
 
+interface SiteSettings {
+  aboutImage?: string | null;
+}
+
 export default function AboutSection() {
   const [team, setTeam] = useState<TeamMember[]>([]);
+  const [aboutImage, setAboutImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
   useEffect(() => {
-    publicApi.getTeamMembers()
-      .then(setTeam)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    const run = async () => {
+      try {
+        const [teamData, settings] = await Promise.all([
+          publicApi.getTeamMembers(),
+          publicApi.getSettings().catch(() => null),
+        ]);
+
+        setTeam(teamData || []);
+        const s = settings as SiteSettings | null;
+        setAboutImage((s?.aboutImage as string) || null);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    run();
   }, []);
 
   return (
@@ -45,11 +65,25 @@ export default function AboutSection() {
           </h2>
         </motion.div>
 
-        {/* نبذة عنا */}
-        <div className="glass-card p-6 sm:p-8 rounded-2xl mb-10 text-center bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-white/10">
-          <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-            نحن مؤسسة سعودية متخصصة في تركيب وصيانة أنظمة التكييف والتهوية والتبريد باستخدام التقنيات الحديثة والمبتكرة. نحرص على تحقيق أفضل النتائج بأفضل الأسعار وفي إطار الالتزام بالمعايير الصحية والبيئية، وذلك لتوفير بيئة مريحة وصحية لعملائنا، سواء في المنازل أو الشركات أو المصانع. يتميز فريق عملنا بالكفاءة والاحترافية، ما يجعلنا من الرواد في هذا المجال. ونحن نهدف دائمًا إلى تحسين خدماتنا وتلبية احتياجات عملائنا بأفضل الطرق الممكنة، وذلك لضمان رضاهم التام عن خدماتنا.
-          </p>
+        {/* نبذة عنا + صورة (قابلة للتغيير من لوحة الإدارة) */}
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 items-stretch mb-10">
+          <div className="glass-card p-6 sm:p-8 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-white/10">
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
+              نحن مؤسسة سعودية متخصصة في تركيب وصيانة أنظمة التكييف والتهوية والتبريد باستخدام التقنيات الحديثة والمبتكرة. نحرص على تحقيق أفضل النتائج بأفضل الأسعار وفي إطار الالتزام بالمعايير الصحية والبيئية، وذلك لتوفير بيئة مريحة وصحية لعملائنا، سواء في المنازل أو الشركات أو المصانع. يتميز فريق عملنا بالكفاءة والاحترافية، ما يجعلنا من الرواد في هذا المجال. ونحن نهدف دائمًا إلى تحسين خدماتنا وتلبية احتياجات عملائنا بأفضل الطرق الممكنة، وذلك لضمان رضاهم التام عن خدماتنا.
+            </p>
+          </div>
+
+          <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 min-h-[220px]">
+            <Image
+              src={aboutImage || '/logo.png'}
+              alt="عن رياح الجليد"
+              fill
+              sizes="(max-width: 768px) 100vw, 520px"
+              className="object-cover"
+              priority={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-transparent" />
+          </div>
         </div>
 
         {/* الرؤية والرسالة */}
@@ -65,6 +99,7 @@ export default function AboutSection() {
               تتجلى رؤيتنا في توفير حلول تكييف متطورة وخدمات مميزة لعملائنا، وتحسين جودة الهواء والبيئة في المناطق التي نخدمها، والاستمرار في الابتكار والتطوير لتحقيق النجاح والنمو المستدام. نؤمن بأن فريقنا هو الأساس لنجاحنا وتحقيق رؤيتنا، لذلك نعمل على توفير بيئة عمل إيجابية وملهمة ونشجع التعاون والابتكار والتحسين المستمر.
             </p>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
@@ -94,26 +129,36 @@ export default function AboutSection() {
         {/* صور الفريق */}
         {!loading && team.length > 0 && (
           <div className="mt-12">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">فريقنا الهندسي</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {team.map((member) => (
-                <div key={member.id} className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 text-center">
-                  {member.image && (
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      className="w-24 h-24 rounded-full mx-auto mb-3 object-cover border-2 border-[#01AEBE] dark:border-[#00c6ff]"
-                      onError={(e) => {
-                        console.error('Failed to load image:', member.image);
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  )}
-                  <h4 className="text-base font-bold text-gray-900 dark:text-white">{member.name}</h4>
-                  <p className="text-xs text-[#01AEBE] dark:text-[#00c6ff] mb-2">{member.role}</p>
-                  {member.bio && <p className="text-xs text-gray-600 dark:text-gray-300">{member.bio}</p>}
-                </div>
-              ))}
+            <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-6">
+              فريق العمل
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {team
+                .slice()
+                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                .map((member) => (
+                  <motion.div
+                    key={member.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.4 }}
+                    className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-700"
+                  >
+                    <div className="relative w-full h-32 sm:h-36">
+                      <Image
+                        src={member.image || '/logo.png'}
+                        alt={member.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="p-3">
+                      <p className="font-semibold text-sm text-gray-900 dark:text-white">{member.name}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">{member.role}</p>
+                    </div>
+                  </motion.div>
+                ))}
             </div>
           </div>
         )}

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { FaHome, FaProjectDiagram, FaCog, FaBars, FaTimes, FaSnowflake, FaUsers, FaList, FaImage, FaServicestack } from 'react-icons/fa';
+import { FaHome, FaProjectDiagram, FaCog, FaBars, FaTimes, FaSnowflake, FaUsers, FaList, FaImage, FaImages, FaServicestack } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -38,6 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: `/admin/${secret}/dashboard/team`, label: 'الفريق', icon: FaUsers, isActive: pathname.startsWith(`/admin/${secret}/dashboard/team`) },
     { href: `/admin/${secret}/dashboard/service-details`, label: 'تفاصيل الخدمات', icon: FaList, isActive: pathname.startsWith(`/admin/${secret}/dashboard/service-details`) },
     { href: `/admin/${secret}/dashboard/company-images`, label: 'صور الشركة', icon: FaImage, isActive: pathname.startsWith(`/admin/${secret}/dashboard/company-images`) },
+    { href: `/admin/${secret}/dashboard/images`, label: 'الصور', icon: FaImages, isActive: pathname.startsWith(`/admin/${secret}/dashboard/images`) },
     { href: `/admin/${secret}/dashboard/settings`, label: 'الإعدادات', icon: FaCog, isActive: pathname.startsWith(`/admin/${secret}/dashboard/settings`) },
   ];
 
@@ -68,137 +69,64 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25 }}
-              className="absolute top-0 right-0 bottom-0 w-72 bg-gradient-to-b from-gray-900 to-gray-800 p-6 shadow-2xl"
+              className="absolute top-0 right-0 h-full w-72 bg-gray-900 p-6 border-l border-white/10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
-                  <FaSnowflake className="text-white text-xl" />
-                </div>
-                <h2 className="text-white text-xl font-bold">لوحة التحكم</h2>
+              <div className="flex items-center gap-2 mb-8">
+                <FaSnowflake className="text-[#00c6ff]" />
+                <h2 className="text-white font-bold">لوحة التحكم</h2>
               </div>
+
               <nav className="space-y-2">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 ${
-                        item.isActive
-                          ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
-                          : 'text-gray-300 hover:bg-white/10 hover:text-white'
-                      }`}
-                    >
-                      <Icon className="text-xl" />
-                      <span className="font-medium">{item.label}</span>
-                      {item.isActive && (
-                        <motion.div
-                          layoutId="activeIndicator"
-                          className="mr-auto w-1.5 h-6 bg-white rounded-full"
-                        />
-                      )}
-                    </Link>
-                  );
-                })}
+                {navItems.map(({ href, label, icon: Icon, isActive }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+                      isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'
+                    }`}
+                  >
+                    <Icon />
+                    <span className="text-sm font-medium">{label}</span>
+                  </Link>
+                ))}
               </nav>
-              <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-                <p className="text-xs text-gray-400">مرحباً بك</p>
-                <p 
-                    className="text-xs text-white font-medium truncate max-w-full" 
-                    title={session.user?.email ?? undefined}
-                >
-                    {session.user?.email ?? ''}
-                </p>
-                </div>
             </motion.div>
           </motion.div>
         )}
 
-        <main className="pt-16">{children}</main>
-
-        <div className="fixed bottom-0 left-0 right-0 bg-gray-800/90 backdrop-blur-md border-t border-white/10 z-40">
-          <nav className="flex justify-around items-center h-16">
-            {navItems.slice(0, 4).map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${
-                    item.isActive ? 'text-[#00c6ff]' : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  <Icon className={`text-xl ${item.isActive ? 'scale-110' : ''}`} />
-                  <span className="text-xs mt-1 font-medium">{item.label}</span>
-                  {item.isActive && <motion.div layoutId="bottomIndicator" className="w-1 h-1 bg-[#00c6ff] rounded-full mt-0.5" />}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+        <div className="pt-20 px-4">{children}</div>
       </div>
     );
   }
 
-  // تخطيط سطح المكتب
+  // تخطيط الديسكتوب
   return (
-    <div className="flex min-h-screen bg-gray-900">
-      <motion.aside
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-72 bg-gradient-to-b from-gray-900 to-gray-800 p-6 shadow-2xl border-l border-white/5 relative"
-      >
-        <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg">
-            <FaSnowflake className="text-white text-2xl" />
-          </div>
-          <h2 className="text-white text-2xl font-bold">لوحة التحكم</h2>
+    <div className="min-h-screen bg-gray-900 flex">
+      <aside className="w-72 bg-gray-900 border-l border-white/10 p-6 hidden md:block">
+        <div className="flex items-center gap-2 mb-10">
+          <FaSnowflake className="text-[#00c6ff]" />
+          <h2 className="text-white font-bold text-lg">لوحة التحكم</h2>
         </div>
 
         <nav className="space-y-2">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`relative flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                  item.isActive
-                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/20'
-                    : 'text-gray-300 hover:bg-white/5 hover:text-white'
-                }`}
-              >
-                <Icon className={`text-xl ${item.isActive ? 'scale-110' : ''}`} />
-                <span className="font-medium">{item.label}</span>
-                {item.isActive && (
-                  <motion.div
-                    layoutId="desktopActiveIndicator"
-                    className="absolute right-0 w-1.5 h-8 bg-white rounded-full"
-                  />
-                )}
-                {!item.isActive && (
-                  <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity bg-white/5" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-2 bg-white/5 rounded-lg border border-white/10">
-            <p className="text-xs text-gray-400">مرحباً بك</p>
-            <p 
-                className="text-xs text-white font-medium truncate max-w-full" 
-                title={session.user?.email ?? undefined}
+          {navItems.map(({ href, label, icon: Icon, isActive }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
+                isActive ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5'
+              }`}
             >
-                {session.user?.email ?? ''}
-            </p>
-            </div>
-      </motion.aside>
+              <Icon />
+              <span className="text-sm font-medium">{label}</span>
+            </Link>
+          ))}
+        </nav>
+      </aside>
 
-      <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

@@ -53,6 +53,12 @@ model Setting {
   email             String
   address           String
   commercialRegister String
+
+  // صور/محتوى صفحات عامة (يتم التحكم بها من لوحة الإدارة)
+  whyUsImage         String?
+  aboutImage         String?
+  footerIceImage     String?
+  googleMapsEmbedUrl String?
 }
 
 model ActivityLog {

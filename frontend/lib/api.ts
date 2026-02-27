@@ -16,6 +16,7 @@ export const publicApi = {
   getTeamMembers: () => fetchPublic('/team'),
   getServiceDetails: () => fetchPublic('/service-details'),
   getCompanyImages: () => fetchPublic('/company-images'),
+  getSettings: () => fetchPublic('/settings'),
 };
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
@@ -115,23 +116,14 @@ export const maintenanceApi = {
     fetchWithAuth('/maintenance', { method: 'PATCH', body: JSON.stringify(data) }),
 };
 
+export const settingsApi = {
+  get: () => fetchWithAuth('/settings'),
+  update: (data: any) => fetchWithAuth('/settings', { method: 'PUT', body: JSON.stringify(data) }),
+};
+
 export const teamApi = {
   getAll: () => fetchWithAuth('/team'),
   create: (data: any) => fetchWithAuth('/team', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: string, data: any) => fetchWithAuth(`/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: string) => fetchWithAuth(`/team/${id}`, { method: 'DELETE' }),
-};
-
-export const serviceDetailsApi = {
-  getAll: () => fetchWithAuth('/service-details'),
-  create: (data: any) => fetchWithAuth('/service-details', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: any) => fetchWithAuth(`/service-details/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: string) => fetchWithAuth(`/service-details/${id}`, { method: 'DELETE' }),
-};
-
-export const companyImagesApi = {
-  getAll: () => fetchWithAuth('/company-images'),
-  create: (data: any) => fetchWithAuth('/company-images', { method: 'POST', body: JSON.stringify(data) }),
-  update: (id: string, data: any) => fetchWithAuth(`/company-images/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  delete: (id: string) => fetchWithAuth(`/company-images/${id}`, { method: 'DELETE' }),
 };

@@ -3,23 +3,57 @@ import Link from 'next/link';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaRegBuilding } from 'react-icons/fa';
 import Image from 'next/image';
 
-export default function Footer() {
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+async function fetchSettings() {
+  try {
+    if (!API_URL) return null;
+    const res = await fetch(`${API_URL}/settings`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function Footer() {
   const currentYear = new Date().getFullYear();
+  const settings = await fetchSettings();
+
+  const address = settings?.address || 'الرياض - طريق الملك عبدالعزيز';
+  const phone = settings?.phone || '+966 56 524 7407';
+  const email = settings?.email || 'RiaHaljalid@icloud.com';
+  const commercialRegister = settings?.commercialRegister || '1010632725';
+  const footerIceImage = settings?.footerIceImage || '/logo.png';
 
   return (
-    <footer className="bg-white dark:bg-[#0F2027] text-gray-800 dark:text-white pt-12 pb-6 transition-colors duration-300">
-      <div className="container mx-auto px-4 sm:px-6">
+    <footer className="relative bg-white dark:bg-[#0F2027] text-gray-800 dark:text-white pt-12 pb-6 transition-colors duration-300 overflow-hidden">
+      {/* زخرفة خفيفة أسفل الفوتر (صورة قابلة للتغيير من لوحة الإدارة) */}
+      <div className="pointer-events-none absolute -bottom-10 -left-10 opacity-10 dark:opacity-[0.08]">
+        <div className="relative w-[220px] h-[220px] sm:w-[280px] sm:h-[280px]">
+          <Image
+            src={footerIceImage}
+            alt="رياح الجليد"
+            fill
+            sizes="(max-width: 640px) 220px, 280px"
+            className="object-contain"
+            priority={false}
+          />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 sm:px-6 relative">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* حول الشركة */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="relative w-12 h-12">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5">
                 <Image
                   src="/logo.png"
                   alt="رياح الجليد"
-                  width={48}
-                  height={48}
-                  className="object-contain"
+                  fill
+                  sizes="64px"
+                  className="object-contain p-1"
                 />
               </div>
               <h3 className="text-xl font-bold text-gradient-primary">رياح الجليد</h3>
@@ -46,51 +80,37 @@ export default function Footer() {
             <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">خدماتنا</h4>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
               <li>تكييف مركزي</li>
-              <li>تهوية</li>
-              <li>تبريد</li>
-              <li>صيانة وإصلاح</li>
-              <li>استشارات فنية</li>
+              <li>صيانة دورية</li>
+              <li>توريد وتركيب</li>
+              <li>تهوية وتبريد</li>
             </ul>
           </div>
 
-          {/* معلومات الاتصال */}
+          {/* تواصل */}
           <div>
-            <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">تواصل معنا</h4>
+            <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">تواصل</h4>
             <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
-              <li className="flex items-start gap-3">
-                <FaMapMarkerAlt className="w-4 h-4 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
-                <span>8246 طريق الملك عبدالعزيز الفرعي، الملك فهد، الرياض</span>
+              <li className="flex items-start gap-2">
+                <FaMapMarkerAlt className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
+                <span>{address}</span>
               </li>
-              <li className="flex items-start gap-3">
-                <FaPhone className="w-4 h-4 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
-                <a
-                  href="https://wa.me/966565247407"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition underline underline-offset-2"
-                >
-                  <span dir="ltr">+966 56 524 7407</span>
+              <li className="flex items-start gap-2">
+                <FaPhone className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
+                <a href={`https://wa.me/${phone.replace(/\s|\+/g, '')}`} className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition" target="_blank" rel="noreferrer">
+                  <span dir="ltr">{phone}</span>
                 </a>
               </li>
-              <li className="flex items-start gap-3">
-                <FaEnvelope className="w-4 h-4 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
-                <a
-                  href="mailto:RiaHaljalid@icloud.com"
-                  className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition underline underline-offset-2"
-                >
-                  RiaHaljalid@icloud.com
-                </a>
+              <li className="flex items-start gap-2">
+                <FaEnvelope className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
+                <a href={`mailto:${email}`} className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition">{email}</a>
               </li>
-              <li className="flex items-start gap-3">
-                <FaRegBuilding className="w-4 h-4 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
-                <span>سجل تجاري: 1010632725</span>
+              <li className="flex items-start gap-2">
+                <FaRegBuilding className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
+                <span>سجل: {commercialRegister}</span>
               </li>
             </ul>
           </div>
         </div>
-
-        {/* خط فاصل */}
-        <div className="border-t border-gray-200 dark:border-white/10 my-6"></div>
 
         {/* حقوق النشر وتوقيع التطوير */}
         <div className="flex flex-col sm:flex-row justify-between items-center text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
