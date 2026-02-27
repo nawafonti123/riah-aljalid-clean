@@ -1,4 +1,4 @@
-// frontend/lib/api.ts (مع التأكيد على cache: 'no-store')
+// frontend/lib/api.ts
 import { getSession } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -13,6 +13,9 @@ export const publicApi = {
   getServices: () => fetchPublic('/services'),
   getProjects: () => fetchPublic('/projects'),
   getMaintenance: () => fetchPublic('/maintenance'),
+  getTeamMembers: () => fetchPublic('/team'),
+  getServiceDetails: () => fetchPublic('/service-details'),
+  getCompanyImages: () => fetchPublic('/company-images'),
 };
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
@@ -110,4 +113,28 @@ export const maintenanceApi = {
   getStatus: () => fetchWithAuth('/maintenance'),
   updateStatus: (data: { isEnabled?: boolean; message?: string }) =>
     fetchWithAuth('/maintenance', { method: 'PATCH', body: JSON.stringify(data) }),
+};
+
+// جديد: Team
+export const teamApi = {
+  getAll: () => fetchWithAuth('/team'),
+  create: (data: any) => fetchWithAuth('/team', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) => fetchWithAuth(`/team/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => fetchWithAuth(`/team/${id}`, { method: 'DELETE' }),
+};
+
+// جديد: ServiceDetails
+export const serviceDetailsApi = {
+  getAll: () => fetchWithAuth('/service-details'),
+  create: (data: any) => fetchWithAuth('/service-details', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) => fetchWithAuth(`/service-details/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => fetchWithAuth(`/service-details/${id}`, { method: 'DELETE' }),
+};
+
+// جديد: CompanyImages
+export const companyImagesApi = {
+  getAll: () => fetchWithAuth('/company-images'),
+  create: (data: any) => fetchWithAuth('/company-images', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: any) => fetchWithAuth(`/company-images/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) => fetchWithAuth(`/company-images/${id}`, { method: 'DELETE' }),
 };

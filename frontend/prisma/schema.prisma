@@ -60,3 +60,36 @@ model ActivityLog {
   action    String
   timestamp DateTime @default(now())
 }
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  role        String
+  bio         String?
+  image       String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServiceDetail {
+  id          String   @id @default(cuid())
+  title       String   // عنوان التفصيلة (مثل "التوريد")
+  description String   // وصف طويل
+  image       String?  // صورة توضيحية
+  order       Int      @default(0)
+  serviceId   String   // ربط بالخدمة الرئيسية
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CompanyImage {
+  id          String   @id @default(cuid())
+  title       String?  // عنوان الصورة (اختياري)
+  image       String   // رابط الصورة
+  category    String?  // تصنيف (مثلاً "team", "office", "projects")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

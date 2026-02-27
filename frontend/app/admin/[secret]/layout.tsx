@@ -1,11 +1,11 @@
-// frontend/app/admin/[secret]/layout.tsx
+// frontend/app/admin/[secret]/layout.tsx (مع إضافة الروابط الجديدة)
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { redirect, usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { FaHome, FaProjectDiagram, FaCog, FaBars, FaTimes, FaSnowflake } from 'react-icons/fa';
+import { FaHome, FaProjectDiagram, FaCog, FaBars, FaTimes, FaSnowflake, FaUsers, FaList, FaImage } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -30,26 +30,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === 'loading') return <p className="text-center text-white py-10">جاري التحميل...</p>;
   if (!session) redirect(`/admin/${secret}/login`);
 
-  // روابط التنقل مع تحسين شروط النشاط
+  // روابط التنقل الرئيسية مع إضافة الصفحات الجديدة
   const navItems = [
-    {
-      href: `/admin/${secret}/dashboard`,
-      label: 'الرئيسية',
-      icon: FaHome,
-      isActive: pathname === `/admin/${secret}/dashboard`, // exact match فقط
-    },
-    {
-      href: `/admin/${secret}/dashboard/projects`,
-      label: 'المشاريع',
-      icon: FaProjectDiagram,
-      isActive: pathname.startsWith(`/admin/${secret}/dashboard/projects`),
-    },
-    {
-      href: `/admin/${secret}/dashboard/settings`,
-      label: 'الإعدادات',
-      icon: FaCog,
-      isActive: pathname.startsWith(`/admin/${secret}/dashboard/settings`),
-    },
+    { href: `/admin/${secret}/dashboard`, label: 'الرئيسية', icon: FaHome, isActive: pathname === `/admin/${secret}/dashboard` },
+    { href: `/admin/${secret}/dashboard/projects`, label: 'المشاريع', icon: FaProjectDiagram, isActive: pathname.startsWith(`/admin/${secret}/dashboard/projects`) },
+    { href: `/admin/${secret}/dashboard/team`, label: 'الفريق', icon: FaUsers, isActive: pathname.startsWith(`/admin/${secret}/dashboard/team`) },
+    { href: `/admin/${secret}/dashboard/service-details`, label: 'تفاصيل الخدمات', icon: FaList, isActive: pathname.startsWith(`/admin/${secret}/dashboard/service-details`) },
+    { href: `/admin/${secret}/dashboard/company-images`, label: 'صور الشركة', icon: FaImage, isActive: pathname.startsWith(`/admin/${secret}/dashboard/company-images`) },
+    { href: `/admin/${secret}/dashboard/settings`, label: 'الإعدادات', icon: FaCog, isActive: pathname.startsWith(`/admin/${secret}/dashboard/settings`) },
   ];
 
   // تخطيط الهاتف
@@ -67,7 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
 
-        {/* قائمة جانبية منسدلة للهاتف - بتصميم محسن */}
+        {/* قائمة جانبية منسدلة للهاتف */}
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -116,15 +104,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   );
                 })}
               </nav>
-              {/* معلومات المستخدم في القائمة الجانبية للهاتف (مع truncate) */}
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="p-2 bg-white/5 rounded-lg border border-white/10">
                   <p className="text-xs text-gray-400">مرحباً بك</p>
-                  <p 
-                    className="text-xs text-white font-medium truncate max-w-full" 
-                    title={session.user?.email || undefined}
-                  >
-                    {session.user?.email ?? ''}
+                  <p className="text-xs text-white font-medium truncate max-w-full" title={session.user?.email}>
+                    {session.user?.email}
                   </p>
                 </div>
               </div>
@@ -132,32 +116,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </motion.div>
         )}
 
-        {/* المحتوى الرئيسي */}
         <main className="pt-16">{children}</main>
 
-        {/* شريط سفلي محسن للتنقل السريع */}
+        {/* شريط سفلي للتنقل السريع */}
         <div className="fixed bottom-0 left-0 right-0 bg-gray-800/90 backdrop-blur-md border-t border-white/10 z-40">
           <nav className="flex justify-around items-center h-16">
-            {navItems.map((item) => {
+            {navItems.slice(0, 4).map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${
-                    item.isActive
-                      ? 'text-[#00c6ff]'
-                      : 'text-gray-400 hover:text-white'
+                    item.isActive ? 'text-[#00c6ff]' : 'text-gray-400 hover:text-white'
                   }`}
                 >
                   <Icon className={`text-xl ${item.isActive ? 'scale-110' : ''}`} />
                   <span className="text-xs mt-1 font-medium">{item.label}</span>
-                  {item.isActive && (
-                    <motion.div
-                      layoutId="bottomIndicator"
-                      className="w-1 h-1 bg-[#00c6ff] rounded-full mt-0.5"
-                    />
-                  )}
+                  {item.isActive && <motion.div layoutId="bottomIndicator" className="w-1 h-1 bg-[#00c6ff] rounded-full mt-0.5" />}
                 </Link>
               );
             })}
@@ -167,10 +143,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  // تخطيط سطح المكتب مع شريط جانبي محسن
+  // تخطيط سطح المكتب
   return (
     <div className="flex min-h-screen bg-gray-900">
-      {/* شريط جانبي بتحسينات بصرية */}
       <motion.aside
         initial={{ x: -20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -213,15 +188,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        {/* معلومات المستخدم في الشريط الجانبي (مع truncate) */}
         <div className="absolute bottom-6 left-6 right-6">
           <div className="p-3 bg-white/5 rounded-xl border border-white/10">
             <p className="text-xs text-gray-400">مرحباً بك</p>
-            <p 
-              className="text-sm text-white font-medium truncate max-w-full" 
-              title={session.user?.email || undefined}
-            >
-              {session.user?.email ?? ''}
+            <p className="text-sm text-white font-medium truncate max-w-full" title={session.user?.email}>
+              {session.user?.email}
             </p>
           </div>
         </div>
@@ -231,4 +202,3 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     </div>
   );
 }
-
