@@ -47,67 +47,65 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled 
-            ? 'backdrop-blur-xl bg-white/10 dark:bg-white/10 border-b border-white/20' 
+            ? 'backdrop-blur-xl bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-white/10' 
             : 'bg-transparent'
         }`}
       >
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          {/* اللوجو */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="relative w-10 h-10">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#01AEBE] dark:border-[#00c6ff]">
               <Image
                 src="/logo.png"
                 alt="رياح الجليد"
                 width={40}
                 height={40}
-                className="object-contain"
+                className="object-cover"
               />
             </div>
-            <span className="text-xl sm:text-2xl font-bold text-gradient-primary">
+            <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
               رياح الجليد
             </span>
           </Link>
 
-          {/* روابط سطح المكتب */}
           <div className="hidden md:flex gap-6 items-center">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition text-sm lg:text-base text-gray-800 dark:text-white"
+                className="text-gray-700 dark:text-gray-200 hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition text-sm lg:text-base"
               >
                 {link.label}
               </Link>
             ))}
             
-            {/* زر تبديل الوضع */}
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
                 <FaSun className="text-yellow-400" />
               ) : (
-                <FaMoon className="text-gray-700" />
+                <FaMoon className="text-gray-700 dark:text-gray-200" />
               )}
             </button>
           </div>
 
-          {/* زر القائمة للجوال */}
           <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
                 <FaSun className="text-yellow-400" />
               ) : (
-                <FaMoon className="text-gray-700" />
+                <FaMoon className="text-gray-700 dark:text-gray-200" />
               )}
             </button>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="text-gray-800 dark:text-white text-2xl focus:outline-none"
+              className="text-gray-700 dark:text-gray-200 text-2xl focus:outline-none"
             >
               {menuOpen ? <FaTimes /> : <FaBars />}
             </button>
@@ -115,7 +113,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* قائمة جانبية للجوال */}
       <AnimatePresence>
         {menuOpen && (
           <>
@@ -131,10 +128,12 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed top-0 right-0 bottom-0 w-64 bg-white dark:bg-[#0F2027] z-50 md:hidden shadow-xl"
+              className="fixed top-0 right-0 bottom-0 w-64 bg-white dark:bg-gray-900 z-50 md:hidden shadow-xl"
             >
               <div className="p-6">
-                <h2 className="text-xl font-bold mb-8 text-gradient-primary">رياح الجليد</h2>
+                <h2 className="text-xl font-bold mb-8 bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
+                  رياح الجليد
+                </h2>
                 <nav className="flex flex-col gap-4">
                   {navLinks.map((link) => (
                     <Link
