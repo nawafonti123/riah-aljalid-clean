@@ -1,3 +1,4 @@
+// frontend/components/sections/ContactSection.tsx
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -18,9 +19,9 @@ export default function ContactSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
+  // ✅ قيم افتراضية (Fallback)
   const DEFAULT_SETTINGS: SiteSettings = {
-    address:
-      '8246 طريق الملك عبدالعزيز الفرعي، الملك فهد، 3988، الرياض 12274، المملكة العربية السعودية',
+    address: '8246 طريق الملك عبدالعزيز الفرعي، الملك فهد، 3988، الرياض 12274، المملكة العربية السعودية',
     phone: '+966 56 524 7407',
     email: 'RiaHaljalid@icloud.com',
     commercialRegister: '1010632725',
@@ -39,6 +40,11 @@ export default function ContactSection() {
         setSettings((prev) => ({
           ...prev,
           ...data,
+          address: data?.address?.trim() ? data.address : prev.address,
+          phone: data?.phone?.trim() ? data.phone : prev.phone,
+          email: data?.email?.trim() ? data.email : prev.email,
+          commercialRegister: data?.commercialRegister?.trim() ? data.commercialRegister : prev.commercialRegister,
+          googleMapsEmbedUrl: data?.googleMapsEmbedUrl?.trim() ? data.googleMapsEmbedUrl : prev.googleMapsEmbedUrl,
         }));
       })
       .catch(() => {});
@@ -63,133 +69,141 @@ export default function ContactSection() {
     }
   };
 
-  const wa = (settings.phone || '').replace(/\s|\+/g, '');
+  // ✅ WhatsApp link (يفتح واتس مباشرة)
+  const waNumber = (settings.phone || '').replace(/[^\d]/g, ''); // يبقي الأرقام فقط
+  const waLink = waNumber ? `https://wa.me/${waNumber}` : '#';
+
+  // ✅ Email link (يفتح برنامج البريد مباشرة)
+  const emailLink = settings.email ? `mailto:${settings.email}` : '#';
 
   return (
     <section
       id="contact"
       ref={ref}
-      className="py-16 bg-gradient-to-b from-gray-50 to-white dark:from-[#2C5364] dark:to-[#0F2027] transition-colors duration-300"
+      className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#2C5364] dark:to-[#0F2027] transition-colors duration-300"
     >
       <div className="container mx-auto px-4">
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="text-center mb-10"
+          className="text-center mb-8 sm:mb-10"
         >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            اتصل بنا
-          </h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">اتصل بنا</h2>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-6 items-start">
-
-          {/* معلومات الاتصال */}
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-start">
+          {/* معلومات الاتصال + الموقع */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
           >
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">
               معلومات الاتصال
             </h3>
 
-            <div className="space-y-5">
+            <div className="space-y-4">
+              {/* الموقع */}
               <div className="flex items-start gap-3">
-                <FaMapMarkerAlt className="text-[#01AEBE] mt-1" />
-                <span className="text-gray-600 dark:text-gray-300">
+                <FaMapMarkerAlt className="w-4 h-4 sm:w-5 sm:h-5 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
+                <span className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300">
                   {settings.address}
                 </span>
               </div>
 
+              {/* رقم الهاتف -> واتساب */}
               <div className="flex items-start gap-3">
-                <FaPhone className="text-[#01AEBE] mt-1" />
+                <FaPhone className="w-4 h-4 sm:w-5 sm:h-5 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
                 <a
-                  href={`https://wa.me/${wa}`}
+                  href={waLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-gray-600 dark:text-gray-300 hover:text-[#01AEBE]"
+                  className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition"
                 >
                   <span dir="ltr">{settings.phone}</span>
                 </a>
               </div>
 
+              {/* ايميل -> يفتح البريد */}
               <div className="flex items-start gap-3">
-                <FaEnvelope className="text-[#01AEBE] mt-1" />
+                <FaEnvelope className="w-4 h-4 sm:w-5 sm:h-5 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
                 <a
-                  href={`mailto:${settings.email}`}
-                  className="text-gray-600 dark:text-gray-300 hover:text-[#01AEBE]"
+                  href={emailLink}
+                  className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition"
                 >
                   {settings.email}
                 </a>
               </div>
 
+              {/* السجل */}
               <div className="flex items-start gap-3">
-                <FaRegBuilding className="text-[#01AEBE] mt-1" />
-                <span className="text-gray-600 dark:text-gray-300">
-                  سجل: {settings.commercialRegister}
+                <FaRegBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
+                <span className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300">
+                  السجل: {settings.commercialRegister}
                 </span>
               </div>
             </div>
           </motion.div>
 
-          {/* خريطة + نموذج */}
+          {/* الخريطة + الفورم */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5 }}
-            className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700"
           >
-            <div className="rounded-xl overflow-hidden mb-6 border border-gray-200 dark:border-white/10">
-              <iframe
-                src={settings.googleMapsEmbedUrl || ''}
-                className="w-full h-64"
-                loading="lazy"
-                allowFullScreen
-              />
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">
+              موقعنا على الخريطة
+            </h3>
+
+            <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5">
+              <div className="relative w-full aspect-[16/9]">
+                <iframe
+                  src={settings.googleMapsEmbedUrl || ''}
+                  className="absolute inset-0 w-full h-full"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              </div>
             </div>
 
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3 mt-6">
               أرسل رسالة
             </h3>
 
-            <form onSubmit={onSubmit} className="space-y-4">
+            <form onSubmit={onSubmit} className="space-y-3 sm:space-y-4">
               <input
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 type="text"
                 placeholder="الاسم"
-                className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+                className="w-full p-3 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#01AEBE] dark:focus:ring-[#00c6ff] text-sm"
               />
-
               <input
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
                 type="email"
                 placeholder="البريد الإلكتروني"
-                className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
+                className="w-full p-3 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#01AEBE] dark:focus:ring-[#00c6ff] text-sm"
               />
-
               <textarea
                 value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
+                onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
                 placeholder="الرسالة"
-                className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 min-h-[120px]"
+                className="w-full p-3 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#01AEBE] dark:focus:ring-[#00c6ff] text-sm min-h-[120px]"
               />
-
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full py-3 rounded-lg bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] text-white font-bold hover:opacity-90 transition"
+                className="w-full py-3 rounded-lg bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] text-white font-bold hover:opacity-90 transition disabled:opacity-60"
               >
                 {sending ? 'جاري الإرسال...' : 'إرسال'}
               </button>
             </form>
           </motion.div>
-
         </div>
       </div>
     </section>
