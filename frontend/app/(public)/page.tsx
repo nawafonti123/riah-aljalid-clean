@@ -10,6 +10,7 @@ import Achievements from '@/components/sections/Achievements';
 import AboutSection from '@/components/sections/AboutSection';
 import Services from '@/components/sections/Services';
 import Portfolio from '@/components/sections/Portfolio';
+import CompanyGallery from '@/components/sections/CompanyGallery';
 import ContactSection from '@/components/sections/ContactSection';
 
 async function checkMaintenance() {
@@ -64,6 +65,12 @@ export default async function HomePage() {
       <section id="portfolio">
         <Suspense fallback={<div className="h-96 bg-white dark:bg-gray-900" />}>
           <Portfolio />
+        </Suspense>
+      </section>
+
+      <section id="gallery">
+        <Suspense fallback={<div className="h-96 bg-gray-50 dark:bg-gray-800" />}>
+          <CompanyGallery />
         </Suspense>
       </section>
 
