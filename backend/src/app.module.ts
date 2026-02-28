@@ -22,15 +22,15 @@ import { CompanyImagesModule } from './modules/company-images/company-images.mod
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'uploads'),
-      serveRoot: '/uploads',
-      serveStaticOptions: {
-        setHeaders: (res, path, stat) => {
-          res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
-          res.setHeader('Access-Control-Allow-Credentials', 'true');
-        },
+    rootPath: join(__dirname, '..', 'uploads'),
+    serveRoot: '/uploads',
+    serveStaticOptions: {
+      setHeaders: (res) => {
+        res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
       },
-    }),
+    },
+  }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],

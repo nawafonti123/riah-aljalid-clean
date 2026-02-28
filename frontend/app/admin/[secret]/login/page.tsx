@@ -19,9 +19,18 @@ export default function AdminLogin() {
       password,
       redirect: false,
     });
+
     if (res?.error) {
       setError('بيانات الدخول غير صحيحة');
     } else {
+      // ✅ حفظ التوكن كـ fallback (في حال جلسة NextAuth تأخرت/تعطلت)
+      try {
+        const sessionRes = await fetch('/api/auth/session');
+        const sessionData = await sessionRes.json().catch(() => null);
+        const token = sessionData?.accessToken;
+        if (token) localStorage.setItem('riah_access_token', token);
+      } catch {}
+
       router.push(`/admin/${secret}/dashboard`);
     }
   };
@@ -48,7 +57,10 @@ export default function AdminLogin() {
             className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white"
             required
           />
-          <button type="submit" className="w-full p-3 rounded-lg bg-[#00c6ff] text-white font-bold hover:bg-[#00a0cc] transition">
+          <button
+            type="submit"
+            className="w-full p-3 rounded-lg bg-[#00c6ff] text-white font-bold hover:bg-[#00a0cc] transition"
+          >
             دخول
           </button>
         </form>

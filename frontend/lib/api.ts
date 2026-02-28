@@ -20,19 +20,40 @@ export const publicApi = {
   getSettings: () => fetchPublic('/settings'),
 };
 
+// ✅ helper: always try to get a token.
+// - 1) from NextAuth session (preferred)
+// - 2) from localStorage fallback (handles some deployment/session edge cases)
+async function getAccessToken(): Promise<string | null> {
+  try {
+    const session = await getSession();
+    const token = (session as any)?.accessToken as string | undefined;
+    if (token) return token;
+  } catch {
+    // ignore
+  }
+
+  // fallback (client only)
+  if (typeof window !== 'undefined') {
+    const stored = window.localStorage.getItem('riah_access_token');
+    if (stored) return stored;
+  }
+  return null;
+}
+
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
   if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
 
-  const session = await getSession();
+  const accessToken = await getAccessToken();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {}),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     ...(options.headers ? (options.headers as Record<string, string>) : {}),
   };
 
   const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
   if (!res.ok) {
     const error = await res.json().catch(() => ({}));
+    if (res.status === 401) throw new Error('Unauthorized');
     throw new Error(error.message || 'Something went wrong');
   }
   return res.json();
@@ -86,19 +107,19 @@ export const uploadApi = {
   uploadImage: async (file: File) => {
     if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
 
-    const session = await getSession();
+    const accessToken = await getAccessToken();
     const formData = new FormData();
     formData.append('file', file);
 
-    // ✅ changed: /uploads/image -> /api/uploads/image
     const res = await fetch(`${API_URL}/api/uploads/image`, {
       method: 'POST',
-      headers: session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {},
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
       body: formData,
     });
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({}));
+      if (res.status === 401) throw new Error('Unauthorized');
       throw new Error(error.message || 'Upload failed');
     }
     const data = await res.json();
@@ -108,19 +129,19 @@ export const uploadApi = {
   uploadVideo: async (file: File) => {
     if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is missing');
 
-    const session = await getSession();
+    const accessToken = await getAccessToken();
     const formData = new FormData();
     formData.append('file', file);
 
-    // ✅ changed: /uploads/video -> /api/uploads/video
     const res = await fetch(`${API_URL}/api/uploads/video`, {
       method: 'POST',
-      headers: session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {},
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
       body: formData,
     });
 
     if (!res.ok) {
       const error = await res.json().catch(() => ({}));
+      if (res.status === 401) throw new Error('Unauthorized');
       throw new Error(error.message || 'Upload failed');
     }
     const data = await res.json();
