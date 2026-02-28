@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { publicApi } from '@/lib/api';
+import { FaImages, FaPlay } from 'react-icons/fa';
 
 type Project = {
   id: string;
@@ -45,8 +46,6 @@ export default function Portfolio() {
     [projects],
   );
 
-  const hasAny = !loading && projects.length > 0;
-
   return (
     <section
       id="portfolio"
@@ -55,16 +54,23 @@ export default function Portfolio() {
     >
       <div className="container mx-auto px-4">
 
-        <div className="text-center mb-10">
+        {/* عنوان */}
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
             أعمالنا
           </h2>
         </div>
 
-        {hasAny && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* ========================= قسم الصور ========================= */}
+        <div className="mb-20">
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <FaImages className="text-[#01AEBE] text-xl" />
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              قسم الصور
+            </h3>
+          </div>
 
-            {/* =================== الصور =================== */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {imageProjects.map((p, idx) => {
               const cover = p.images![0];
 
@@ -74,9 +80,9 @@ export default function Portfolio() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.4, delay: idx * 0.05 }}
-                  className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+                  className="relative rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 shadow-lg transition-all duration-500 hover:scale-110 hover:-translate-y-4 hover:shadow-2xl hover:z-30"
                 >
-                  <div className="relative h-52">
+                  <div className="relative h-52 rounded-t-2xl overflow-hidden">
                     <Image
                       src={cover}
                       alt={p.title}
@@ -86,13 +92,13 @@ export default function Portfolio() {
                     />
                   </div>
 
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  <div className="p-6">
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
                       {p.title}
-                    </h3>
+                    </h4>
 
                     {p.description && (
-                      <div className="mt-3 max-h-40 overflow-y-auto pr-1">
+                      <div className="max-h-40 overflow-y-auto pr-1">
                         <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                           {p.description}
                         </p>
@@ -102,8 +108,19 @@ export default function Portfolio() {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
 
-            {/* =================== الفيديوهات =================== */}
+        {/* ========================= قسم الفيديوهات ========================= */}
+        <div>
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <FaPlay className="text-[#01AEBE] text-xl" />
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              قسم الفيديوهات
+            </h3>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {videoProjects.map((p, idx) => {
               const videoUrl = p.videos![0];
 
@@ -113,9 +130,9 @@ export default function Portfolio() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.4, delay: idx * 0.05 }}
-                  className="rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+                  className="relative rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 shadow-lg transition-all duration-500 hover:scale-110 hover:-translate-y-4 hover:shadow-2xl hover:z-30"
                 >
-                  <div className="relative h-52 bg-black">
+                  <div className="relative h-52 bg-black rounded-t-2xl overflow-hidden">
                     <video
                       src={videoUrl}
                       className="w-full h-full object-cover"
@@ -125,13 +142,13 @@ export default function Portfolio() {
                     />
                   </div>
 
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  <div className="p-6">
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
                       {p.title}
-                    </h3>
+                    </h4>
 
                     {p.description && (
-                      <div className="mt-3 max-h-40 overflow-y-auto pr-1">
+                      <div className="max-h-40 overflow-y-auto pr-1">
                         <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                           {p.description}
                         </p>
@@ -141,9 +158,9 @@ export default function Portfolio() {
                 </motion.div>
               );
             })}
-
           </div>
-        )}
+        </div>
+
       </div>
     </section>
   );
