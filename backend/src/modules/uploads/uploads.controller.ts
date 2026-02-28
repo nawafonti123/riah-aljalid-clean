@@ -6,7 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 
-@Controller('uploads')
+@Controller('api/uploads')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UploadsController {
   constructor(private uploadsService: UploadsService) {}

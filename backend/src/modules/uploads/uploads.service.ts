@@ -6,7 +6,7 @@ import { existsSync } from 'fs';
 
 @Injectable()
 export class UploadsService {
-  private readonly uploadDir = join(process.cwd(), 'uploads');
+  private readonly uploadDir = process.env.UPLOAD_DIR || '/uploads';
   // استخدم BACKEND_URL من متغيرات البيئة، مع قيمة افتراضية للتطوير المحلي
   private readonly baseUrl = process.env.BACKEND_URL || 'http://localhost:4000';
 
