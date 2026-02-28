@@ -1,7 +1,7 @@
 // frontend/components/sections/Portfolio.tsx
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Image from 'next/image';
 import { publicApi } from '@/lib/api';
@@ -14,6 +14,7 @@ type Project = {
   images?: string[];
   videos?: string[];
   category?: string;
+  updatedAt?: string;
 };
 
 type LightboxState =
@@ -28,28 +29,76 @@ function requestFullscreen(el: HTMLElement | null) {
   else if (anyEl.msRequestFullscreen) anyEl.msRequestFullscreen();
 }
 
+function normalizeUrl(u?: string | null) {
+  if (!u) return '';
+  // إذا جاءك رابط نسبي مثل /uploads/xxx.jpg نخليه مطلق على الباك اند
+  if (u.startsWith('/uploads/')) {
+    const base =
+      process.env.NEXT_PUBLIC_API_URL ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      process.env.NEXT_PUBLIC_BACKEND ||
+      '';
+    return base ? `${base}${u}` : u;
+  }
+  return u;
+}
+
+function withBust(url: string, bust: string) {
+  if (!url) return '';
+  return url.includes('?') ? `${url}&v=${bust}` : `${url}?v=${bust}`;
+}
+
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [lightbox, setLightbox] = useState<LightboxState>({ open: false });
+
+  // bust عام لإعادة تحميل الميديا عند الحاجة
+  const [bust, setBust] = useState(() => String(Date.now()));
+  // retry per media
+  const [retryMap, setRetryMap] = useState<Record<string, number>>({});
 
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.15 });
 
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const data = await publicApi.getProjects();
-        setProjects(Array.isArray(data) ? data : []);
-      } catch {
-        setProjects([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    run();
+  const fetchProjects = useCallback(async () => {
+    try {
+      setLoading(true);
+      // مهم: اجبر الجلب من الشبكة وليس من كاش المتصفح
+      // إذا publicApi.getProjects يستخدم fetch داخلي، غالبًا يتجاهل cache.
+      // لذلك نعيد الجلب + نغير bust حتى الصور/الفيديوهات تعيد التحميل
+      const data = await publicApi.getProjects();
+      setProjects(Array.isArray(data) ? data : []);
+      setBust(String(Date.now()));
+    } catch {
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  // ✅ لما ترجع للصفحة (على الجوال كثير يصير) أو يصير focus أو اتصال يرجع
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') fetchProjects();
+    };
+    const onFocus = () => fetchProjects();
+    const onOnline = () => fetchProjects();
+
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('online', onOnline);
+
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('online', onOnline);
+    };
+  }, [fetchProjects]);
 
   // ESC يغلق المودال
   useEffect(() => {
@@ -71,6 +120,15 @@ export default function Portfolio() {
   );
 
   const hasAny = useMemo(() => !loading && projects.length > 0, [loading, projects.length]);
+
+  const bumpRetry = (key: string) => {
+    setRetryMap((prev) => {
+      const next = (prev[key] || 0) + 1;
+      return { ...prev, [key]: next };
+    });
+    // يغير bust قليلًا لإجبار إعادة تحميل الرابط
+    setBust(String(Date.now()));
+  };
 
   return (
     <section
@@ -115,11 +173,9 @@ export default function Portfolio() {
           </div>
         )}
 
-        {/* =========================
-            ✅ قسم الصور
-           ========================= */}
         {!loading && hasAny && (
           <div className="mt-4">
+            {/* ========================= ✅ قسم الصور ========================= */}
             <div className="flex items-center justify-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
                 <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
@@ -137,7 +193,8 @@ export default function Portfolio() {
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {imageProjects.map((p, idx) => {
-                  const cover = p.images![0];
+                  const raw = p.images?.[0] || '';
+                  const cover = withBust(normalizeUrl(raw), `${bust}-${retryMap[`img-${p.id}`] || 0}`);
 
                   return (
                     <motion.div
@@ -147,20 +204,21 @@ export default function Portfolio() {
                       transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
                       className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg"
                     >
-                      <div className="relative h-44 sm:h-48 overflow-hidden">
+                      <div className="relative h-44 sm:h-48 overflow-hidden bg-gray-100 dark:bg-white/5">
                         <Image
                           src={cover}
                           alt={p.title}
                           fill
+                          unoptimized // ✅ مهم: يمنع مشاكل Optimizer مع Render
                           sizes="(max-width: 1024px) 100vw, 33vw"
                           className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                          onError={() => bumpRetry(`img-${p.id}`)}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-black/0 pointer-events-none" />
 
-                        {/* ✅ زر تكبير الصورة */}
                         <button
                           type="button"
-                          onClick={() => setLightbox({ open: true, type: 'image', src: cover, title: p.title })}
+                          onClick={() => setLightbox({ open: true, type: 'image', src: normalizeUrl(raw), title: p.title })}
                           className="absolute top-3 right-3 z-10 w-10 h-10 rounded-xl bg-black/45 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
                           aria-label="تكبير الصورة"
                           title="تكبير"
@@ -188,14 +246,11 @@ export default function Portfolio() {
               </div>
             )}
 
-            {/* فاصل */}
             <div className="mt-10 mb-10 flex justify-center">
               <div className="h-[2px] w-56 rounded-full bg-gradient-to-r from-transparent via-[#01AEBE]/60 to-transparent dark:via-[#00c6ff]/60" />
             </div>
 
-            {/* =========================
-                ✅ قسم الفيديوهات
-               ========================= */}
+            {/* ========================= ✅ قسم الفيديوهات ========================= */}
             <div className="flex items-center justify-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
                 <FaPlay className="text-[#01AEBE] dark:text-[#00c6ff]" />
@@ -213,7 +268,8 @@ export default function Portfolio() {
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {videoProjects.map((p, idx) => {
-                  const videoUrl = p.videos![0];
+                  const raw = p.videos?.[0] || '';
+                  const videoUrl = withBust(normalizeUrl(raw), `${bust}-${retryMap[`vid-${p.id}`] || 0}`);
 
                   return (
                     <motion.div
@@ -225,18 +281,19 @@ export default function Portfolio() {
                     >
                       <div className="relative h-44 sm:h-48 bg-black/10 dark:bg-black/20 overflow-hidden">
                         <video
+                          key={videoUrl} // ✅ يجبر الري-لود لو تغير الباراميتر
                           src={videoUrl}
                           className="absolute inset-0 w-full h-full object-cover"
                           controls
-                          preload="metadata"
+                          preload="none" // ✅ أخف على الجوال وأقل مشاكل
                           playsInline
+                          onError={() => bumpRetry(`vid-${p.id}`)}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0 pointer-events-none" />
 
-                        {/* ✅ زر تكبير الفيديو (مودال كبير) */}
                         <button
                           type="button"
-                          onClick={() => setLightbox({ open: true, type: 'video', src: videoUrl, title: p.title })}
+                          onClick={() => setLightbox({ open: true, type: 'video', src: normalizeUrl(raw), title: p.title })}
                           className="absolute top-3 right-3 z-10 w-10 h-10 rounded-xl bg-black/45 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
                           aria-label="تكبير الفيديو"
                           title="تكبير"
@@ -244,7 +301,6 @@ export default function Portfolio() {
                           <FaExpand className="text-sm" />
                         </button>
 
-                        {/* ✅ زر Fullscreen للفيديو داخل الكرت (اختياري) */}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -282,7 +338,7 @@ export default function Portfolio() {
         )}
       </div>
 
-      {/* ✅ Lightbox (تكبير صورة/فيديو) */}
+      {/* ✅ Lightbox */}
       {lightbox.open && (
         <div
           className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
@@ -308,11 +364,7 @@ export default function Portfolio() {
 
             <div className="relative w-full bg-black">
               {lightbox.type === 'image' ? (
-                <img
-                  src={lightbox.src}
-                  alt={lightbox.title || 'image'}
-                  className="w-full max-h-[75vh] object-contain"
-                />
+                <img src={lightbox.src} alt={lightbox.title || 'image'} className="w-full max-h-[75vh] object-contain" />
               ) : (
                 <video
                   src={lightbox.src}
