@@ -20,15 +20,22 @@ export function Providers({ children }: { children: React.ReactNode }) {
       requestAnimationFrame(raf);
     }
     requestAnimationFrame(raf);
+
+    return () => {
+      // تنظيف بسيط
+      // @ts-ignore
+      lenis?.destroy?.();
+    };
   }, []);
 
   return (
     <SessionProvider>
-      <ThemeProvider 
-        attribute="class" 
-        defaultTheme="dark"
-        enableSystem={false}
-        themes={['dark', 'light']}
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"     // ✅ الافتراضي فاتح
+        enableSystem={false}     // ✅ لا يتبع نظام الجهاز
+        themes={['light', 'dark']}
+        storageKey="riah-theme"  // ✅ يحفظ اختيار المستخدم
       >
         <Toaster position="top-center" reverseOrder={false} />
         {children}
