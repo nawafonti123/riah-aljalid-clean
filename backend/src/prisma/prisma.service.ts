@@ -1,4 +1,3 @@
-// backend/src/prisma/prisma.service.ts
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
@@ -14,14 +13,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       throw new Error('DATABASE_URL is missing');
     }
 
-    // ✅ reuse pool (أفضل للأداء على السيرفر)
     if (!PrismaService.pool) {
       PrismaService.pool = new Pool({ connectionString });
     }
 
-    const adapter = new PrismaPg(PrismaService.pool);
-
-    super({ adapter });
+    super({
+      adapter: new PrismaPg(PrismaService.pool),
+    });
   }
 
   async onModuleInit() {
@@ -30,6 +28,5 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async onModuleDestroy() {
     await this.$disconnect();
-    // لا نسكر الـ pool هنا عشان ما يسبب مشاكل في hot reload/instances
   }
 }
