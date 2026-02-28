@@ -1,4 +1,3 @@
-// frontend/components/sections/Portfolio.tsx
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -56,6 +55,7 @@ export default function Portfolio() {
       className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-[#0F2027] transition-colors duration-300"
     >
       <div className="container mx-auto px-4">
+
         {/* العنوان */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -63,161 +63,121 @@ export default function Portfolio() {
           transition={{ duration: 0.45 }}
           className="text-center mb-8"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">أعمالنا</h2>
-          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">نماذج من مشاريعنا</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            أعمالنا
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            نماذج من مشاريعنا
+          </p>
         </motion.div>
 
-        {/* تحميل */}
-        {loading && (
-          <div className="max-w-xl mx-auto">
-            <div className="bg-white/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 text-center">
-              <div className="inline-flex items-center gap-2 text-gray-700 dark:text-gray-200">
-                <FaImages className="opacity-70" />
-                <span className="text-sm">جاري تحميل الأعمال...</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* لا يوجد أي أعمال */}
-        {!loading && !hasAny && (
-          <div className="max-w-xl mx-auto">
-            <div className="bg-white/70 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6 sm:p-8 text-center">
-              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center mb-3">
-                <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
-              </div>
-              <p className="text-gray-700 dark:text-gray-200 font-semibold">لا توجد أعمال حالياً</p>
-              <p className="text-gray-500 dark:text-gray-300 text-sm mt-2">سيتم إضافة صور وفيديوهات قريبًا.</p>
-            </div>
-          </div>
-        )}
-
-        {/* =========================
-            ✅ قسم الصور
-           ========================= */}
         {!loading && hasAny && (
           <div className="mt-4">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
-                <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
-              </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">قسم الصور</h3>
-              <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200">
-                {imageProjects.length}
-              </span>
+
+            {/* ========================= الصور ========================= */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {imageProjects.map((p, idx) => {
+                const cover = p.images![0];
+
+                return (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
+                    className="group relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+                  >
+                    {/* صورة */}
+                    <div className="relative h-48">
+                      <Image
+                        src={cover}
+                        alt={p.title}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    </div>
+
+                    {/* محتوى مختصر */}
+                    <div className="p-4">
+                      <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                        {p.title}
+                      </h4>
+                      {p.description && (
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                          {p.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Overlay عند Hover */}
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-500 p-6 flex flex-col justify-center">
+                      <h3 className="text-xl font-bold text-white mb-4 text-center">
+                        {p.title}
+                      </h3>
+
+                      <div className="max-h-40 overflow-y-auto pr-2">
+                        <p className="text-gray-300 text-sm leading-relaxed">
+                          {p.description}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
-            {imageProjects.length === 0 ? (
-              <div className="max-w-xl mx-auto text-center text-gray-600 dark:text-gray-300 bg-white/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-                لا توجد صور حالياً
-              </div>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {imageProjects.map((p, idx) => {
-                  const cover = p.images![0];
+            {/* ========================= الفيديوهات ========================= */}
+            <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {videoProjects.map((p, idx) => {
+                const videoUrl = p.videos![0];
 
-                  return (
-                    <motion.div
-                      key={p.id}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
-                      className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg"
-                    >
-                      <div className="relative h-44 sm:h-48">
-                        <Image
-                          src={cover}
-                          alt={p.title}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 33vw"
-                          className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-black/0 pointer-events-none" />
+                return (
+                  <motion.div
+                    key={p.id}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
+                    className="group relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+                  >
+                    <div className="relative h-48">
+                      <video
+                        src={videoUrl}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        controls
+                        preload="metadata"
+                        playsInline
+                      />
+                    </div>
+
+                    <div className="p-4">
+                      <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                        {p.title}
+                      </h4>
+                      {p.description && (
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                          {p.description}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-black/85 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-500 p-6 flex flex-col justify-center">
+                      <h3 className="text-xl font-bold text-white mb-4 text-center">
+                        {p.title}
+                      </h3>
+
+                      <div className="max-h-40 overflow-y-auto pr-2">
+                        <p className="text-gray-300 text-sm leading-relaxed">
+                          {p.description}
+                        </p>
                       </div>
-
-                      <div className="p-4 sm:p-5">
-                        <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{p.title}</h4>
-                        {p.description && (
-                          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{p.description}</p>
-                        )}
-                        {p.category && (
-                          <div className="mt-3">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-[#01AEBE]/10 text-[#017f8b] dark:bg-[#00c6ff]/10 dark:text-[#7fe8ff]">
-                              {p.category}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* فاصل لطيف */}
-            <div className="mt-10 mb-10 flex justify-center">
-              <div className="h-[2px] w-56 rounded-full bg-gradient-to-r from-transparent via-[#01AEBE]/60 to-transparent dark:via-[#00c6ff]/60" />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
-            {/* =========================
-                ✅ قسم الفيديوهات
-               ========================= */}
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
-                <FaPlay className="text-[#01AEBE] dark:text-[#00c6ff]" />
-              </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">قسم الفيديوهات</h3>
-              <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200">
-                {videoProjects.length}
-              </span>
-            </div>
-
-            {videoProjects.length === 0 ? (
-              <div className="max-w-xl mx-auto text-center text-gray-600 dark:text-gray-300 bg-white/60 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-6">
-                لا توجد فيديوهات حالياً
-              </div>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {videoProjects.map((p, idx) => {
-                  const videoUrl = p.videos![0];
-
-                  return (
-                    <motion.div
-                      key={p.id}
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
-                      className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg"
-                    >
-                      <div className="relative h-44 sm:h-48 bg-black/10 dark:bg-black/20">
-                        <video
-                          src={videoUrl}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          controls
-                          preload="metadata"
-                          playsInline
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-black/0 to-black/0 pointer-events-none" />
-                      </div>
-
-                      <div className="p-4 sm:p-5">
-                        <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{p.title}</h4>
-                        {p.description && (
-                          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{p.description}</p>
-                        )}
-                        {p.category && (
-                          <div className="mt-3">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-[#01AEBE]/10 text-[#017f8b] dark:bg-[#00c6ff]/10 dark:text-[#7fe8ff]">
-                              {p.category}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         )}
       </div>
