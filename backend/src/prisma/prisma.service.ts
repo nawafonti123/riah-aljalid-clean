@@ -9,17 +9,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   constructor() {
     const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-      throw new Error('DATABASE_URL is missing');
-    }
+    if (!connectionString) throw new Error('DATABASE_URL is missing');
 
     if (!PrismaService.pool) {
       PrismaService.pool = new Pool({ connectionString });
     }
 
-    super({
-      adapter: new PrismaPg(PrismaService.pool),
-    });
+    // ✅ TypeScript fix: PrismaClientOptions type may not include `adapter` in your generated types
+    super({ adapter: new PrismaPg(PrismaService.pool) } as any);
   }
 
   async onModuleInit() {
