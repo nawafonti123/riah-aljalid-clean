@@ -15,7 +15,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       PrismaService.pool = new Pool({ connectionString });
     }
 
-    // Prisma 7: ممنوع datasources — نستخدم adapter
     super({ adapter: new PrismaPg(PrismaService.pool) } as any);
   }
 
