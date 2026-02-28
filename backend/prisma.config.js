@@ -1,7 +1,5 @@
-// prisma.config.ts
-import { defineConfig } from "prisma/config";
-
-export default defineConfig({
+// backend/prisma.config.js
+module.exports = {
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
@@ -9,4 +7,4 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL,
   },
-});
+};
