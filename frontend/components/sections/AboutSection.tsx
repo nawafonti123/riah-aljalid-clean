@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import { publicApi } from '@/lib/api';
 import Image from 'next/image';
 import Tilt from 'react-parallax-tilt';
+import { FaExpand, FaTimes } from 'react-icons/fa';
 
 interface TeamMember {
   id: string;
@@ -19,13 +20,27 @@ interface SiteSettings {
   aboutImage?: string | null;
 }
 
+type TeamLightbox =
+  | { open: false }
+  | { open: true; src: string; name?: string; role?: string };
+
 export default function AboutSection() {
   const [team, setTeam] = useState<TeamMember[]>([]);
   const [aboutImage, setAboutImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [lb, setLb] = useState<TeamLightbox>({ open: false });
+
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLb({ open: false });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   useEffect(() => {
     const run = async () => {
@@ -52,7 +67,7 @@ export default function AboutSection() {
     <section
       id="about"
       ref={ref}
-      className="py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-900 transition-colors duration-300"
+      className="py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-900 transition-colors duration-300 overflow-x-clip"
     >
       <div className="container mx-auto px-4">
         {/* العنوان */}
@@ -72,7 +87,6 @@ export default function AboutSection() {
 
         {/* نبذة عنا + صورة (3D) */}
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6 items-stretch mb-10">
-          {/* نبذة (3D Card) */}
           <Tilt
             tiltMaxAngleX={8}
             tiltMaxAngleY={8}
@@ -84,9 +98,7 @@ export default function AboutSection() {
             className="rounded-2xl"
           >
             <div className="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-white/10 shadow-xl transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,200,255,0.18)]">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-3">
-                نبذة عنا
-              </h3>
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-3">نبذة عنا</h3>
               <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
 {`نحن مؤسسة سعودية متخصصة في تركيب وصيانة أنظمة التكييف والتهوية والتبريد باستخدام التقنيات الحديثة والمبتكرة. نحرص على تحقيق أفضل النتائج بأفضل الأسعار وفي إطار الالتزام بالمعايير الصحية والبيئية، وذلك لتوفير بيئة مريحة وصحية لعملائنا، سواء في المنازل أو الشركات والمصانع.
 يتميز فريق عملنا بالكفاءة والاحترافية، ما يجعلنا من الرواد في هذا المجال. ونحن نهدف دائمًا إلى تحسين خدماتنا وتلبية احتياجات عملائنا بأفضل الطرق الممكنة، وذلك لضمان رضاهم التام عن خدماتنا.`}
@@ -94,7 +106,6 @@ export default function AboutSection() {
             </div>
           </Tilt>
 
-          {/* صورة (3D) */}
           <Tilt
             tiltMaxAngleX={8}
             tiltMaxAngleY={8}
@@ -119,7 +130,7 @@ export default function AboutSection() {
           </Tilt>
         </div>
 
-        {/* الرؤية والرسالة (3D) */}
+        {/* الرؤية والرسالة */}
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6 mb-10">
           <Tilt
             tiltMaxAngleX={8}
@@ -137,9 +148,7 @@ export default function AboutSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-500 hover:shadow-[0_0_35px_rgba(0,200,255,0.18)]"
             >
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3">
-                الرؤية
-              </h3>
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3">الرؤية</h3>
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
 {`تتمثل رؤيتنا في توفير حلول تكييف متطورة وخدمات متميزة لعملائنا، وتحسين جودة الهواء والبيئة في المناطق التي نخدمها، والاستمرار في الابتكار والتطوير لتحقيق النجاح والنمو المستدام.
 ونحن نؤمن بأن فريقنا هو الأساس لنجاحنا وتحقيق رؤيتنا، لذلك نعمل على توفير بيئة عمل إيجابية وملهمة ونشجع التعاون والابتكار والتحسين المستمر.`}
@@ -163,9 +172,7 @@ export default function AboutSection() {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-500 hover:shadow-[0_0_35px_rgba(0,255,200,0.16)]"
             >
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3">
-                الرسالة
-              </h3>
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3">الرسالة</h3>
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
 {`تؤمن شركتنا بأهمية الابتكار والتطوير لتحسين أدائنا وتلبية متطلبات السوق الذي يشهد نمواً كبيراً بالتزامن مع رؤية 2030.
 ولذلك نسعى دائماً إلى الاستمرار في تعزيز الجودة والكفاءة والاستدامة في جميع جوانب أعمالنا.
@@ -175,7 +182,7 @@ export default function AboutSection() {
           </Tilt>
         </div>
 
-        {/* القيم (3D) */}
+        {/* القيم */}
         <Tilt
           tiltMaxAngleX={6}
           tiltMaxAngleY={6}
@@ -204,12 +211,10 @@ export default function AboutSection() {
           </motion.div>
         </Tilt>
 
-        {/* فريق العمل (3D Cards) */}
+        {/* فريق العمل */}
         {!loading && team.length > 0 && (
           <div className="mt-12">
-            <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-6">
-              فريق العمل
-            </h3>
+            <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-6">فريق العمل</h3>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {team
@@ -241,7 +246,26 @@ export default function AboutSection() {
                             sizes="(max-width: 640px) 50vw, 25vw"
                             className="object-cover"
                           />
+
+                          {/* ✅ زر تكبير صورة العضو */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setLb({
+                                open: true,
+                                src: member.image || '/logo.png',
+                                name: member.name,
+                                role: member.role,
+                              })
+                            }
+                            className="absolute top-2 right-2 w-9 h-9 rounded-xl bg-black/45 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
+                            aria-label="تكبير صورة العضو"
+                            title="تكبير"
+                          >
+                            <FaExpand className="text-[12px]" />
+                          </button>
                         </div>
+
                         <div className="p-3">
                           <p className="font-semibold text-sm text-gray-900 dark:text-white">{member.name}</p>
                           <p className="text-xs text-gray-600 dark:text-gray-300">{member.role}</p>
@@ -254,6 +278,38 @@ export default function AboutSection() {
           </div>
         )}
       </div>
+
+      {/* ✅ Lightbox لفريق العمل */}
+      {lb.open && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          onMouseDown={() => setLb({ open: false })}
+        >
+          <div
+            className="relative w-full max-w-3xl bg-white/90 dark:bg-gray-900/90 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/60 dark:border-white/10">
+              <div className="truncate">
+                <div className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">{lb.name || 'عضو'}</div>
+                {lb.role && <div className="text-xs text-gray-600 dark:text-gray-300">{lb.role}</div>}
+              </div>
+              <button
+                type="button"
+                onClick={() => setLb({ open: false })}
+                className="w-10 h-10 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition"
+                aria-label="إغلاق"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            <div className="bg-black">
+              <img src={lb.src} alt={lb.name || 'team'} className="w-full max-h-[75vh] object-contain" />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
