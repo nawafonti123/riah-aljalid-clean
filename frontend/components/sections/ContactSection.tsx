@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaRegBuilding } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaRegBuilding, FaWhatsapp, FaTimes } from 'react-icons/fa';
 import { publicApi, contactApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
 
@@ -32,6 +32,9 @@ export default function ContactSection() {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sending, setSending] = useState(false);
 
+  // ✅ نافذة اختيار الاتصال
+  const [callOpen, setCallOpen] = useState(false);
+
   useEffect(() => {
     publicApi
       .getSettings()
@@ -47,6 +50,15 @@ export default function ContactSection() {
         }));
       })
       .catch(() => {});
+  }, []);
+
+  // ESC يغلق النافذة
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCallOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -68,15 +80,42 @@ export default function ContactSection() {
     }
   };
 
-  const waNumber = (settings.phone || '').replace(/[^\d]/g, '');
-  const waLink = waNumber ? `https://wa.me/${waNumber}` : '#';
+  const rawPhone = (settings.phone || '').trim();
+  const digitsPhone = rawPhone.replace(/[^\d]/g, '');
+
+  // ✅ واتساب
+  const waLink = digitsPhone ? `https://wa.me/${digitsPhone}` : '#';
+
+  // ✅ اتصال عادي (يفتح تطبيق الهاتف)
+  // ملاحظة: بعض الأجهزة تحتاج رقم بصيغة +966... لذلك نستخدم digits + "+"
+  const telLink = digitsPhone ? `tel:+${digitsPhone}` : '#';
+
   const emailLink = settings.email ? `mailto:${settings.email}` : '#';
+
+  const openCallPicker = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!digitsPhone) {
+      toast.error('رقم الهاتف غير متوفر');
+      return;
+    }
+    setCallOpen(true);
+  };
+
+  const goWhatsApp = () => {
+    setCallOpen(false);
+    window.open(waLink, '_blank', 'noopener,noreferrer');
+  };
+
+  const goTel = () => {
+    setCallOpen(false);
+    window.location.href = telLink;
+  };
 
   return (
     <section
       id="contact"
       ref={ref}
-      className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#2C5364] dark:to-[#0F2027] transition-colors duration-300"
+      className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-[#2C5364] dark:to-[#0F2027] transition-colors duration-300 overflow-x-clip"
     >
       <div className="container mx-auto px-4">
         <motion.div
@@ -118,16 +157,19 @@ export default function ContactSection() {
                     </span>
                   </div>
 
+                  {/* ✅ رقم الهاتف - يفتح نافذة اختيار */}
                   <div className="flex items-start gap-3">
                     <FaPhone className="w-4 h-4 sm:w-5 sm:h-5 text-[#01AEBE] dark:text-[#00c6ff] mt-0.5 flex-shrink-0" />
-                    <a
-                      href={waLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition"
+                    <button
+                      type="button"
+                      onClick={openCallPicker}
+                      className="text-left text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition"
                     >
                       <span dir="ltr">{settings.phone}</span>
-                    </a>
+                      <span className="block text-[11px] sm:text-xs text-gray-400 dark:text-gray-400 mt-0.5">
+                        اضغط لاختيار واتساب أو اتصال
+                      </span>
+                    </button>
                   </div>
 
                   <div className="flex items-start gap-3">
@@ -222,6 +264,71 @@ export default function ContactSection() {
           </motion.div>
         </div>
       </div>
+
+      {/* ✅ نافذة اختيار طريقة الاتصال */}
+      {callOpen && (
+        <div
+          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onMouseDown={() => setCallOpen(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200/60 dark:border-white/10 shadow-2xl overflow-hidden"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/60 dark:border-white/10">
+              <div className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">اختر طريقة الاتصال</div>
+              <button
+                type="button"
+                onClick={() => setCallOpen(false)}
+                className="w-10 h-10 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition"
+                aria-label="إغلاق"
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                الرقم: <span dir="ltr" className="font-semibold">{rawPhone || `+${digitsPhone}`}</span>
+              </div>
+
+              <button
+                type="button"
+                onClick={goWhatsApp}
+                className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 text-gray-900 dark:text-white border border-[#25D366]/20 transition"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center">
+                    <FaWhatsapp />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-bold text-sm">واتساب</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-300">فتح محادثة مباشرة</div>
+                  </div>
+                </div>
+                <span className="text-xs opacity-70">فتح</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={goTel}
+                className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#01AEBE]/10 hover:bg-[#01AEBE]/20 text-gray-900 dark:text-white border border-[#01AEBE]/20 transition"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#01AEBE] text-white flex items-center justify-center">
+                    <FaPhone />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-bold text-sm">اتصال عادي</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-300">فتح تطبيق الهاتف</div>
+                  </div>
+                </div>
+                <span className="text-xs opacity-70">اتصال</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
