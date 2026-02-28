@@ -90,7 +90,8 @@ export const uploadApi = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await fetch(`${API_URL}/uploads/image`, {
+    // ✅ changed: /uploads/image -> /api/uploads/image
+    const res = await fetch(`${API_URL}/api/uploads/image`, {
       method: 'POST',
       headers: session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {},
       body: formData,
@@ -111,7 +112,8 @@ export const uploadApi = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await fetch(`${API_URL}/uploads/video`, {
+    // ✅ changed: /uploads/video -> /api/uploads/video
+    const res = await fetch(`${API_URL}/api/uploads/video`, {
       method: 'POST',
       headers: session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {},
       body: formData,
