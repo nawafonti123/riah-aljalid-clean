@@ -1,6 +1,7 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { jwtDecode } from 'jwt-decode';
+import NextAuth, { type NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import type { JWT } from "next-auth/jwt";
+import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
   sub: string;
@@ -10,114 +11,95 @@ interface DecodedToken {
   exp: number;
 }
 
-const handler = NextAuth({
+type LoginResponse = {
+  access_token: string;
+  refresh_token?: string;
+};
+
+type Credentials = {
+  email: string;
+  password: string;
+};
+
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: "credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
 
       async authorize(credentials) {
-        try {
-          const baseUrl =
-            process.env.NEXT_PUBLIC_API_URL ||
-            process.env.BACKEND_URL;
+        const c = credentials as Credentials | undefined;
+        if (!c?.email || !c?.password) return null;
 
-          if (!baseUrl) {
-            console.error('Missing NEXT_PUBLIC_API_URL/BACKEND_URL');
-            return null;
-          }
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL;
+        if (!baseUrl) return null;
 
-          const url = `${baseUrl}/auth/login`;
+        const res = await fetch(`${baseUrl}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ email: c.email, password: c.password }),
+        });
 
-          const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json',
-            },
-            body: JSON.stringify({
-              email: credentials?.email,
-              password: credentials?.password,
-            }),
-          });
+        if (!res.ok) return null;
 
-          const responseText = await res.text();
+        const data = (await res.json()) as LoginResponse;
+        if (!data?.access_token) return null;
 
-          if (!res.ok) {
-            console.error('Login failed:', res.status, responseText);
-            return null;
-          }
+        const decoded = jwtDecode<DecodedToken>(data.access_token);
 
-          let data: any;
-          try {
-            data = JSON.parse(responseText);
-          } catch {
-            console.error('Invalid JSON from backend:', responseText);
-            return null;
-          }
-
-          if (!data?.access_token) {
-            console.error('Backend did not return access_token:', data);
-            return null;
-          }
-
-          const decoded = jwtDecode<DecodedToken>(data.access_token);
-
-          return {
-            id: decoded.sub,
-            email: decoded.email,
-            role: decoded.role,
-            accessToken: data.access_token,
-            refreshToken: data.refresh_token,
-          } as any;
-        } catch (error) {
-          console.error('Authorize error:', error);
-          return null;
-        }
+        return {
+          id: decoded.sub,
+          email: decoded.email,
+          role: decoded.role,
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+        };
       },
     }),
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: any }) {
       if (user) {
-        const u = user as any;
-        token.accessToken = u.accessToken;
-        token.refreshToken = u.refreshToken;
-        token.role = u.role;
-        token.id = u.id;
-        token.email = u.email;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.role = user.role;
+        token.id = user.id;
+        token.email = user.email;
       }
       return token;
     },
 
-    async session({ session, token }) {
-      // ✅ نخلي accessToken واضح للفرونت
-      (session as any).accessToken = token.accessToken as string;
+    async session({ session, token }: { session: any; token: JWT }) {
+      session.accessToken = token.accessToken as string | undefined;
 
       if (session.user) {
-        (session.user as any).id = token.id as string;
-        (session.user as any).role = token.role as string;
-        session.user.email = (token.email as string) || session.user.email || '';
+        session.user.id = token.id as string | undefined;
+        session.user.role = token.role as string | undefined;
+        session.user.email = (token.email as string | undefined) ?? session.user.email ?? null;
       }
 
       return session;
     },
   },
 
-  // ✅ مهم جداً: مسار تسجيل الدخول الحقيقي عندك /admin/[secret]/login
   pages: {
-    signIn: `/admin/${process.env.ADMIN_SECRET || 'login'}/login`,
+    signIn: `/admin/${process.env.ADMIN_SECRET || "login"}/login`,
   },
 
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };
