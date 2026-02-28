@@ -82,7 +82,7 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="mt-4 text-lg sm:text-xl md:text-2xl lg:text-3xl max-w-2xl text-white/90"
         >
-          حلول تبريد متكاملة لهندسة المستقبل
+          لأعمال التكييف والتبريد
         </motion.p>
 
         <motion.button
