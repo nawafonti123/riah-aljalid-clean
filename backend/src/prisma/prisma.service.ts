@@ -1,21 +1,14 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+// backend/src/prisma/prisma.service.ts
+
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private static pool: Pool;
-
   constructor() {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) throw new Error('DATABASE_URL is missing');
-
-    if (!PrismaService.pool) {
-      PrismaService.pool = new Pool({ connectionString });
-    }
-
-    super({ adapter: new PrismaPg(PrismaService.pool) } as any);
+    super({
+      log: process.env.NODE_ENV === 'production' ? ['error'] : ['query', 'info', 'warn', 'error'],
+    });
   }
 
   async onModuleInit() {
