@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // ✅ Prisma 7: ممنوع url هنا
 }
 
 model User {
@@ -37,7 +37,7 @@ model Service {
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  details     ServiceDetail[] // <- أضف هذا السطر
+  details     ServiceDetail[]
 }
 
 model Hero {
@@ -54,13 +54,11 @@ model Setting {
   address            String
   commercialRegister String
 
-  // صور/محتوى صفحات عامة (يتم التحكم بها من لوحة الإدارة)
   whyUsImage         String?
   aboutImage         String?
   footerIceImage     String?
   googleMapsEmbedUrl String?
 
-  // ✅ NEW: صور لكل قسم تقريبًا
   servicesImage      String?
   portfolioImage     String?
   contactImage       String?
@@ -93,7 +91,6 @@ model Maintenance {
   updatedAt DateTime @updatedAt
 }
 
-// أضف هذه النماذج في نهاية الملف
 model TeamMember {
   id        String   @id @default(cuid())
   name      String
