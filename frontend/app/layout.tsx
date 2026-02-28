@@ -4,6 +4,7 @@ import { Cairo } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import Loader from '@/components/layout/Loader';
+import FloatingContactButtons from '@/components/FloatingContactButtons';
 
 const cairo = Cairo({ 
   subsets: ['arabic'], 
@@ -28,6 +29,7 @@ export default function RootLayout({
           <Loader />
           {children}
         </Providers>
+        <FloatingContactButtons />
       </body>
     </html>
   );
