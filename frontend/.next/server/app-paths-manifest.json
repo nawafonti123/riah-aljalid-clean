@@ -1,8 +1,19 @@
 {
+  "/_not-found": "app/_not-found.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/(public)/page": "app/(public)/page.js",
-  "/admin/[secret]/login/page": "app/admin/[secret]/login/page.js",
+  "/(public)/services/page": "app/(public)/services/page.js",
+  "/(public)/about/page": "app/(public)/about/page.js",
+  "/(public)/contact/page": "app/(public)/contact/page.js",
+  "/(public)/portfolio/page": "app/(public)/portfolio/page.js",
+  "/(public)/maintenance/page": "app/(public)/maintenance/page.js",
   "/admin/[secret]/dashboard/page": "app/admin/[secret]/dashboard/page.js",
+  "/admin/[secret]/dashboard/images/page": "app/admin/[secret]/dashboard/images/page.js",
+  "/admin/[secret]/dashboard/service-details/page": "app/admin/[secret]/dashboard/service-details/page.js",
+  "/admin/[secret]/dashboard/company-images/page": "app/admin/[secret]/dashboard/company-images/page.js",
+  "/admin/[secret]/login/page": "app/admin/[secret]/login/page.js",
   "/admin/[secret]/dashboard/projects/page": "app/admin/[secret]/dashboard/projects/page.js",
-  "/admin/[secret]/dashboard/settings/page": "app/admin/[secret]/dashboard/settings/page.js"
+  "/(public)/page": "app/(public)/page.js",
+  "/admin/[secret]/dashboard/services/page": "app/admin/[secret]/dashboard/services/page.js",
+  "/admin/[secret]/dashboard/settings/page": "app/admin/[secret]/dashboard/settings/page.js",
+  "/admin/[secret]/dashboard/team/page": "app/admin/[secret]/dashboard/team/page.js"
 }

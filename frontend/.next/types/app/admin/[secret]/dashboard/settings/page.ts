@@ -1,4 +1,4 @@
-// File: C:\Users\HCES\Desktop\riahljalid\riah-aljalid\frontend\app\admin\[secret]\dashboard\settings\page.tsx
+// File: C:\Users\HCES\Desktop\riahljalid\riah-aljalid-clean\frontend\app\admin\[secret]\dashboard\settings\page.tsx
 import * as entry from '../../../../../../../app/admin/[secret]/dashboard/settings/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
