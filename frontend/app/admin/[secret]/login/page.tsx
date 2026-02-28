@@ -1,69 +1,109 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useParams } from 'next/navigation';
 
-export default function AdminLogin() {
+export default function AdminLoginPage() {
+  const router = useRouter();
   const params = useParams();
-  const secret = params.secret as string;
+  const secret = (params?.secret as string) || '';
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-    });
+    setErrorMsg('');
+    setLoading(true);
 
-    if (res?.error) {
-      setError('بيانات الدخول غير صحيحة');
-    } else {
-      // ✅ حفظ التوكن كـ fallback (في حال جلسة NextAuth تأخرت/تعطلت)
+    try {
+      const res = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setErrorMsg('بيانات الدخول غير صحيحة');
+        setLoading(false);
+        return;
+      }
+
+      // ✅ fallback: خزّن التوكن في localStorage لضمان رفع الملفات
       try {
-        const sessionRes = await fetch('/api/auth/session');
-        const sessionData = await sessionRes.json().catch(() => null);
+        const s = await fetch('/api/auth/session', { cache: 'no-store' });
+        const sessionData = await s.json().catch(() => null);
         const token = sessionData?.accessToken;
         if (token) localStorage.setItem('riah_access_token', token);
-      } catch {}
+      } catch {
+        // ignore
+      }
 
+      // روح للداشبورد (نفس secret)
       router.push(`/admin/${secret}/dashboard`);
+    } catch (err) {
+      setErrorMsg('حدث خطأ غير متوقع');
+      setLoading(false);
+      return;
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0F2027] to-[#2C5364]">
-      <div className="glass-card p-8 rounded-2xl w-full max-w-md">
-        <h1 className="text-3xl font-bold text-white mb-6 text-center">تسجيل الدخول</h1>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0B1D26] to-[#1B3B4B] px-4">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 shadow-2xl">
+        <h1 className="text-2xl font-extrabold text-white text-center mb-2">Admin Login</h1>
+        <p className="text-white/70 text-center mb-6">أدخل بيانات الدخول لإدارة الموقع</p>
+
+        {errorMsg ? (
+          <div className="mb-4 rounded-lg bg-red-500/15 border border-red-500/30 p-3 text-red-200 text-sm">
+            {errorMsg}
+          </div>
+        ) : null}
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="البريد الإلكتروني"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white"
-            required
-          />
-          <input
-            type="password"
-            placeholder="كلمة المرور"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white"
-            required
-          />
+          <div>
+            <label className="block text-white/80 text-sm mb-2">Email</label>
+            <input
+              type="email"
+              className="w-full rounded-xl bg-black/20 border border-white/10 px-4 py-3 text-white outline-none focus:border-white/30"
+              placeholder="admin@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-white/80 text-sm mb-2">Password</label>
+            <input
+              type="password"
+              className="w-full rounded-xl bg-black/20 border border-white/10 px-4 py-3 text-white outline-none focus:border-white/30"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
           <button
             type="submit"
-            className="w-full p-3 rounded-lg bg-[#00c6ff] text-white font-bold hover:bg-[#00a0cc] transition"
+            disabled={loading}
+            className="w-full rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 px-4 py-3 font-bold text-white transition"
           >
-            دخول
+            {loading ? '...جاري تسجيل الدخول' : 'دخول'}
           </button>
         </form>
+
+        <div className="mt-6 text-center text-xs text-white/50">
+          سيتم تحويلك للوحة التحكم بعد نجاح تسجيل الدخول
+        </div>
       </div>
     </div>
   );
