@@ -15,7 +15,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       PrismaService.pool = new Pool({ connectionString });
     }
 
-    // ✅ TypeScript fix: PrismaClientOptions type may not include `adapter` in your generated types
+    // Prisma 7: ممنوع datasources — نستخدم adapter
     super({ adapter: new PrismaPg(PrismaService.pool) } as any);
   }
 
