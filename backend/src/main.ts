@@ -9,6 +9,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'https://riah-aljalid-clean-4cog.vercel.app',
+      'https://www.riah-aljalid.com'
     ],
     credentials: true,
   });
