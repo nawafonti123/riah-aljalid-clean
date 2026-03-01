@@ -8,13 +8,14 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'https://riah-aljalid-clean-4cog.vercel.app',
-      'https://www.riah-aljalid.com'
+      process.env.FRONTEND_URL,           // الدومين الأساسي
+      'https://www.riah-aljalid.com',     // احتياط
+      'https://riah-aljalid.com'          // بدون www احتياط
     ],
     credentials: true,
   });
 
-  // ✅ مهم جداً: اجعل uploads public
+  // ✅ جعل مجلد uploads public
   app.use(
     '/uploads',
     express.static(path.join(process.cwd(), 'uploads')),
