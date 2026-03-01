@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Tilt from 'react-parallax-tilt';
 import { publicApi } from '@/lib/api';
@@ -38,9 +38,6 @@ export default function Portfolio() {
   // ✅ نخزن فيديوهات الكروت هنا عشان نقدر نوقفها لما نفتح مودال
   const cardVideoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.15 });
-
   useEffect(() => {
     const run = async () => {
       try {
@@ -65,8 +62,14 @@ export default function Portfolio() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const imageProjects = useMemo(() => projects.filter((p) => (p.images?.length || 0) > 0), [projects]);
-  const videoProjects = useMemo(() => projects.filter((p) => (p.videos?.length || 0) > 0), [projects]);
+  const imageProjects = useMemo(
+    () => projects.filter((p) => (p.images?.length || 0) > 0),
+    [projects]
+  );
+  const videoProjects = useMemo(
+    () => projects.filter((p) => (p.videos?.length || 0) > 0),
+    [projects]
+  );
   const hasAny = useMemo(() => !loading && projects.length > 0, [loading, projects.length]);
 
   // ✅ وقف كل فيديوهات الكروت
@@ -75,7 +78,6 @@ export default function Portfolio() {
       Object.values(cardVideoRefs.current).forEach((v) => {
         if (!v) return;
         v.pause();
-        // نرجع لثانية 0 اختياري (عشان ما يكمل صوت بالخلفية حتى لو فيه كاش غريب)
         try {
           v.currentTime = v.currentTime; // keep position (بدون reset)
         } catch {}
@@ -93,10 +95,9 @@ export default function Portfolio() {
     setLightbox({ open: false });
   };
 
-  // ✅ لو المودال انقفل لأي سبب: ما نعيد تشغيل الخلفية تلقائي (أنت تتحكم)
+  // ✅ يمنع سكرول الخلفية أثناء فتح المودال
   useEffect(() => {
     if (!lightbox.open) return;
-    // يمنع سكرول الخلفية أثناء فتح المودال
     document.body.style.overflow = 'hidden';
     return () => {
       document.body.style.overflow = '';
@@ -106,19 +107,23 @@ export default function Portfolio() {
   return (
     <section
       id="portfolio"
-      ref={ref}
       className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-[#0F2027] transition-colors duration-300 overflow-x-clip"
     >
       <div className="container mx-auto px-4">
         {/* العنوان */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 0.45 }}
           className="text-center mb-8"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">أعمالنا</h2>
-          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">نماذج من مشاريعنا</p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            أعمالنا
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-300">
+            نماذج من مشاريعنا
+          </p>
         </motion.div>
 
         {/* تحميل */}
@@ -140,8 +145,12 @@ export default function Portfolio() {
               <div className="w-12 h-12 mx-auto rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center mb-3">
                 <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
               </div>
-              <p className="text-gray-700 dark:text-gray-200 font-semibold">لا توجد أعمال حالياً</p>
-              <p className="text-gray-500 dark:text-gray-300 text-sm mt-2">سيتم إضافة صور وفيديوهات قريبًا.</p>
+              <p className="text-gray-700 dark:text-gray-200 font-semibold">
+                لا توجد أعمال حالياً
+              </p>
+              <p className="text-gray-500 dark:text-gray-300 text-sm mt-2">
+                سيتم إضافة صور وفيديوهات قريبًا.
+              </p>
             </div>
           </div>
         )}
@@ -156,7 +165,9 @@ export default function Portfolio() {
               <div className="w-10 h-10 rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
                 <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">قسم الصور</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                قسم الصور
+              </h3>
               <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200">
                 {imageProjects.length}
               </span>
@@ -175,7 +186,8 @@ export default function Portfolio() {
                     <motion.div
                       key={p.id}
                       initial={{ opacity: 0, y: 16 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.15 }}
                       transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
                       className="max-w-full"
                     >
@@ -187,12 +199,10 @@ export default function Portfolio() {
                           transitionSpeed={1200}
                           glareEnable
                           glareMaxOpacity={0.12}
-                          // ✅ لا نكبر على الموبايل (عشان ما يعمل overflow)
                           scale={1.0}
                           className="rounded-2xl w-full"
                         >
                           <div className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,200,255,0.16)]">
-                            {/* ✅ كبرنا مساحة الكرت */}
                             <div className="relative h-52 sm:h-56 overflow-hidden">
                               <Image
                                 src={cover}
@@ -203,10 +213,16 @@ export default function Portfolio() {
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-black/0 pointer-events-none" />
 
-                              {/* زر تكبير */}
                               <button
                                 type="button"
-                                onClick={() => openLightbox({ open: true, type: 'image', src: cover, title: p.title })}
+                                onClick={() =>
+                                  openLightbox({
+                                    open: true,
+                                    type: 'image',
+                                    src: cover,
+                                    title: p.title,
+                                  })
+                                }
                                 className="absolute top-3 right-3 z-10 w-10 h-10 rounded-xl bg-black/45 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
                                 aria-label="تكبير الصورة"
                                 title="تكبير"
@@ -215,9 +231,10 @@ export default function Portfolio() {
                               </button>
                             </div>
 
-                            {/* ✅ كبرنا مساحة النص + أزلنا line-clamp عشان يبين كامل */}
                             <div className="p-4 sm:p-5">
-                              <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{p.title}</h4>
+                              <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                                {p.title}
+                              </h4>
 
                               {p.description && (
                                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
@@ -252,7 +269,9 @@ export default function Portfolio() {
               <div className="w-10 h-10 rounded-2xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center">
                 <FaPlay className="text-[#01AEBE] dark:text-[#00c6ff]" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">قسم الفيديوهات</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                قسم الفيديوهات
+              </h3>
               <span className="text-xs sm:text-sm px-3 py-1 rounded-full bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200">
                 {videoProjects.length}
               </span>
@@ -271,7 +290,8 @@ export default function Portfolio() {
                     <motion.div
                       key={p.id}
                       initial={{ opacity: 0, y: 16 }}
-                      animate={inView ? { opacity: 1, y: 0 } : {}}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.15 }}
                       transition={{ duration: 0.4, delay: 0.05 + idx * 0.03 }}
                       className="max-w-full"
                     >
@@ -287,11 +307,9 @@ export default function Portfolio() {
                           className="rounded-2xl w-full"
                         >
                           <div className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-800 shadow-lg transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,255,200,0.14)]">
-                            {/* ✅ كبرنا الفيديو داخل الكرت */}
                             <div className="relative h-52 sm:h-56 bg-black/10 dark:bg-black/20 overflow-hidden">
                               <video
                                 ref={(el) => {
-                                  // نخزن المرجع باسم id (لإيقافه لاحقاً)
                                   cardVideoRefs.current[p.id] = el;
                                 }}
                                 src={videoUrl}
@@ -302,10 +320,16 @@ export default function Portfolio() {
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-black/0 pointer-events-none" />
 
-                              {/* ✅ تكبير (يوقف الخلفية أولاً) */}
                               <button
                                 type="button"
-                                onClick={() => openLightbox({ open: true, type: 'video', src: videoUrl, title: p.title })}
+                                onClick={() =>
+                                  openLightbox({
+                                    open: true,
+                                    type: 'video',
+                                    src: videoUrl,
+                                    title: p.title,
+                                  })
+                                }
                                 className="absolute top-3 right-3 z-10 w-10 h-10 rounded-xl bg-black/45 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
                                 aria-label="تكبير الفيديو"
                                 title="تكبير"
@@ -313,7 +337,6 @@ export default function Portfolio() {
                                 <FaExpand className="text-sm" />
                               </button>
 
-                              {/* Fullscreen داخل نفس الفيديو */}
                               <button
                                 type="button"
                                 onClick={(e) => {
@@ -329,9 +352,10 @@ export default function Portfolio() {
                               </button>
                             </div>
 
-                            {/* ✅ كبرنا النص + عرض كامل الوصف */}
                             <div className="p-4 sm:p-5">
-                              <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{p.title}</h4>
+                              <h4 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
+                                {p.title}
+                              </h4>
 
                               {p.description && (
                                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
@@ -389,7 +413,11 @@ export default function Portfolio() {
 
             <div className="relative w-full bg-black">
               {lightbox.type === 'image' ? (
-                <img src={lightbox.src} alt={lightbox.title || 'image'} className="w-full max-h-[78vh] object-contain" />
+                <img
+                  src={lightbox.src}
+                  alt={lightbox.title || 'image'}
+                  className="w-full max-h-[78vh] object-contain"
+                />
               ) : (
                 <video
                   src={lightbox.src}
