@@ -20,12 +20,16 @@ const DEFAULT_DESC =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+
   title: {
     default: DEFAULT_TITLE,
     template: `%s | ${SITE_NAME}`,
   },
+
   description: DEFAULT_DESC,
+
   applicationName: SITE_NAME,
+
   keywords: [
     'صيانة مكيفات بالرياض',
     'تركيب مكيفات بالرياض',
@@ -37,9 +41,18 @@ export const metadata: Metadata = {
     'تكييف سبليت بالرياض',
     'رياح الجليد تكييف',
   ],
+
   alternates: {
     canonical: '/',
   },
+
+  // ✅ إضافة الأيقونة هنا
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
+
   openGraph: {
     type: 'website',
     url: SITE_URL,
@@ -49,19 +62,21 @@ export const metadata: Metadata = {
     locale: 'ar_SA',
     images: [
       {
-        url: '/og.jpg', // حط صورة og.jpg داخل public لو تقدر
+        url: '/og.jpg',
         width: 1200,
         height: 630,
         alt: DEFAULT_TITLE,
       },
     ],
   },
+
   twitter: {
     card: 'summary_large_image',
     title: DEFAULT_TITLE,
     description: DEFAULT_DESC,
     images: ['/og.jpg'],
   },
+
   robots: {
     index: true,
     follow: true,
@@ -73,13 +88,17 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-  // إذا عندك كود التحقق (بدّل القيمة إن لزم)
+
   verification: {
     google: '-sHiWCngfdbyUPZjlEABGG5vtF2fjjH_QQPKFXzqx6w',
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -92,13 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       addressLocality: 'Riyadh',
       addressCountry: 'SA',
     },
-    // عدّل رقمك الحقيقي بالسعودية هنا
     telephone: '+966XXXXXXXXX',
-    sameAs: [
-      // ضع روابط حساباتك لو موجودة
-      // 'https://instagram.com/....',
-      // 'https://x.com/....',
-    ],
     serviceType: [
       'صيانة مكيفات',
       'تركيب مكيفات',
@@ -114,7 +127,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script
           type="application/ld+json"
-          // مهم
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
