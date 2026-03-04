@@ -1,9 +1,10 @@
+// backend/src/modules/uploads/uploads.service.ts
 import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
 export class UploadsService {
-  constructor(@Inject('CLOUDINARY') private readonly _cloudinary: typeof cloudinary) {}
+  constructor(@Inject('CLOUDINARY') private readonly c: typeof cloudinary) {}
 
   async uploadFile(file: Express.Multer.File, type: 'image' | 'video'): Promise<string> {
     if (!file) throw new BadRequestException('No file provided');
@@ -14,13 +15,15 @@ export class UploadsService {
         : ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
 
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      throw new BadRequestException(`Invalid file type. Allowed ${type} types: ${allowedMimeTypes.join(', ')}`);
+      throw new BadRequestException(
+        `Invalid file type. Allowed ${type} types: ${allowedMimeTypes.join(', ')}`
+      );
     }
 
     const resourceType = type === 'video' ? 'video' : 'image';
 
     const result = await new Promise<any>((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
+      const stream = this.c.uploader.upload_stream(
         {
           folder: 'riah-aljalid',
           resource_type: resourceType,
