@@ -1,56 +1,25 @@
-import {
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, UploadedFile, UseInterceptors, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { AuthGuard } from '@nestjs/passport';
+import { UploadsService } from './uploads.service';
 
 @Controller('api/uploads')
 export class UploadsController {
+  constructor(private readonly uploadsService: UploadsService) {}
 
-  // ✅ رفع صورة
   @Post('image')
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (_, file, callback) => {
-          const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
-          callback(null, uniqueName);
-        },
-      }),
-    }),
-  )
-  uploadImage(@UploadedFile() file: Express.Multer.File) {
-    return {
-      url: `${process.env.BACKEND_URL}/uploads/${file.filename}`,
-    };
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    const url = await this.uploadsService.uploadFile(file, 'image');
+    return { url };
   }
 
-  // ✅ رفع فيديو
   @Post('video')
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (_, file, callback) => {
-          const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
-          callback(null, uniqueName);
-        },
-      }),
-    }),
-  )
-  uploadVideo(@UploadedFile() file: Express.Multer.File) {
-    return {
-      url: `${process.env.BACKEND_URL}/uploads/${file.filename}`,
-    };
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadVideo(@UploadedFile() file: Express.Multer.File) {
+    const url = await this.uploadsService.uploadFile(file, 'video');
+    return { url };
   }
 }
