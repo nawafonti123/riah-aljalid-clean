@@ -1,4 +1,3 @@
-// backend/src/modules/uploads/uploads.controller.ts
 import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadsService } from './uploads.service';
@@ -7,6 +6,7 @@ import { UploadsService } from './uploads.service';
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
+  // رفع الصور
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
@@ -14,6 +14,7 @@ export class UploadsController {
     return { url };
   }
 
+  // رفع الفيديو
   @Post('video')
   @UseInterceptors(FileInterceptor('file'))
   async uploadVideo(@UploadedFile() file: Express.Multer.File) {
