@@ -1,22 +1,23 @@
-// frontend/app/admin/[secret]/dashboard/settings/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { redirect, useParams } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
+import { redirect, useParams, useRouter } from 'next/navigation';
 import { maintenanceApi } from '@/lib/api';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { FaSnowflake } from 'react-icons/fa';
+import { FaSnowflake, FaSignOutAlt } from 'react-icons/fa';
 
 export default function SettingsPage() {
   const params = useParams();
+  const router = useRouter();
   const secret = params.secret as string;
   const { data: session, status } = useSession();
   const [isEnabled, setIsEnabled] = useState(false);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   if (status === 'loading') return <p className="text-center text-white py-10">جاري التحميل...</p>;
   if (!session) redirect(`/admin/${secret}/login`);
@@ -45,6 +46,26 @@ export default function SettingsPage() {
       toast.error('فشل في حفظ الإعدادات');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      localStorage.removeItem('riah_access_token');
+      localStorage.clear();
+      sessionStorage.clear();
+
+      await signOut({ redirect: false });
+
+      toast.success('تم تسجيل الخروج بنجاح');
+      router.push(`/admin/${secret}/login`);
+      router.refresh();
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast.error('فشل في تسجيل الخروج');
+    } finally {
+      setLoggingOut(false);
     }
   };
 
@@ -120,7 +141,20 @@ export default function SettingsPage() {
             />
           </div>
 
-          <div className="flex justify-end">
+          <div className="flex flex-col sm:flex-row justify-end gap-3">
+            <motion.button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="flex items-center gap-2">
+                <FaSignOutAlt />
+                {loggingOut ? 'جاري تسجيل الخروج...' : 'تسجيل الخروج'}
+              </span>
+            </motion.button>
+
             <motion.button
               onClick={handleSave}
               disabled={saving}
