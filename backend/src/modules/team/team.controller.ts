@@ -35,7 +35,7 @@ export class TeamController {
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'EDITOR')
   remove(@Param('id') id: string) {
     return this.teamService.remove(id);
   }
