@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import Link from 'next/link';
+import { FaInfoCircle, FaArrowLeft, FaSnowflake } from 'react-icons/fa';
 import AboutSection from '@/components/sections/AboutSection';
 import WhyUs from '@/components/sections/WhyUs';
 import Achievements from '@/components/sections/Achievements';
-import { FaInfoCircle } from 'react-icons/fa';
 
 export const metadata: Metadata = {
   title: 'عن الشركة',
@@ -18,43 +17,90 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <Navbar />
+      <section className="section-shell !pt-6 md:!pt-8">
+        <div className="container">
+          <div className="glass-card overflow-hidden p-6 md:p-8 xl:p-10">
+            <div className="grid gap-8 xl:grid-cols-[1.05fr_0.95fr] xl:items-center">
+              <div>
+                <span className="mb-4 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
+                  <FaInfoCircle className="ml-2" />
+                  عن رياح الجليد
+                </span>
 
-      <main className="min-h-screen overflow-hidden pt-32 pb-20">
-        <section className="container-main">
-          <div className="rounded-[32px] border border-cyan-400/10 bg-[#081427]/90 p-8 sm:p-10 shadow-[0_15px_50px_rgba(0,0,0,0.25)]">
-            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-300">
-              <FaInfoCircle />
-              عن رياح الجليد
-            </span>
+                <h1 className="text-3xl font-black leading-[1.35] text-white md:text-5xl">
+                  خبرة وجودة في
+                  <span className="block text-cyan-300">
+                    أعمال التكييف والتبريد
+                  </span>
+                </h1>
 
-            <h1 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-              خبرة وجودة في
-              <span className="block text-cyan-400">أعمال التكييف والتبريد</span>
-            </h1>
+                <p className="mt-5 max-w-3xl text-base leading-8 text-white/75 md:text-lg">
+                  رياح الجليد مؤسسة متخصصة في تنفيذ أعمال التكييف المركزي
+                  والسبليت والدكت والتهوية، ونركز على تقديم خدمة احترافية تجمع
+                  بين الجودة العالية والالتزام والدقة في التنفيذ والمظهر النهائي.
+                </p>
 
-            <p className="mt-6 max-w-4xl text-lg leading-9 text-white/80">
-              رياح الجليد مؤسسة متخصصة في تنفيذ أعمال التكييف المركزي والسبليت
-              والدكت والتهوية، ونركز على تقديم خدمة احترافية تجمع بين الجودة
-              العالية، الالتزام، والدقة في التنفيذ.
-            </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <Link
+                    href="/services"
+                    className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-sky-500 px-6 text-sm font-black text-white shadow-lg shadow-cyan-500/20"
+                  >
+                    <span>استعرض خدماتنا</span>
+                    <FaArrowLeft />
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 text-sm font-black text-white"
+                  >
+                    <span>تواصل معنا</span>
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[26px] border border-white/10 bg-white/5 p-6">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                    <FaSnowflake className="text-xl" />
+                  </div>
+                  <h3 className="text-lg font-black text-white">
+                    حلول عملية ومرتبة
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-white/70">
+                    نهتم بالأداء وكفاءة التشغيل مع تنفيذ منظم يراعي جودة الشكل
+                    النهائي.
+                  </p>
+                </div>
+
+                <div className="rounded-[26px] border border-white/10 bg-white/5 p-6">
+                  <div className="mb-4 text-4xl font-black text-cyan-300">
+                    +15
+                  </div>
+                  <h3 className="text-lg font-black text-white">سنوات خبرة</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/70">
+                    خبرة عملية متراكمة في المشاريع السكنية والتجارية وأعمال
+                    التهوية والدكت.
+                  </p>
+                </div>
+
+                <div className="rounded-[26px] border border-white/10 bg-white/5 p-6 sm:col-span-2">
+                  <h3 className="text-lg font-black text-white">
+                    هدفنا في كل مشروع
+                  </h3>
+                  <p className="mt-3 text-sm leading-8 text-white/70">
+                    تقديم خدمة موثوقة ونتيجة نظيفة بصريًا وفنيًا، مع التزام
+                    بالمواعيد وجودة التنفيذ ورضا العميل في كل مرحلة.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="section-padding">
-          <AboutSection />
-        </section>
-
-        <section className="section-padding pt-0">
-          <WhyUs />
-        </section>
-
-        <section className="section-padding pt-0">
-          <Achievements />
-        </section>
-      </main>
-
-      <Footer />
+      <AboutSection />
+      <WhyUs />
+      <Achievements />
     </>
   );
 }
