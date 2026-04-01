@@ -8,8 +8,8 @@ import ContactSection from '@/components/sections/ContactSection';
 
 export default function HomePage() {
   return (
-    <>
-      <section id="hero" className="scroll-mt-28">
+    <main className="space-y-24 md:space-y-32">
+      <section id="hero" className="scroll-mt-28 pt-10">
         <Hero />
       </section>
 
@@ -33,9 +33,9 @@ export default function HomePage() {
         <Portfolio />
       </section>
 
-      <section id="contact" className="scroll-mt-28">
+      <section id="contact" className="scroll-mt-28 pb-16">
         <ContactSection />
       </section>
-    </>
+    </main>
   );
 }
