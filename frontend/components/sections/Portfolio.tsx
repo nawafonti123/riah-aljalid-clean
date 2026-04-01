@@ -45,14 +45,8 @@ export default function Portfolio() {
   }, [projects]);
 
   const filteredProjects = useMemo(() => {
-    if (activeTab === 'images') {
-      return sortedProjects.filter((item) => !!item.image);
-    }
-
-    if (activeTab === 'videos') {
-      return sortedProjects.filter((item) => !!item.video);
-    }
-
+    if (activeTab === 'images') return sortedProjects.filter((item) => !!item.image);
+    if (activeTab === 'videos') return sortedProjects.filter((item) => !!item.video);
     return sortedProjects;
   }, [activeTab, sortedProjects]);
 
@@ -74,88 +68,98 @@ export default function Portfolio() {
   ];
 
   return (
-    <section id="portfolio" className="section-shell">
-      <div className="container">
-        <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <span className="mb-4 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
+    <section className="relative overflow-hidden px-4 py-16 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.12 }}
+          transition={{ duration: 0.6 }}
+          className="mb-10"
+        >
+          <div className="mb-4 flex justify-end">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-700 dark:text-cyan-300">
+              <FaImages />
               أعمالنا
-            </span>
-            <h2 className="section-title">نماذج من مشاريعنا وتنفيذنا</h2>
-            <p className="section-subtitle">
-              استعرض جزءًا من أعمالنا في مشاريع التكييف والتركيب والدكت
-              والصيانة، مع عرض مرتب للصور والفيديوهات بشكل أوضح وأجمل.
-            </p>
+            </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            {tabs.map((tab) => {
-              const active = activeTab === tab.key;
+          <div className="grid items-center gap-5 lg:grid-cols-[1fr_auto]">
+            <div className="text-right">
+              <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white md:text-4xl">
+                نماذج من مشاريعنا وتنفيذنا
+              </h2>
+              <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 md:text-lg">
+                استعرض جزءًا من أعمالنا في مشاريع التكييف والتركيب والدكت
+                والصيانة، مع عرض مرتب للصور والفيديوهات بشكل أوضح وأجمل.
+              </p>
+            </div>
 
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`inline-flex min-h-[48px] items-center gap-2 rounded-full px-5 text-sm font-black transition ${
-                    active
-                      ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-lg shadow-cyan-500/20'
-                      : 'border border-white/10 bg-white/5 text-white/75 hover:bg-white/10'
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs">
-                    {tab.count}
-                  </span>
-                </button>
-              );
-            })}
+            <div className="flex flex-wrap gap-3">
+              {tabs.map((tab) => {
+                const active = activeTab === tab.key;
+
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key)}
+                    className={`inline-flex min-h-[48px] items-center gap-2 rounded-full px-5 text-sm font-black transition ${
+                      active
+                        ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-lg shadow-cyan-500/20'
+                        : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white/75 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    {tab.label}
+                    <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs dark:bg-white/10">
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </motion.div>
 
         {filteredProjects.length === 0 ? (
-          <div className="glass-card p-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/15 text-cyan-300">
+          <div className="rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-100 px-6 py-16 text-center shadow-sm dark:border-white/10 dark:from-[#111c27] dark:via-[#14202d] dark:to-[#192634]">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
               <FaImages className="text-2xl" />
             </div>
-            <h3 className="text-xl font-black text-white">لا توجد أعمال حالياً</h3>
-            <p className="mt-3 text-sm leading-7 text-white/70">
+            <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+              لا توجد أعمال حالياً
+            </h3>
+            <p className="mt-3 text-base text-slate-600 dark:text-slate-300">
               سيتم إضافة الأعمال والمشاريع هنا فور توفرها من لوحة التحكم.
             </p>
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filteredProjects.map((project, index) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 26 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.12 }}
-                transition={{ duration: 0.4, delay: index * 0.04 }}
-                className="group glass-card overflow-hidden"
+                transition={{ duration: 0.45, delay: index * 0.03 }}
+                className="group overflow-hidden rounded-[28px] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
               >
-                <div className="relative h-[260px] overflow-hidden bg-slate-900/40">
+                <div className="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-white/5">
                   {project.video ? (
                     <>
                       <video
                         src={project.video}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                        className="h-full w-full object-cover"
                         muted
                         playsInline
-                        preload="metadata"
                       />
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/15 to-transparent" />
-
                       <button
-                        type="button"
                         onClick={() => setSelectedItem(project)}
                         className="absolute inset-0 flex items-center justify-center"
                         aria-label={`عرض ${project.title}`}
                       >
-                        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition group-hover:scale-110">
-                          <FaPlay className="mr-1" />
-                        </div>
+                        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md">
+                          <FaPlay className="mr-1 text-xl" />
+                        </span>
                       </button>
                     </>
                   ) : (
@@ -164,16 +168,14 @@ export default function Portfolio() {
                         src={project.image || '/logo.png'}
                         alt={project.title}
                         fill
-                        className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                        className="object-cover transition duration-500 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/15 to-transparent" />
                     </>
                   )}
 
                   <button
-                    type="button"
                     onClick={() => setSelectedItem(project)}
-                    className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-slate-950/45 text-white backdrop-blur-md"
+                    className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-slate-950/45 text-white backdrop-blur-md"
                     aria-label="تكبير"
                   >
                     <FaExpand />
@@ -181,23 +183,23 @@ export default function Portfolio() {
                 </div>
 
                 <div className="p-5">
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <h3 className="line-clamp-1 text-lg font-black text-white">
-                      {project.title}
-                    </h3>
+                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                    {project.title}
+                  </h3>
 
-                    <span className="shrink-0 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-black text-cyan-300">
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className="rounded-full bg-cyan-100 px-3 py-1 text-xs font-bold text-cyan-700 dark:bg-cyan-500/15 dark:text-cyan-300">
                       {project.video ? 'فيديو' : 'صورة'}
                     </span>
+
+                    {project.category && (
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700 dark:bg-white/10 dark:text-slate-200">
+                        {project.category}
+                      </span>
+                    )}
                   </div>
 
-                  {project.category && (
-                    <div className="mb-3 text-sm font-bold text-white/55">
-                      {project.category}
-                    </div>
-                  )}
-
-                  <p className="line-clamp-3 text-sm leading-7 text-white/70">
+                  <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">
                     {project.description || 'تنفيذ احترافي من أعمال رياح الجليد.'}
                   </p>
                 </div>
@@ -209,34 +211,33 @@ export default function Portfolio() {
         <AnimatePresence>
           {selectedItem && (
             <motion.div
-              className="fixed inset-0 z-[1400] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md"
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedItem(null)}
             >
               <motion.div
-                className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[30px] border border-white/10 bg-[#081318] shadow-2xl"
-                initial={{ opacity: 0, scale: 0.97, y: 16 }}
+                initial={{ opacity: 0, scale: 0.96, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.97, y: 16 }}
-                transition={{ duration: 0.22 }}
+                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                transition={{ duration: 0.2 }}
                 onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-5xl overflow-hidden rounded-[32px] border border-white/10 bg-[#0b1622] shadow-2xl"
               >
-                <div className="flex items-center justify-between gap-4 border-b border-white/10 px-5 py-4">
+                <div className="flex items-center justify-between border-b border-white/10 p-4">
                   <div>
-                    <h3 className="text-xl font-black text-white">
+                    <h3 className="text-2xl font-extrabold text-white">
                       {selectedItem.title}
                     </h3>
                     {selectedItem.category && (
-                      <p className="mt-1 text-sm text-white/55">
+                      <div className="mt-2 text-sm font-semibold text-cyan-300">
                         {selectedItem.category}
-                      </p>
+                      </div>
                     )}
                   </div>
 
                   <button
-                    type="button"
                     onClick={() => setSelectedItem(null)}
                     className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white"
                     aria-label="إغلاق"
@@ -245,32 +246,31 @@ export default function Portfolio() {
                   </button>
                 </div>
 
-                <div className="max-h-[calc(92vh-88px)] overflow-y-auto p-5">
-                  <div className="relative min-h-[320px] overflow-hidden rounded-[24px] bg-slate-900/40 md:min-h-[560px]">
+                <div className="p-4 md:p-6">
+                  <div className="relative mb-5 aspect-video overflow-hidden rounded-3xl bg-black">
                     {selectedItem.video ? (
                       <video
                         src={selectedItem.video}
                         controls
-                        autoPlay
-                        className="h-full w-full object-contain bg-black"
+                        className="h-full w-full object-contain"
                       />
                     ) : (
                       <Image
                         src={selectedItem.image || '/logo.png'}
                         alt={selectedItem.title}
                         fill
-                        className="object-contain bg-black"
+                        className="object-contain"
                       />
                     )}
                   </div>
 
-                  <div className="mt-5 rounded-[22px] border border-white/10 bg-white/5 p-5">
-                    <h4 className="text-lg font-black text-white">تفاصيل العمل</h4>
-                    <p className="mt-3 text-sm leading-8 text-white/75">
-                      {selectedItem.description ||
-                        'هذا العمل من ضمن مشاريع رياح الجليد المنفذة باحترافية عالية.'}
-                    </p>
-                  </div>
+                  <h4 className="text-lg font-extrabold text-white">
+                    تفاصيل العمل
+                  </h4>
+                  <p className="mt-3 text-sm leading-8 text-slate-300">
+                    {selectedItem.description ||
+                      'هذا العمل من ضمن مشاريع رياح الجليد المنفذة باحترافية عالية.'}
+                  </p>
                 </div>
               </motion.div>
             </motion.div>

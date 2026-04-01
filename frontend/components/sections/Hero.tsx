@@ -1,214 +1,223 @@
 'use client';
 
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import Tilt from 'react-parallax-tilt';
 import {
-  FaSnowflake,
-  FaPhoneAlt,
-  FaWhatsapp,
-  FaCheckCircle,
-  FaArrowDown,
-  FaTools,
-  FaFan,
-  FaWind,
+  FaTruck,
+  FaIndustry,
+  FaRuler,
+  FaUniversity,
+  FaSchool,
+  FaLandmark,
+  FaHome,
+  FaCoffee,
+  FaHotel,
+  FaBuilding,
+  FaWrench,
 } from 'react-icons/fa';
 
-const stats = [
-  { value: '+15', label: 'سنة خبرة' },
-  { value: '+200', label: 'مشروع منجز' },
-  { value: '+50', label: 'فني ومختص' },
-  { value: '24/7', label: 'دعم وخدمة' },
+interface ServiceDetail {
+  title: string;
+  description: string;
+}
+
+interface StaticService {
+  id: string;
+  title: string;
+  description: string;
+  icon: JSX.Element;
+  details: ServiceDetail[];
+}
+
+const servicesData: StaticService[] = [
+  {
+    id: '1',
+    title: 'التوريد',
+    icon: <FaTruck />,
+    description: 'نقدم خدمات توريد احترافية لمكونات وأنظمة التكييف والتهوية بجودة عالية واعتمادية ممتازة.',
+    details: [
+      {
+        title: 'جودة المواد',
+        description:
+          'نحرص على اختيار مواد ومكونات مناسبة لطبيعة المشروع وتتحمل ظروف التشغيل المختلفة مع الحفاظ على كفاءة الأداء.',
+      },
+      {
+        title: 'مرونة التوريد',
+        description:
+          'نوفر حلول توريد مناسبة للمشاريع الصغيرة والكبيرة مع سرعة في التجهيز والتنفيذ بما يلائم احتياج العميل.',
+      },
+    ],
+  },
+  {
+    id: '2',
+    title: 'التصنيع والتركيب',
+    icon: <FaIndustry />,
+    description: 'تصنيع وتركيب مجاري الهواء والدكت بأنواعه المختلفة وفق مواصفات دقيقة وتشطيب مرتب.',
+    details: [
+      {
+        title: 'تنفيذ احترافي',
+        description:
+          'ننفذ أعمال الدكت والتهوية والتركيب الميداني بعناية مع مراعاة الجودة، الدقة، وسلامة التوزيع داخل الموقع.',
+      },
+      {
+        title: 'تشطيب منظم',
+        description:
+          'نهتم بتناسق التمديدات وجودة التشطيب النهائي ليظهر العمل بشكل أنيق وعملي داخل المشروع.',
+      },
+    ],
+  },
+  {
+    id: '3',
+    title: 'التصميم',
+    icon: <FaRuler />,
+    description: 'إعداد تصورات مناسبة لطبيعة المشروع والمساحة لتحقيق أفضل توزيع وكفاءة تشغيل.',
+    details: [
+      {
+        title: 'حلول مدروسة',
+        description:
+          'نقدم تصميمات ومخططات مناسبة للموقع تساعد على رفع كفاءة النظام وتحسين توزيع الهواء بشكل صحيح.',
+      },
+      {
+        title: 'مراعاة طبيعة المشروع',
+        description:
+          'نختار الحل الأنسب بحسب نوع المشروع سواء كان سكنيًا أو تجاريًا أو خدميًا مع أفضل توازن بين الجودة والتكلفة.',
+      },
+    ],
+  },
 ];
 
-const features = [
-  'تركيب وصيانة جميع أنواع المكيفات',
-  'تنفيذ مشاريع التكييف المركزي والدكت',
-  'فريق احترافي وسرعة في الإنجاز',
+const projectIcons = [
+  { icon: FaUniversity, name: 'جامعات' },
+  { icon: FaSchool, name: 'مدارس' },
+  { icon: FaLandmark, name: 'قصور' },
+  { icon: FaHome, name: 'فلل' },
+  { icon: FaCoffee, name: 'كافيهات' },
+  { icon: FaHotel, name: 'فنادق' },
+  { icon: FaBuilding, name: 'أبراج' },
 ];
 
-export default function Hero() {
+export default function Services() {
+  const ref = useRef<HTMLElement | null>(null);
+  const inView = useInView(ref, { once: true, amount: 0.12 });
+
   return (
     <section
-      id="hero"
-      className="relative overflow-hidden pt-2 md:pt-10"
-      aria-label="القسم الرئيسي"
+      ref={ref}
+      className="relative overflow-hidden px-4 py-16 md:px-8 lg:px-12"
     >
-      <div className="container">
-        <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-gradient-to-br from-cyan-500/10 via-slate-900/70 to-slate-950/90 px-4 py-6 shadow-2xl backdrop-blur-xl sm:px-5 sm:py-8 md:rounded-[32px] md:px-8 md:py-14 xl:px-12">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-cyan-400/15 blur-3xl" />
-            <div className="absolute -left-16 bottom-0 h-72 w-72 rounded-full bg-sky-500/10 blur-3xl" />
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="mb-10 text-center"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-700 dark:text-cyan-300">
+            <FaWrench />
+            خدماتنا
           </div>
 
-          <div className="relative grid items-center gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
-            <div className="min-w-0">
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45 }}
-                className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-2 text-[11px] font-extrabold text-cyan-200 sm:px-4 sm:text-sm"
-              >
-                <FaSnowflake className="shrink-0" />
-                <span className="truncate">
-                  حلول احترافية في التكييف والتبريد بالرياض
-                </span>
-              </motion.div>
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white md:text-4xl">
+            حلول متكاملة في التكييف والتبريد والتهوية
+          </h2>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 22 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.05 }}
-                className="max-w-3xl text-[2.05rem] font-black leading-[1.22] text-white sm:text-[2.5rem] md:text-5xl"
-              >
-                رياح الجليد
-                <span className="mt-1 block text-cyan-300 sm:mt-2">
-                  لتركيب وصيانة أنظمة التكييف المركزي والسبليت والدكت
-                </span>
-              </motion.h1>
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 md:text-lg">
+            نقدم خدمات عالية الجودة تشمل التوريد، التصنيع، التركيب، والتصميم
+            بما يناسب طبيعة المشروع ويضمن أفضل نتيجة من حيث الأداء والشكل النهائي.
+          </p>
+        </motion.div>
 
-              <motion.p
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.1 }}
-                className="mt-4 max-w-2xl text-[0.98rem] leading-8 text-white/75 md:mt-5 md:text-lg"
-              >
-                نقدم خدمات متكاملة تشمل التوريد والتركيب والصيانة والتنظيف
-                والتعبئة وتنفيذ مشاريع التهوية والدكت للمنازل والشركات
-                والمشاريع باحترافية عالية ولمسة تنفيذ دقيقة.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 26 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.15 }}
-                className="mt-6 grid gap-3 sm:grid-cols-2"
-              >
-                {features.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white/85"
-                  >
-                    <FaCheckCircle className="mt-1 shrink-0 text-cyan-300" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 28 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.55, delay: 0.2 }}
-                className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap"
-              >
-                <a
-                  href="https://wa.me/966565247407"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-[50px] items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-sky-500 px-6 text-sm font-black text-white shadow-lg shadow-cyan-500/20 transition hover:-translate-y-0.5"
-                >
-                  <FaWhatsapp className="text-base" />
-                  <span>تواصل واتساب</span>
-                </a>
-
-                <a
-                  href="tel:+966565247407"
-                  className="inline-flex min-h-[50px] items-center justify-center gap-3 rounded-full border border-white/15 bg-white/5 px-6 text-sm font-black text-white transition hover:bg-white/10"
-                >
-                  <FaPhoneAlt className="text-sm" />
-                  <span>اتصل الآن</span>
-                </a>
-
-                <Link
-                  href="/portfolio"
-                  className="inline-flex min-h-[50px] items-center justify-center gap-3 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-6 text-sm font-black text-cyan-200 transition hover:bg-cyan-400/15"
-                >
-                  <span>شاهد أعمالنا</span>
-                </Link>
-              </motion.div>
-            </div>
-
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {servicesData.map((service, index) => (
             <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.12 }}
-              className="relative"
+              key={service.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, delay: index * 0.08 }}
             >
-              <div className="grid gap-4">
-                <div className="rounded-[24px] border border-cyan-400/15 bg-white/5 p-4 backdrop-blur-md sm:p-5 md:rounded-[28px]">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300 sm:h-14 sm:w-14">
-                      <FaFan className="text-xl sm:text-2xl" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-base font-black text-white sm:text-lg">
-                        أنظمة تكييف متطورة
-                      </h3>
-                      <p className="mt-1 text-xs text-white/65 sm:text-sm">
-                        تنفيذ احترافي للمنازل والشركات والمشاريع
-                      </p>
-                    </div>
+              <Tilt
+                tiltMaxAngleX={6}
+                tiltMaxAngleY={6}
+                glareEnable
+                glareMaxOpacity={0.12}
+                scale={1.01}
+                className="h-full"
+              >
+                <div className="h-full rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-[0_12px_35px_rgba(15,23,42,0.08)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(15,23,42,0.12)] dark:border-white/10 dark:bg-[#0b1622]/85 dark:shadow-[0_12px_35px_rgba(0,0,0,0.28)]">
+                  <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-100 text-2xl text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
+                    {service.icon}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    {stats.map((item) => (
+                  <h3 className="mb-3 text-2xl font-extrabold text-slate-900 dark:text-white">
+                    {service.title}
+                  </h3>
+
+                  <p className="mb-6 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                    {service.description}
+                  </p>
+
+                  <div className="space-y-4">
+                    {service.details.map((detail, i) => (
                       <div
-                        key={item.label}
-                        className="rounded-2xl border border-white/10 bg-slate-950/35 px-4 py-4"
+                        key={i}
+                        className="rounded-2xl border border-slate-200 bg-slate-50/90 p-4 dark:border-white/10 dark:bg-white/[0.04]"
                       >
-                        <div className="text-xl font-black text-cyan-300 sm:text-2xl">
-                          {item.value}
-                        </div>
-                        <div className="mt-1 text-xs font-bold text-white/75 sm:text-sm">
-                          {item.label}
-                        </div>
+                        <h4 className="mb-2 text-sm font-extrabold text-slate-900 dark:text-cyan-300">
+                          {detail.title}
+                        </h4>
+                        <p className="text-sm leading-7 text-slate-600 dark:text-slate-300">
+                          {detail.description}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-[22px] border border-white/10 bg-white/5 p-5">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300 sm:h-12 sm:w-12">
-                      <FaTools />
-                    </div>
-                    <h4 className="text-base font-black text-white">
-                      صيانة دقيقة
-                    </h4>
-                    <p className="mt-2 text-sm leading-7 text-white/70">
-                      فحص وتشخيص وحلول عملية لرفع كفاءة التبريد وتقليل الأعطال.
-                    </p>
-                  </div>
-
-                  <div className="rounded-[22px] border border-white/10 bg-white/5 p-5">
-                    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300 sm:h-12 sm:w-12">
-                      <FaWind />
-                    </div>
-                    <h4 className="text-base font-black text-white">
-                      دكت وتهوية
-                    </h4>
-                    <p className="mt-2 text-sm leading-7 text-white/70">
-                      تصميم وتنفيذ مجاري الهواء والدكت بمعايير دقيقة ومظهر مرتب.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              </Tilt>
             </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.65, delay: 0.2 }}
+          className="mt-14 rounded-[32px] border border-slate-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-6 shadow-[0_12px_40px_rgba(15,23,42,0.06)] dark:border-white/10 dark:from-[#08131d] dark:via-[#0b1723] dark:to-[#09111a] dark:shadow-[0_16px_50px_rgba(0,0,0,0.28)] md:p-8"
+        >
+          <div className="mb-6 text-center">
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+              أسعار خاصة بالمشاريع
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300 md:text-base">
+              نخدم أنواعًا متعددة من المشاريع ونوفر حلولًا مناسبة من حيث الجودة
+              والتنفيذ والتكلفة.
+            </p>
           </div>
 
-          <div className="mt-6 flex justify-center md:mt-10">
-            <button
-              type="button"
-              onClick={() => {
-                const target = document.getElementById('about');
-                target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="inline-flex items-center gap-2 text-sm font-extrabold text-cyan-200/90 transition hover:text-cyan-100"
-            >
-              <FaArrowDown />
-              <span>اكتشف المزيد</span>
-            </button>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-7">
+            {projectIcons.map((item, index) => {
+              const Icon = item.icon;
+
+              return (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={inView ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.35, delay: 0.06 * index }}
+                  className="group rounded-2xl border border-slate-200 bg-white/80 p-4 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-white/[0.04]"
+                >
+                  <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-2xl text-cyan-600 transition-transform duration-300 group-hover:scale-110 dark:bg-cyan-500/15 dark:text-cyan-300">
+                    <Icon />
+                  </div>
+
+                  <div className="text-sm font-bold text-slate-800 dark:text-white">
+                    {item.name}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

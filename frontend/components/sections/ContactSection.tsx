@@ -45,117 +45,126 @@ const infoCards = [
 
 export default function ContactSection() {
   return (
-    <section id="contact" className="section-shell">
-      <div className="container">
-        <div className="glass-card overflow-hidden p-6 md:p-8 xl:p-10">
-          <div className="grid gap-8 xl:grid-cols-[0.95fr_1.05fr]">
-            <div>
-              <span className="mb-4 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
-                اتصل بنا
-              </span>
+    <section className="relative overflow-hidden px-4 py-16 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.12 }}
+          transition={{ duration: 0.6 }}
+          className="mb-10 text-center"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-700 dark:text-cyan-300">
+            اتصل بنا
+          </div>
 
-              <h2 className="section-title !text-3xl md:!text-4xl">
-                جاهزون لخدمتك في أي وقت
-              </h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white md:text-4xl">
+            جاهزون لخدمتك في أي وقت
+          </h2>
 
-              <p className="mt-5 max-w-2xl text-base leading-8 text-white/75">
-                سواء كنت تحتاج تركيب مكيف جديد أو صيانة أو تنفيذ مشروع تكييف
-                متكامل، تواصل معنا وسنقدّم لك الحل المناسب بسرعة واحترافية.
-              </p>
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 md:text-lg">
+            سواء كنت تحتاج تركيب مكيف جديد أو صيانة أو تنفيذ مشروع تكييف متكامل،
+            تواصل معنا وسنقدّم لك الحل المناسب بسرعة واحترافية.
+          </p>
+        </motion.div>
 
-              <div className="mt-6 grid gap-4">
-                {infoCards.map((item, index) => {
-                  const Icon = item.icon;
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-5">
+            {infoCards.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.12 }}
+                  transition={{ duration: 0.45 }}
+                  className="rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
+                >
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
+                    <Icon className="text-xl" />
+                  </div>
 
-                  return (
-                    <motion.div
-                      key={item.title}
-                      initial={{ opacity: 0, y: 18 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, amount: 0.2 }}
-                      transition={{ duration: 0.35, delay: index * 0.05 }}
-                      className="rounded-[22px] border border-white/10 bg-white/5 p-5"
-                    >
-                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
-                        <Icon />
-                      </div>
-                      <h3 className="text-base font-black text-white">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-7 text-white/70">
-                        {item.text}
-                      </p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </div>
+                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                    {item.title}
+                  </h3>
 
-            <div className="grid gap-5">
-              {contactCards.map((card, index) => {
-                const Icon = card.icon;
-                const isExternal = card.href.startsWith('http');
+                  <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                    {item.text}
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
 
-                return (
-                  <motion.a
-                    key={card.title}
-                    href={card.href}
-                    target={isExternal ? '_blank' : undefined}
-                    rel={isExternal ? 'noopener noreferrer' : undefined}
-                    initial={{ opacity: 0, y: 22 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.15 }}
-                    transition={{ duration: 0.4, delay: index * 0.06 }}
-                    className="group rounded-[28px] border border-white/10 bg-gradient-to-br from-white/8 to-white/[0.03] p-6 transition hover:-translate-y-1 hover:border-cyan-400/20 hover:bg-cyan-400/[0.06]"
-                  >
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300 transition group-hover:scale-105">
-                      <Icon className="text-xl" />
-                    </div>
+          <div className="grid gap-5">
+            {contactCards.map((card) => {
+              const Icon = card.icon;
+              const isExternal = card.href.startsWith('http');
 
-                    <div className="text-lg font-black text-white">
-                      {card.title}
-                    </div>
+              return (
+                <motion.a
+                  key={card.title}
+                  href={card.href}
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noreferrer' : undefined}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.12 }}
+                  transition={{ duration: 0.45 }}
+                  className="block rounded-[28px] border border-slate-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-6 shadow-sm transition hover:-translate-y-1 dark:border-white/10 dark:from-[#09141e] dark:via-[#0b1622] dark:to-[#09111a]"
+                >
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
+                    <Icon className="text-xl" />
+                  </div>
 
-                    <div className="mt-2 text-sm font-bold leading-7 text-white/75">
-                      {card.value}
-                    </div>
-                  </motion.a>
-                );
-              })}
+                  <div className="text-lg font-extrabold text-slate-900 dark:text-white">
+                    {card.title}
+                  </div>
 
-              <div className="rounded-[28px] border border-cyan-400/20 bg-cyan-400/10 p-6">
-                <h3 className="text-lg font-black text-white">
-                  هل لديك مشروع أو استفسار؟
-                </h3>
-
-                <p className="mt-3 text-sm leading-8 text-white/80">
-                  أرسل لنا تفاصيل احتياجك وسنساعدك في اختيار أفضل حل مناسب
-                  للموقع والمساحة ونوع الاستخدام.
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <a
-                    href="https://wa.me/966565247407"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[50px] items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-sky-500 px-6 text-sm font-black text-white shadow-lg shadow-cyan-500/20"
-                  >
-                    <FaWhatsapp />
-                    <span>ابدأ عبر واتساب</span>
-                  </a>
-
-                  <a
-                    href="tel:+966565247407"
-                    className="inline-flex min-h-[50px] items-center justify-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 text-sm font-black text-white"
-                  >
-                    <FaPhoneAlt />
-                    <span>اتصال مباشر</span>
-                  </a>
-                </div>
-              </div>
-            </div>
+                  <div className="mt-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    {card.value}
+                  </div>
+                </motion.a>
+              );
+            })}
           </div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.12 }}
+          transition={{ duration: 0.6 }}
+          className="mt-10 rounded-[32px] border border-slate-200 bg-white/90 p-8 text-center shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
+        >
+          <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+            هل لديك مشروع أو استفسار؟
+          </h3>
+
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-8 text-slate-600 dark:text-slate-300">
+            أرسل لنا تفاصيل احتياجك وسنساعدك في اختيار أفضل حل مناسب للموقع
+            والمساحة ونوع الاستخدام.
+          </p>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="https://wa.me/966565247407"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full bg-emerald-500 px-6 py-3 text-sm font-extrabold text-white shadow-[0_10px_30px_rgba(16,185,129,0.35)] transition hover:scale-[1.02] hover:bg-emerald-400"
+            >
+              ابدأ عبر واتساب
+            </a>
+
+            <a
+              href="tel:+966565247407"
+              className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+            >
+              اتصال مباشر
+            </a>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
