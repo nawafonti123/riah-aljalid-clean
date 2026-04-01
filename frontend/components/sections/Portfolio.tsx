@@ -1,22 +1,66 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaImages, FaPlay, FaTimes, FaExpand } from 'react-icons/fa';
 import { publicApi } from '@/lib/api';
+
+import img1 from '../imge/1.jpeg';
+import img2 from '../imge/2.jpeg';
+import img3 from '../imge/3.jpeg';
+import img4 from '../imge/4.jpeg';
 
 type Project = {
   id: string;
   title: string;
   description?: string;
-  image?: string;
+  image?: string | StaticImageData;
   video?: string;
   category?: string;
   createdAt?: string;
 };
 
 type TabType = 'all' | 'images' | 'videos';
+
+const localProjects: Project[] = [
+  {
+    id: 'local-1',
+    title: 'واجهة المعرض والهوية الخارجية',
+    description:
+      'تنفيذ وتجهيز الواجهة الخارجية للمعرض مع هوية بصرية واضحة ولمسات احترافية تعكس جودة أعمال التكييف.',
+    image: img1,
+    category: 'واجهة خارجية',
+    createdAt: '2026-04-01T10:00:00.000Z',
+  },
+  {
+    id: 'local-2',
+    title: 'تنفيذ سقف وفتحات تكييف داخلية',
+    description:
+      'تنفيذ داخلي منسق لفتحات التكييف والإضاءة داخل المشروع بشكل مرتب وحديث.',
+    image: img2,
+    category: 'أعمال داخلية',
+    createdAt: '2026-04-01T10:01:00.000Z',
+  },
+  {
+    id: 'local-3',
+    title: 'تركيب دكت ووحدة تكييف مخفية',
+    description:
+      'أعمال دكت ووحدة تكييف مخفية داخل المشروع مع توزيع احترافي وتمديدات مرتبة.',
+    image: img3,
+    category: 'دكت وتكييف مخفي',
+    createdAt: '2026-04-01T10:02:00.000Z',
+  },
+  {
+    id: 'local-4',
+    title: 'تركيب وربط وحدة تحكم',
+    description:
+      'تركيب وتجهيز وحدة التحكم الخاصة بالنظام مع أعمال التمديد والتوصيل الفني.',
+    image: img4,
+    category: 'وحدة تحكم',
+    createdAt: '2026-04-01T10:03:00.000Z',
+  },
+];
 
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -36,13 +80,28 @@ export default function Portfolio() {
     load();
   }, []);
 
+  const mergedProjects = useMemo(() => {
+    const apiProjects = Array.isArray(projects) ? projects : [];
+
+    const filteredApiProjects = apiProjects.filter((item) => {
+      if (!item?.title) return true;
+
+      const normalizedTitle = item.title.trim().toLowerCase();
+      return !localProjects.some(
+        (localItem) => localItem.title.trim().toLowerCase() === normalizedTitle
+      );
+    });
+
+    return [...localProjects, ...filteredApiProjects];
+  }, [projects]);
+
   const sortedProjects = useMemo(() => {
-    return [...projects].sort((a, b) => {
+    return [...mergedProjects].sort((a, b) => {
       const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return bDate - aDate;
     });
-  }, [projects]);
+  }, [mergedProjects]);
 
   const filteredProjects = useMemo(() => {
     if (activeTab === 'images') return sortedProjects.filter((item) => !!item.image);
@@ -163,14 +222,12 @@ export default function Portfolio() {
                       </button>
                     </>
                   ) : (
-                    <>
-                      <Image
-                        src={project.image || '/logo.png'}
-                        alt={project.title}
-                        fill
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
-                    </>
+                    <Image
+                      src={project.image || '/logo.png'}
+                      alt={project.title}
+                      fill
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                    />
                   )}
 
                   <button
