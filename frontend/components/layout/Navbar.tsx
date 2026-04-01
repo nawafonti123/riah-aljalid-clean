@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   FaBars,
   FaTimes,
@@ -16,62 +17,99 @@ import {
   FaPhoneAlt,
 } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
-const navLinks = [
-  { href: '/', label: 'الرئيسية', icon: FaHome },
-  { href: '/about', label: 'عن الشركة', icon: FaInfoCircle },
-  { href: '/services', label: 'الخدمات', icon: FaWrench },
-  { href: '/portfolio', label: 'أعمالنا', icon: FaImages },
-  { href: '/contact', label: 'اتصل بنا', icon: FaEnvelope },
+const sections = [
+  { id: 'hero', label: 'الرئيسية', icon: FaHome, page: '/' },
+  { id: 'about', label: 'عن الشركة', icon: FaInfoCircle, page: '/about' },
+  { id: 'services', label: 'الخدمات', icon: FaWrench, page: '/services' },
+  { id: 'portfolio', label: 'أعمالنا', icon: FaImages, page: '/portfolio' },
+  { id: 'contact', label: 'اتصل بنا', icon: FaEnvelope, page: '/contact' },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { theme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+
+  const isHome = pathname === '/';
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 16);
+
+      if (!isHome) return;
+
+      for (const item of sections) {
+        const el = document.getElementById(item.id);
+        if (!el) continue;
+
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= 140 && rect.bottom >= 140) {
+          setActiveSection(item.id);
+          break;
+        }
+      }
     };
 
-    handleScroll();
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isHome]);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : 'unset';
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
   }, [menuOpen]);
+
+  const activePath = useMemo(() => {
+    if (isHome) return activeSection;
+    const current = sections.find((s) => s.page === pathname);
+    return current?.id ?? '';
+  }, [isHome, pathname, activeSection]);
+
+  const goTo = (item: (typeof sections)[number]) => {
+    setMenuOpen(false);
+
+    if (isHome) {
+      const el = document.getElementById(item.id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+
+    router.push(item.page);
+  };
 
   if (!mounted) return null;
 
   return (
     <>
       <motion.header
-        initial={{ y: -20, opacity: 0 }}
+        initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed top-0 left-0 right-0 z-50 px-4 pt-4"
+        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4"
       >
         <div
-          className={`mx-auto max-w-7xl rounded-[24px] border transition-all duration-300 ${
+          className={`mx-auto max-w-7xl rounded-[28px] border transition-all duration-300 ${
             scrolled
-              ? 'bg-[#061225]/85 backdrop-blur-xl border-cyan-400/15 shadow-[0_10px_35px_rgba(0,0,0,0.25)]'
-              : 'bg-[#061225]/70 backdrop-blur-xl border-cyan-400/10'
+              ? 'border-cyan-400/15 bg-[#051120]/88 shadow-[0_18px_40px_rgba(0,0,0,0.28)] backdrop-blur-xl'
+              : 'border-cyan-400/10 bg-[#051120]/76 backdrop-blur-xl'
           }`}
         >
-          <div className="flex items-center justify-between px-5 py-4">
-            <Link href="/" className="flex items-center gap-3 shrink-0">
-              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white/95 border border-cyan-400/20">
+          <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
+            <button onClick={() => goTo(sections[0])} className="flex items-center gap-3 shrink-0">
+              <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-cyan-400/20 bg-white">
                 <Image
                   src="/logo.png"
                   alt="رياح الجليد"
@@ -82,29 +120,29 @@ export default function Navbar() {
               </div>
 
               <div className="text-right leading-tight">
-                <div className="text-white font-extrabold text-xl">رياح الجليد</div>
-                <div className="text-cyan-300 text-sm">تكييف • تبريد • دكت</div>
+                <div className="text-xl font-extrabold text-white">رياح الجليد</div>
+                <div className="text-sm text-cyan-300">تكييف • تبريد • دكت</div>
               </div>
-            </Link>
+            </button>
 
-            <nav className="hidden lg:flex items-center gap-3">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const active = pathname === link.href;
+            <nav className="hidden lg:flex items-center gap-2">
+              {sections.map((item) => {
+                const Icon = item.icon;
+                const active = activePath === item.id;
 
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`flex items-center gap-2 px-5 py-3 rounded-full font-bold transition-all duration-300 ${
+                  <button
+                    key={item.id}
+                    onClick={() => goTo(item)}
+                    className={`flex items-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold transition-all duration-300 ${
                       active
-                        ? 'bg-[#01AEBE] text-white shadow-[0_8px_25px_rgba(1,174,190,0.35)]'
+                        ? 'bg-[#01AEBE] text-white shadow-[0_10px_30px_rgba(1,174,190,0.38)]'
                         : 'text-white/90 hover:bg-white/8 hover:text-cyan-300'
                     }`}
                   >
                     <Icon className="text-sm" />
-                    <span>{link.label}</span>
-                  </Link>
+                    {item.label}
+                  </button>
                 );
               })}
             </nav>
@@ -112,7 +150,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               <a
                 href="tel:+966565247407"
-                className="flex items-center gap-2 px-6 py-3 rounded-full bg-[#01AEBE] text-white font-extrabold shadow-[0_8px_25px_rgba(1,174,190,0.35)] hover:scale-[1.02] transition"
+                className="flex items-center gap-2 rounded-full bg-[#01AEBE] px-6 py-3 font-extrabold text-white shadow-[0_10px_30px_rgba(1,174,190,0.35)] transition hover:scale-[1.02]"
               >
                 <FaPhoneAlt />
                 اطلب الخدمة الآن
@@ -120,8 +158,8 @@ export default function Navbar() {
 
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="w-11 h-11 rounded-full flex items-center justify-center bg-white/8 text-white hover:bg-white/12 transition"
-                aria-label="تبديل الوضع"
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/8 text-white transition hover:bg-white/12"
+                aria-label="toggle theme"
               >
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
               </button>
@@ -130,16 +168,16 @@ export default function Navbar() {
             <div className="flex lg:hidden items-center gap-2">
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-white/8 text-white"
-                aria-label="تبديل الوضع"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white"
+                aria-label="toggle theme"
               >
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
               </button>
 
               <button
                 onClick={() => setMenuOpen(true)}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-[#01AEBE] text-white"
-                aria-label="فتح القائمة"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#01AEBE] text-white"
+                aria-label="open menu"
               >
                 <FaBars />
               </button>
@@ -151,63 +189,60 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/55 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMenuOpen(false)}
           >
-            <motion.div
-              initial={{ x: 80, opacity: 0 }}
+            <motion.aside
+              initial={{ x: 70, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 80, opacity: 0 }}
+              exit={{ x: 70, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="mr-auto h-full w-full max-w-sm bg-[#071223] border-l border-cyan-400/15 p-5"
+              className="mr-auto h-full w-full max-w-sm border-l border-cyan-400/10 bg-[#071223] p-5"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-white text-xl font-extrabold">القائمة</h3>
-
+                <h3 className="text-xl font-extrabold text-white">القائمة</h3>
                 <button
                   onClick={() => setMenuOpen(false)}
-                  className="w-10 h-10 rounded-full flex items-center justify-center bg-white/8 text-white"
-                  aria-label="إغلاق القائمة"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white"
                 >
                   <FaTimes />
                 </button>
               </div>
 
               <div className="space-y-3">
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  const active = pathname === link.href;
+                {sections.map((item) => {
+                  const Icon = item.icon;
+                  const active = activePath === item.id;
 
                   return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMenuOpen(false)}
-                      className={`w-full flex items-center gap-3 p-4 rounded-2xl transition ${
+                    <button
+                      key={item.id}
+                      onClick={() => goTo(item)}
+                      className={`flex w-full items-center gap-3 rounded-2xl p-4 text-right transition ${
                         active
                           ? 'bg-[#01AEBE] text-white'
                           : 'bg-white/5 text-white/90 hover:bg-white/10'
                       }`}
                     >
                       <Icon />
-                      <span className="font-bold">{link.label}</span>
-                    </Link>
+                      <span className="font-bold">{item.label}</span>
+                    </button>
                   );
                 })}
               </div>
 
               <a
                 href="tel:+966565247407"
-                className="mt-6 flex items-center justify-center gap-2 p-4 rounded-2xl bg-[#01AEBE] text-white font-extrabold"
+                className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-[#01AEBE] p-4 font-extrabold text-white"
               >
                 <FaPhoneAlt />
                 اطلب الخدمة الآن
               </a>
-            </motion.div>
+            </motion.aside>
           </motion.div>
         )}
       </AnimatePresence>

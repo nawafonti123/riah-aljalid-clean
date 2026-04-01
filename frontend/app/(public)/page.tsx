@@ -1,127 +1,141 @@
-import type { Metadata } from 'next';
-import { publicApi } from '@/lib/api';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import Hero from '@/components/sections/Hero';
-import WhyUs from '@/components/sections/WhyUs';
-import Achievements from '@/components/sections/Achievements';
-import AboutSection from '@/components/sections/AboutSection';
-import Services from '@/components/sections/Services';
-import Portfolio from '@/components/sections/Portfolio';
-import CompanyGallery from '@/components/sections/CompanyGallery';
-import ContactSection from '@/components/sections/ContactSection';
-import MaintenanceView from '@/components/maintenance/MaintenanceView';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'رياح الجليد | تركيب وصيانة مكيفات وتكييف مركزي بالرياض',
-  description:
-    'شركة رياح الجليد بالرياض متخصصة في تركيب وصيانة وتنظيف المكيفات، تعبئة الفريون، التكييف المركزي، وتصنيع وتركيب الدكت للمنازل والشركات.',
-  alternates: {
-    canonical: '/',
-  },
-};
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  FaMapMarkerAlt,
+  FaPhone,
+  FaEnvelope,
+  FaRegBuilding,
+  FaWhatsapp,
+  FaArrowUp,
+  FaSnowflake,
+} from 'react-icons/fa';
 
-async function checkMaintenance() {
-  try {
-    const maintenance = await publicApi.getMaintenance();
-    return maintenance;
-  } catch (error) {
-    console.error('Failed to fetch maintenance status', error);
-    return { isEnabled: false, message: '' };
-  }
-}
-
-export default async function HomePage() {
-  const maintenance = await checkMaintenance();
-
-  if (maintenance.isEnabled) {
-    return <MaintenanceView message={maintenance.message} />;
-  }
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
 
   return (
-    <>
-      <Navbar />
+    <footer className="relative overflow-hidden border-t border-cyan-400/10 bg-[#030b18] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,198,255,0.16),transparent_22%),radial-gradient(circle_at_bottom_left,rgba(1,174,190,0.12),transparent_24%)]" />
 
-      <main className="overflow-hidden">
-        <section id="hero">
-          <Hero />
-        </section>
+      <div className="container-main relative py-14">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.9fr_1fr]">
+          <div className="rounded-[28px] border border-cyan-400/10 bg-white/5 p-6 backdrop-blur-xl">
+            <div className="flex items-center gap-4">
+              <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-white">
+                <Image src="/logo.png" alt="رياح الجليد" fill className="object-contain p-2" />
+              </div>
 
-        <section id="about" className="section-padding">
-          <AboutSection />
-        </section>
+              <div>
+                <h3 className="text-3xl font-extrabold">رياح الجليد</h3>
+                <p className="mt-1 text-sm text-white/70">
+                  حلول احترافية في التكييف المركزي والسبليت والتهوية والدكت.
+                </p>
+              </div>
+            </div>
 
-        <section id="why-us" className="section-padding pt-0">
-          <WhyUs />
-        </section>
+            <p className="mt-6 leading-8 text-white/75">
+              شركة متخصصة في تركيب وصيانة أنظمة التكييف والتبريد للمنازل والشركات
+              والمشاريع، مع التزام بالجودة والسرعة والدقة في التنفيذ.
+            </p>
 
-        <section id="achievements" className="section-padding pt-0">
-          <Achievements />
-        </section>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href="https://wa.me/966565247407"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-[#01AEBE] px-5 py-3 font-bold text-white shadow-[0_10px_28px_rgba(1,174,190,0.3)]"
+              >
+                <FaWhatsapp />
+                واتساب
+              </a>
 
-        <section id="services" className="section-padding pt-0">
-          <Services />
-        </section>
+              <a
+                href="tel:+966565247407"
+                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-5 py-3 font-bold text-white"
+              >
+                <FaPhone />
+                اتصال
+              </a>
+            </div>
+          </div>
 
-        <section id="portfolio" className="section-padding pt-0">
-          <Portfolio />
-        </section>
+          <div className="rounded-[28px] border border-cyan-400/10 bg-white/5 p-6 backdrop-blur-xl">
+            <h4 className="text-2xl font-extrabold">روابط سريعة</h4>
 
-        <section id="gallery" className="section-padding pt-0">
-          <CompanyGallery />
-        </section>
+            <div className="mt-5 space-y-3 text-lg text-white/75">
+              <Link href="/" className="block hover:text-cyan-300">الرئيسية</Link>
+              <Link href="/about" className="block hover:text-cyan-300">عن الشركة</Link>
+              <Link href="/services" className="block hover:text-cyan-300">الخدمات</Link>
+              <Link href="/portfolio" className="block hover:text-cyan-300">أعمالنا</Link>
+              <Link href="/contact" className="block hover:text-cyan-300">اتصل بنا</Link>
+            </div>
 
-        <section id="contact" className="section-padding pt-0">
-          <ContactSection />
-        </section>
+            <div className="mt-8 rounded-[24px] border border-white/8 bg-white/5 p-4">
+              <div className="mb-3 flex items-center gap-2 text-cyan-300">
+                <FaSnowflake />
+                <span className="font-extrabold">خدماتنا</span>
+              </div>
 
-        <section className="pb-20">
-          <div className="container-main">
-            <div className="soft-card rounded-[2rem] p-6 sm:p-8 lg:p-10">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-                شركة رياح الجليد لصيانة وتركيب المكيفات بالرياض
-              </h2>
-
-              <p className="mt-4 text-base leading-8 text-slate-600 dark:text-slate-300">
-                تقدم شركة رياح الجليد في الرياض خدمات التكييف والتبريد للمنازل
-                والشركات، وتشمل صيانة مكيفات سبليت، تنظيف وتعقيم المكيفات، تعبئة
-                فريون وإصلاح التسريبات، تركيب وفك ونقل المكيفات، وصيانة التكييف
-                المركزي، مع سرعة في الاستجابة وجودة في التنفيذ.
-              </p>
-
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                <div className="rounded-3xl bg-slate-50 p-5 dark:bg-white/5">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    خدماتنا في الرياض
-                  </h3>
-                  <ul className="mt-3 space-y-2 text-slate-600 dark:text-slate-300">
-                    <li>صيانة مكيفات بالرياض (سبليت / شباك / مركزي)</li>
-                    <li>تنظيف مكيفات بالرياض والتعقيم</li>
-                    <li>تعبئة فريون وإصلاح تسريب الفريون</li>
-                    <li>تركيب وفك ونقل المكيفات</li>
-                    <li>تصنيع وتركيب الدكت والتهوية</li>
-                  </ul>
-                </div>
-
-                <div className="rounded-3xl bg-cyan-50 p-5 dark:bg-cyan-400/10">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                    أكثر الأعطال شيوعًا
-                  </h3>
-                  <ul className="mt-3 space-y-2 text-slate-600 dark:text-slate-300">
-                    <li>ضعف التبريد أو توقفه</li>
-                    <li>تسريب المياه من الوحدة</li>
-                    <li>أصوات مزعجة أو اهتزاز</li>
-                    <li>روائح غير مرغوبة</li>
-                    <li>تجمد المواسير أو الثلج</li>
-                  </ul>
-                </div>
+              <div className="space-y-2 text-white/75">
+                <div>تكييف مركزي</div>
+                <div>صيانة دورية</div>
+                <div>تركيب مكيفات</div>
+                <div>تصنيع وتركيب دكت</div>
               </div>
             </div>
           </div>
-        </section>
-      </main>
 
-      <Footer />
-    </>
+          <div className="rounded-[28px] border border-cyan-400/10 bg-white/5 p-6 backdrop-blur-xl">
+            <h4 className="text-2xl font-extrabold">بيانات التواصل</h4>
+
+            <div className="mt-5 space-y-4 text-white/75">
+              <div className="flex items-start gap-3">
+                <FaMapMarkerAlt className="mt-1 text-cyan-300" />
+                <span>الرياض - طريق الملك عبدالعزيز</span>
+              </div>
+
+              <a href="tel:+966565247407" className="flex items-start gap-3 hover:text-cyan-300">
+                <FaPhone className="mt-1 text-cyan-300" />
+                <span>+966 56 524 7407</span>
+              </a>
+
+              <a
+                href="mailto:RiaHaljalid@icloud.com"
+                className="flex items-start gap-3 hover:text-cyan-300"
+              >
+                <FaEnvelope className="mt-1 text-cyan-300" />
+                <span>RiaHaljalid@icloud.com</span>
+              </a>
+
+              <div className="flex items-start gap-3">
+                <FaRegBuilding className="mt-1 text-cyan-300" />
+                <span>السجل التجاري: 1010632725</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col gap-4 border-t border-white/8 pt-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</p>
+
+          <div className="flex items-center gap-5">
+            <span>تصميم وتطوير: Team Hawk</span>
+            <a
+              href="#top"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 hover:bg-white/5"
+            >
+              <FaArrowUp />
+              للأعلى
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }

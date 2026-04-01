@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = 'https://riah-aljalid.com';
+const SITE_URL = 'https://www.riah-aljalid.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
