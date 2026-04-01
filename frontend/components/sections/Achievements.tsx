@@ -1,185 +1,107 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
-  FaBolt,
-  FaShieldAlt,
+  FaProjectDiagram,
+  FaUsers,
   FaTools,
-  FaUserTie,
-  FaClock,
-  FaCheckCircle,
+  FaSnowflake,
 } from 'react-icons/fa';
-import { publicApi } from '@/lib/api';
 
-type WhyUsItem = {
+type StatItem = {
   icon: React.ComponentType<{ className?: string }>;
-  title: string;
+  value: string;
+  label: string;
   description: string;
 };
 
-type SettingsResponse = {
-  whyUsImage?: string | null;
-};
-
-const whyUsItems: WhyUsItem[] = [
+const stats: StatItem[] = [
   {
-    icon: FaUserTie,
-    title: 'فريق احترافي',
+    icon: FaProjectDiagram,
+    value: '+150',
+    label: 'مشروع تم تنفيذه',
     description:
-      'طاقم فني وإداري لديه خبرة عملية في تنفيذ أعمال التكييف والتبريد بمختلف أنواعها.',
+      'تنفيذ أعمال متنوعة في التكييف والتبريد والدكت والتهوية للمنازل والمنشآت التجارية.',
   },
   {
-    icon: FaBolt,
-    title: 'سرعة في الإنجاز',
+    icon: FaUsers,
+    value: '+120',
+    label: 'عميل راضٍ',
     description:
-      'ننجز الأعمال بسرعة عالية مع المحافظة على الجودة والترتيب والدقة في التنفيذ.',
+      'ثقة عملائنا مبنية على جودة التنفيذ والالتزام بالمواعيد وسرعة الاستجابة.',
   },
   {
     icon: FaTools,
-    title: 'حلول متكاملة',
+    value: '+15',
+    label: 'سنة خبرة',
     description:
-      'من التوريد إلى التركيب والصيانة والتهوية والدكت، نوفر خدمة متكاملة في مكان واحد.',
+      'خبرة عملية متراكمة في التركيبات والصيانة والمعالجة الفنية للمشاريع المختلفة.',
   },
   {
-    icon: FaShieldAlt,
-    title: 'جودة واعتمادية',
+    icon: FaSnowflake,
+    value: '100%',
+    label: 'تركيز على الجودة',
     description:
-      'نهتم بالخامات وجودة التشطيب وكفاءة التشغيل لضمان أفضل أداء على المدى الطويل.',
-  },
-  {
-    icon: FaClock,
-    title: 'التزام بالمواعيد',
-    description:
-      'نلتزم بجدولة واضحة وتنفيذ منظم ومتابعة مستمرة حتى تسليم العمل بالصورة المطلوبة.',
-  },
-  {
-    icon: FaCheckCircle,
-    title: 'رضا العميل أولاً',
-    description:
-      'نركز على راحتك وجودة الخدمة والحلول المناسبة لميزانيتك وطبيعة مشروعك.',
+      'نهتم بالتفاصيل الفنية والشكل النهائي لضمان نتيجة احترافية وعمل موثوق.',
   },
 ];
 
-export default function WhyUs() {
-  const [image, setImage] = useState('/logo.png');
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const settings = (await publicApi.getSettings()) as SettingsResponse | null;
-        const img = settings?.whyUsImage?.trim();
-        setImage(img || '/logo.png');
-      } catch {
-        setImage('/logo.png');
-      }
-    };
-
-    load();
-  }, []);
-
-  const highlights = useMemo(
-    () => [
-      'التزام بالجودة والدقة في كل مرحلة',
-      'تنفيذ أنيق ومنظم للمشاريع السكنية والتجارية',
-      'خدمة سريعة مع متابعة واهتمام بالتفاصيل',
-    ],
-    []
-  );
-
+export default function Achievements() {
   return (
-    <section className="relative overflow-hidden px-4 py-16 md:px-8 lg:px-12">
-      <div className="mx-auto max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.12 }}
-          transition={{ duration: 0.6 }}
-          className="mb-10 text-center"
-        >
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-700 dark:text-cyan-300">
-            لماذا نحن
-          </div>
+    <section
+      id="achievements"
+      className="relative py-20 sm:py-24 overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.10),transparent_35%),radial-gradient(circle_at_bottom,rgba(34,197,94,0.10),transparent_35%)] pointer-events-none" />
 
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white md:text-4xl">
-            لماذا يختارنا العملاء؟
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
+          viewport={{ once: true }}
+          className="text-center max-w-3xl mx-auto mb-12"
+        >
+          <span className="inline-flex items-center rounded-full border border-cyan-400/25 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-300">
+            إنجازاتنا
+          </span>
+
+          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
+            أرقام تعكس خبرتنا وجودة أعمالنا
           </h2>
 
-          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 md:text-lg">
-            لأننا نجمع بين الجودة والسرعة والخبرة والتنفيذ المنظم، ونقدّم تجربة
-            خدمة أكثر احترافية ووضوحًا من البداية حتى التسليم.
+          <p className="mt-4 text-base sm:text-lg leading-8 text-white/75">
+            نفخر بتنفيذ أعمال احترافية في التكييف والتبريد والتهوية، مع اهتمام
+            كبير بالدقة والتنظيم ورضا العميل في كل مشروع.
           </p>
         </motion.div>
 
-        <div className="grid items-center gap-8 lg:grid-cols-2">
-          <motion.div
-            initial={{ opacity: 0, x: 25 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.12 }}
-            transition={{ duration: 0.65 }}
-          >
-            <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_15px_45px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/[0.04]">
-              <div className="relative aspect-[4/3] w-full">
-                <Image
-                  src={image}
-                  alt="لماذا رياح الجليد"
-                  fill
-                  className="object-cover"
-                  onError={() => setImage('/logo.png')}
-                />
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: -25 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.12 }}
-            transition={{ duration: 0.65 }}
-            className="rounded-[32px] border border-slate-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-6 shadow-[0_15px_45px_rgba(15,23,42,0.06)] dark:border-white/10 dark:from-[#09141e] dark:via-[#0b1622] dark:to-[#09111a] md:p-8"
-          >
-            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              تنفيذ مرتب وخدمة موثوقة
-            </h3>
-
-            <div className="mt-5 space-y-3">
-              {highlights.map((item) => (
-                <div
-                  key={item}
-                  className="flex items-center gap-3 text-sm font-semibold text-slate-700 dark:text-slate-200"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
-                    <FaCheckCircle className="text-xs" />
-                  </span>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {whyUsItems.map((item) => {
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {stats.map((item, index) => {
             const Icon = item.icon;
+
             return (
               <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 24 }}
+                key={item.label}
+                initial={{ opacity: 0, y: 26 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.12 }}
-                transition={{ duration: 0.45 }}
-                className="rounded-[28px] border border-slate-200 bg-white/90 p-6 shadow-sm dark:border-white/10 dark:bg-white/[0.04]"
+                transition={{ duration: 0.45, delay: index * 0.08 }}
+                viewport={{ once: true }}
+                className="group rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-7 shadow-[0_10px_40px_rgba(0,0,0,0.25)] hover:border-cyan-400/30 hover:bg-white/10 transition-all duration-300"
               >
-                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
-                  <Icon className="text-xl" />
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300 ring-1 ring-cyan-400/20">
+                  <Icon className="text-2xl" />
                 </div>
 
-                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                  {item.title}
+                <div className="text-3xl sm:text-4xl font-extrabold text-white">
+                  {item.value}
+                </div>
+
+                <h3 className="mt-3 text-xl font-bold text-white">
+                  {item.label}
                 </h3>
 
-                <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
+                <p className="mt-3 text-sm sm:text-base leading-7 text-white/70">
                   {item.description}
                 </p>
               </motion.div>
