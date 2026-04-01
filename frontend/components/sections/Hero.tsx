@@ -1,242 +1,213 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { motion } from 'framer-motion';
 import {
-  FaMapMarkerAlt,
-  FaPhone,
-  FaEnvelope,
-  FaRegBuilding,
-  FaWhatsapp,
-  FaTimes,
   FaSnowflake,
-  FaArrowUp,
+  FaPhoneAlt,
+  FaWhatsapp,
+  FaCheckCircle,
+  FaArrowDown,
+  FaTools,
+  FaFan,
+  FaWind,
 } from 'react-icons/fa';
 
-type Settings = {
-  address?: string;
-  phone?: string;
-  email?: string;
-  commercialRegister?: string;
-  footerIceImage?: string;
-};
+const stats = [
+  { value: '+15', label: 'سنة خبرة' },
+  { value: '+200', label: 'مشروع منجز' },
+  { value: '+50', label: 'فني ومختص' },
+  { value: '24/7', label: 'دعم وخدمة' },
+];
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const features = [
+  'تركيب وصيانة جميع أنواع المكيفات',
+  'تنفيذ مشاريع التكييف المركزي والدكت',
+  'فريق احترافي وسرعة في الإنجاز',
+];
 
-async function fetchSettingsClient(): Promise<Settings | null> {
-  try {
-    if (!API_URL) return null;
-    const res = await fetch(`${API_URL}/settings`, { cache: 'no-store' });
-    if (!res.ok) return null;
-    return (await res.json()) as Settings;
-  } catch {
-    return null;
-  }
-}
-
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
-  const [settings, setSettings] = useState<Settings | null>(null);
-  const [callOpen, setCallOpen] = useState(false);
-
-  useEffect(() => {
-    fetchSettingsClient().then(setSettings).catch(() => setSettings(null));
-  }, []);
-
-  const address = settings?.address || 'الرياض - طريق الملك عبدالعزيز';
-  const phone = settings?.phone || '+966 56 524 7407';
-  const email = settings?.email || 'RiaHaljalid@icloud.com';
-  const commercialRegister = settings?.commercialRegister || '1010632725';
-  const footerImage = settings?.footerIceImage || '/logo.png';
-
-  const digitsPhone = useMemo(() => (phone || '').replace(/[^\d]/g, ''), [phone]);
-  const waLink = digitsPhone ? `https://wa.me/${digitsPhone}` : '#';
-  const telLink = digitsPhone ? `tel:+${digitsPhone}` : '#';
-
+export default function Hero() {
   return (
-    <>
-      <footer className="relative overflow-hidden border-t border-slate-200/70 bg-slate-950 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_20%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.14),transparent_25%)]" />
+    <section
+      id="hero"
+      className="relative overflow-hidden pt-6 md:pt-10"
+      aria-label="القسم الرئيسي"
+    >
+      <div className="container">
+        <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-cyan-500/10 via-slate-900/70 to-slate-950/90 px-5 py-10 shadow-2xl backdrop-blur-xl md:px-8 md:py-14 xl:px-12">
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -right-20 top-0 h-72 w-72 rounded-full bg-cyan-400/15 blur-3xl" />
+            <div className="absolute -left-16 bottom-0 h-72 w-72 rounded-full bg-sky-500/10 blur-3xl" />
+          </div>
 
-        <div className="container-main relative py-16">
-          <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr_1fr]">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-              <div className="flex items-center gap-4">
-                <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-white">
-                  <Image
-                    src={footerImage}
-                    alt="رياح الجليد"
-                    fill
-                    className="object-contain p-2"
-                    sizes="64px"
-                  />
-                </div>
+          <div className="relative grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45 }}
+                className="mb-5 inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-extrabold text-cyan-200"
+              >
+                <FaSnowflake />
+                <span>حلول احترافية في التكييف والتبريد بالرياض</span>
+              </motion.div>
 
-                <div>
-                  <h3 className="text-2xl font-extrabold">رياح الجليد</h3>
-                  <p className="mt-1 text-sm text-slate-300">
-                    حلول احترافية في التكييف المركزي والسبليت والتهوية والدكت.
-                  </p>
-                </div>
-              </div>
+              <motion.h1
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.05 }}
+                className="max-w-3xl text-3xl font-black leading-[1.35] text-white md:text-5xl"
+              >
+                رياح الجليد
+                <span className="block text-cyan-300">
+                  لتركيب وصيانة أنظمة التكييف المركزي والسبليت والدكت
+                </span>
+              </motion.h1>
 
-              <p className="mt-6 leading-8 text-slate-300">
-                شركة متخصصة في تركيب وصيانة أنظمة التكييف والتبريد للمنازل والشركات
-                والمشاريع، مع التزام بالجودة والسرعة والدقة في التنفيذ.
-              </p>
+              <motion.p
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.1 }}
+                className="mt-5 max-w-2xl text-base leading-8 text-white/75 md:text-lg"
+              >
+                نقدم خدمات متكاملة تشمل التوريد والتركيب والصيانة والتنظيف
+                والتعبئة وتنفيذ مشاريع التهوية والدكت للمنازل والشركات
+                والمشاريع باحترافية عالية ولمسة تنفيذ دقيقة.
+              </motion.p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <motion.div
+                initial={{ opacity: 0, y: 26 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.15 }}
+                className="mt-7 grid gap-3 sm:grid-cols-2"
+              >
+                {features.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white/85"
+                  >
+                    <FaCheckCircle className="mt-1 shrink-0 text-cyan-300" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 28 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.2 }}
+                className="mt-8 flex flex-wrap gap-3"
+              >
                 <a
-                  href={waLink}
+                  href="https://wa.me/966565247407"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-primary"
+                  className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full bg-gradient-to-r from-cyan-500 to-sky-500 px-6 text-sm font-black text-white shadow-lg shadow-cyan-500/20 transition hover:-translate-y-0.5"
                 >
-                  <FaWhatsapp className="ml-2" />
-                  واتساب
+                  <FaWhatsapp className="text-base" />
+                  <span>تواصل واتساب</span>
                 </a>
 
-                <button onClick={() => setCallOpen(true)} className="btn-secondary">
-                  <FaPhone className="ml-2" />
-                  اتصال
-                </button>
-              </div>
-            </div>
+                <a
+                  href="tel:+966565247407"
+                  className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-white/15 bg-white/5 px-6 text-sm font-black text-white transition hover:bg-white/10"
+                >
+                  <FaPhoneAlt className="text-sm" />
+                  <span>اتصل الآن</span>
+                </a>
 
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-              <h4 className="text-xl font-bold">روابط سريعة</h4>
-
-              <div className="mt-5 space-y-3 text-slate-300">
-                <Link href="/" className="block transition hover:text-cyan-300">
-                  الرئيسية
+                <Link
+                  href="/portfolio"
+                  className="inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-6 text-sm font-black text-cyan-200 transition hover:bg-cyan-400/15"
+                >
+                  <span>شاهد أعمالنا</span>
                 </Link>
-                <a href="/#about" className="block transition hover:text-cyan-300">
-                  عن الشركة
-                </a>
-                <a href="/#services" className="block transition hover:text-cyan-300">
-                  الخدمات
-                </a>
-                <a href="/#portfolio" className="block transition hover:text-cyan-300">
-                  أعمالنا
-                </a>
-                <a href="/#contact" className="block transition hover:text-cyan-300">
-                  اتصل بنا
-                </a>
-              </div>
-
-              <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="mb-2 flex items-center gap-2 text-cyan-300">
-                  <FaSnowflake />
-                  <span className="font-semibold">خدماتنا</span>
-                </div>
-                <div className="grid gap-2 text-sm text-slate-300">
-                  <span>تكييف مركزي</span>
-                  <span>صيانة دورية</span>
-                  <span>تركيب مكيفات</span>
-                  <span>تصنيع وتركيب دكت</span>
-                </div>
-              </div>
+              </motion.div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-              <h4 className="text-xl font-bold">بيانات التواصل</h4>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: 0.12 }}
+              className="relative"
+            >
+              <div className="grid gap-4">
+                <div className="rounded-[28px] border border-cyan-400/15 bg-white/5 p-5 backdrop-blur-md">
+                  <div className="mb-4 flex items-center gap-3">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                      <FaFan className="text-2xl" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-white">
+                        أنظمة تكييف متطورة
+                      </h3>
+                      <p className="mt-1 text-sm text-white/65">
+                        تنفيذ احترافي للمنازل والشركات والمشاريع
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="mt-5 space-y-4 text-slate-300">
-                <div className="flex items-start gap-3">
-                  <FaMapMarkerAlt className="mt-1 text-cyan-300" />
-                  <span>{address}</span>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {stats.map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-2xl border border-white/10 bg-slate-950/35 px-4 py-4"
+                      >
+                        <div className="text-2xl font-black text-cyan-300">
+                          {item.value}
+                        </div>
+                        <div className="mt-1 text-sm font-bold text-white/75">
+                          {item.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <button
-                  onClick={() => setCallOpen(true)}
-                  className="flex items-start gap-3 text-right transition hover:text-cyan-300"
-                >
-                  <FaPhone className="mt-1 text-cyan-300" />
-                  <span>{phone}</span>
-                </button>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                      <FaTools />
+                    </div>
+                    <h4 className="text-base font-black text-white">
+                      صيانة دقيقة
+                    </h4>
+                    <p className="mt-2 text-sm leading-7 text-white/70">
+                      فحص وتشخيص وحلول عملية لرفع كفاءة التبريد وتقليل الأعطال.
+                    </p>
+                  </div>
 
-                <a href={`mailto:${email}`} className="flex items-start gap-3 hover:text-cyan-300">
-                  <FaEnvelope className="mt-1 text-cyan-300" />
-                  <span>{email}</span>
-                </a>
-
-                <div className="flex items-start gap-3">
-                  <FaRegBuilding className="mt-1 text-cyan-300" />
-                  <span>السجل التجاري: {commercialRegister}</span>
+                  <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                      <FaWind />
+                    </div>
+                    <h4 className="text-base font-black text-white">
+                      دكت وتهوية
+                    </h4>
+                    <p className="mt-2 text-sm leading-7 text-white/70">
+                      تصميم وتنفيذ مجاري الهواء والدكت بمعايير دقيقة ومظهر مرتب.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</p>
-
-            <div className="flex items-center gap-4">
-              <span>تصميم وتطوير: Team Hawk</span>
-              <a
-                href="#hero"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 hover:bg-white/5"
-              >
-                <FaArrowUp />
-                للأعلى
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      {callOpen && (
-        <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-          onClick={() => setCallOpen(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-3xl bg-white p-6 text-slate-900 shadow-2xl dark:bg-slate-900 dark:text-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold">اختر طريقة الاتصال</h3>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{phone}</p>
-              </div>
-
-              <button
-                onClick={() => setCallOpen(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/10"
-              >
-                <FaTimes />
-              </button>
-            </div>
-
-            <div className="grid gap-3">
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between rounded-2xl bg-green-500 px-5 py-4 font-bold text-white"
-              >
-                <span className="flex items-center gap-3">
-                  <FaWhatsapp />
-                  واتساب
-                </span>
-                <span>فتح</span>
-              </a>
-
-              <a
-                href={telLink}
-                className="flex items-center justify-between rounded-2xl bg-cyan-600 px-5 py-4 font-bold text-white"
-              >
-                <span className="flex items-center gap-3">
-                  <FaPhone />
-                  اتصال عادي
-                </span>
-                <span>اتصال</span>
-              </a>
-            </div>
+          <div className="mt-8 flex justify-center md:mt-10">
+            <button
+              type="button"
+              onClick={() => {
+                const target = document.getElementById('about');
+                target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="inline-flex items-center gap-2 text-sm font-extrabold text-cyan-200/90 transition hover:text-cyan-100"
+            >
+              <FaArrowDown />
+              <span>اكتشف المزيد</span>
+            </button>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </section>
   );
 }

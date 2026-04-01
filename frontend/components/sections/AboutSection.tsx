@@ -1,11 +1,10 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { publicApi } from '@/lib/api';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import Tilt from 'react-parallax-tilt';
-import { FaExpand, FaTimes } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { publicApi } from '@/lib/api';
+import { FaUsers, FaBullseye, FaEye, FaGem } from 'react-icons/fa';
 
 interface TeamMember {
   id: string;
@@ -13,303 +12,200 @@ interface TeamMember {
   role: string;
   bio?: string;
   image?: string;
-  order: number;
+  order?: number;
 }
 
 interface SiteSettings {
   aboutImage?: string | null;
 }
 
-type TeamLightbox =
-  | { open: false }
-  | { open: true; src: string; name?: string; role?: string };
+const values = [
+  {
+    icon: FaGem,
+    title: 'الجودة',
+    description: 'نلتزم بتقديم أعمال دقيقة بمواد جيدة وتشطيب مرتب.',
+  },
+  {
+    icon: FaBullseye,
+    title: 'الرسالة',
+    description: 'تقديم حلول تكييف عملية وفعالة تلبي احتياج العميل بأفضل صورة.',
+  },
+  {
+    icon: FaEye,
+    title: 'الرؤية',
+    description: 'أن نكون من الأسماء الموثوقة والرائدة في مجال التكييف والتبريد.',
+  },
+];
 
 export default function AboutSection() {
   const [team, setTeam] = useState<TeamMember[]>([]);
-  const [aboutImage, setAboutImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const [lb, setLb] = useState<TeamLightbox>({ open: false });
-
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setLb({ open: false });
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  const [aboutImage, setAboutImage] = useState('/logo.png');
 
   useEffect(() => {
     const run = async () => {
       try {
         const [teamData, settings] = await Promise.all([
-          publicApi.getTeamMembers(),
+          publicApi.getTeamMembers().catch(() => []),
           publicApi.getSettings().catch(() => null),
         ]);
 
-        setTeam(teamData || []);
-        const s = settings as SiteSettings | null;
-        setAboutImage((s?.aboutImage as string) || '/logo.png');
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
+        setTeam(Array.isArray(teamData) ? teamData : []);
+
+        const siteSettings = settings as SiteSettings | null;
+        const image = siteSettings?.aboutImage?.trim();
+        setAboutImage(image || '/logo.png');
+      } catch {
+        setTeam([]);
+        setAboutImage('/logo.png');
       }
     };
 
     run();
   }, []);
 
+  const orderedTeam = useMemo(
+    () =>
+      [...team].sort((a, b) => {
+        const aOrder = a.order ?? 0;
+        const bOrder = b.order ?? 0;
+        return aOrder - bOrder;
+      }),
+    [team]
+  );
+
   return (
-    <section
-      id="about"
-      ref={ref}
-      className="py-12 sm:py-16 md:py-20 bg-white dark:bg-gray-900 transition-colors duration-300 overflow-x-clip"
-    >
-      <div className="container mx-auto px-4">
-        {/* العنوان */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55 }}
-          className="text-center mb-8 sm:mb-10"
-        >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-            رياح الجليد
-            <span className="block text-lg sm:text-xl text-[#01AEBE] dark:text-[#00c6ff] mt-2">
-              لأعمال التكييف المركزي
-            </span>
-          </h2>
-        </motion.div>
+    <section id="about" className="section-shell">
+      <div className="container">
+        <div className="mb-10 max-w-3xl">
+          <span className="mb-4 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
+            من نحن
+          </span>
+          <h2 className="section-title">نبذة عن رياح الجليد</h2>
+          <p className="section-subtitle">
+            مؤسسة متخصصة في حلول التكييف والتبريد والتهوية، نهتم بجودة التنفيذ
+            وسرعة الإنجاز ورضا العميل، ونعمل على تقديم خدمات متكاملة للمشاريع
+            السكنية والتجارية باحترافية عالية.
+          </p>
+        </div>
 
-        {/* نبذة عنا + صورة (3D) */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 items-stretch mb-10">
-          <Tilt
-            tiltMaxAngleX={8}
-            tiltMaxAngleY={8}
-            perspective={1200}
-            transitionSpeed={1200}
-            glareEnable
-            glareMaxOpacity={0.12}
-            scale={1.02}
-            className="rounded-2xl"
+        <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.05fr]">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.45 }}
+            className="glass-card overflow-hidden p-3"
           >
-            <div className="glass-card p-6 sm:p-8 rounded-2xl bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-white/10 shadow-xl transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,200,255,0.18)]">
-              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-3">نبذة عنا</h3>
-              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-{`نحن مؤسسة سعودية متخصصة في تركيب وصيانة أنظمة التكييف والتهوية والتبريد باستخدام التقنيات الحديثة والمبتكرة. نحرص على تحقيق أفضل النتائج بأفضل الأسعار وفي إطار الالتزام بالمعايير الصحية والبيئية، وذلك لتوفير بيئة مريحة وصحية لعملائنا، سواء في المنازل أو الشركات والمصانع.
-يتميز فريق عملنا بالكفاءة والاحترافية، ما يجعلنا من الرواد في هذا المجال. ونحن نهدف دائمًا إلى تحسين خدماتنا وتلبية احتياجات عملائنا بأفضل الطرق الممكنة، وذلك لضمان رضاهم التام عن خدماتنا.`}
-              </p>
-            </div>
-          </Tilt>
-
-          <Tilt
-            tiltMaxAngleX={8}
-            tiltMaxAngleY={8}
-            perspective={1300}
-            transitionSpeed={1200}
-            glareEnable
-            glareMaxOpacity={0.08}
-            scale={1.02}
-            className="rounded-2xl"
-          >
-            <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 min-h-[220px] shadow-xl transition-all duration-500 hover:shadow-[0_0_45px_rgba(0,255,200,0.15)]">
+            <div className="relative min-h-[340px] overflow-hidden rounded-[24px] bg-slate-900/40 md:min-h-[460px]">
               <Image
-                src={aboutImage || '/logo.png'}
+                src={aboutImage}
                 alt="عن رياح الجليد"
                 fill
-                sizes="(max-width: 768px) 100vw, 520px"
                 className="object-cover"
-                priority={false}
+                onError={() => setAboutImage('/logo.png')}
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/15 to-transparent" />
             </div>
-          </Tilt>
-        </div>
-
-        {/* الرؤية والرسالة */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 mb-10">
-          <Tilt
-            tiltMaxAngleX={8}
-            tiltMaxAngleY={8}
-            perspective={1200}
-            transitionSpeed={1200}
-            glareEnable
-            glareMaxOpacity={0.10}
-            scale={1.02}
-            className="rounded-xl"
-          >
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-500 hover:shadow-[0_0_35px_rgba(0,200,255,0.18)]"
-            >
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3">الرؤية</h3>
-              <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-{`تتمثل رؤيتنا في توفير حلول تكييف متطورة وخدمات متميزة لعملائنا، وتحسين جودة الهواء والبيئة في المناطق التي نخدمها، والاستمرار في الابتكار والتطوير لتحقيق النجاح والنمو المستدام.
-ونحن نؤمن بأن فريقنا هو الأساس لنجاحنا وتحقيق رؤيتنا، لذلك نعمل على توفير بيئة عمل إيجابية وملهمة ونشجع التعاون والابتكار والتحسين المستمر.`}
-              </p>
-            </motion.div>
-          </Tilt>
-
-          <Tilt
-            tiltMaxAngleX={8}
-            tiltMaxAngleY={8}
-            perspective={1200}
-            transitionSpeed={1200}
-            glareEnable
-            glareMaxOpacity={0.10}
-            scale={1.02}
-            className="rounded-xl"
-          >
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-white dark:bg-gray-800 p-4 sm:p-6 md:p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-500 hover:shadow-[0_0_35px_rgba(0,255,200,0.16)]"
-            >
-              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-3">الرسالة</h3>
-              <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-{`تؤمن شركتنا بأهمية الابتكار والتطوير لتحسين أدائنا وتلبية متطلبات السوق الذي يشهد نمواً كبيراً بالتزامن مع رؤية 2030.
-ولذلك نسعى دائماً إلى الاستمرار في تعزيز الجودة والكفاءة والاستدامة في جميع جوانب أعمالنا.
-ونعمل بشكل مستمر على تحسين أدائنا وتطوير قدراتنا للحفاظ على مكانتنا كشركة رائدة في هذا المجال.`}
-              </p>
-            </motion.div>
-          </Tilt>
-        </div>
-
-        {/* القيم */}
-        <Tilt
-          tiltMaxAngleX={6}
-          tiltMaxAngleY={6}
-          perspective={1100}
-          transitionSpeed={1200}
-          glareEnable
-          glareMaxOpacity={0.08}
-          scale={1.01}
-          className="rounded-2xl"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            className="mb-12 bg-white/70 dark:bg-gray-800/60 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-white/10 transition-all duration-500 hover:shadow-[0_0_35px_rgba(0,200,255,0.14)]"
-          >
-            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white text-center mb-5 sm:mb-6">
-              القيم
-            </h3>
-            <p className="text-center text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-xs sm:text-sm leading-relaxed whitespace-pre-line">
-{`نحن نؤمن بأن القيم الأخلاقية تلعب دورًا حاسمًا في تحقيق النجاح والنمو المستدام، وهذا ما نسعى إليه في مؤسسة رياح الجليد.
-نحرص كل الحرص على الإخلاص والتفاني في تقديم خدماتنا، ونسعى جاهدين لتحسين جودة الخدمات التي نقدمها.
-وتلبية احتياجات عملائنا وتحسين خدمتهم، وهذا ينعكس بوضوح في شهاداتهم الإيجابية وثقتهم بنا.
-ونحن بذلك نعتز ونفتخر بتواجدنا كرواد في هذا المجال.`}
-            </p>
           </motion.div>
-        </Tilt>
 
-        {/* فريق العمل */}
-        {!loading && team.length > 0 && (
-          <div className="mt-12">
-            <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-6">فريق العمل</h3>
+          <div className="space-y-5">
+            <motion.div
+              initial={{ opacity: 0, y: 26 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45 }}
+              className="soft-card p-6"
+            >
+              <h3 className="mb-3 text-xl font-black text-white">نبذة عنا</h3>
+              <p className="text-[15px] leading-8 text-white/75">
+                نقدم خدمات تركيب وصيانة وتنظيف وتوريد أنظمة التكييف بأعلى مستوى
+                من الاحتراف، ونسعى دائمًا لرفع كفاءة التشغيل وتقديم حلول مناسبة
+                لطبيعة كل مشروع سواء كان منزلًا أو منشأة تجارية أو مشروعًا كبيرًا.
+              </p>
+            </motion.div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {team
-                .slice()
-                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                .map((member, idx) => (
+            <div className="grid gap-4 md:grid-cols-3">
+              {values.map((item, index) => {
+                const Icon = item.icon;
+
+                return (
                   <motion.div
-                    key={member.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.4, delay: 0.05 + idx * 0.04 }}
+                    key={item.title}
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.2 }}
+                    transition={{ duration: 0.4, delay: index * 0.06 }}
+                    className="soft-card p-5"
                   >
-                    <Tilt
-                      tiltMaxAngleX={10}
-                      tiltMaxAngleY={10}
-                      perspective={1200}
-                      transitionSpeed={1200}
-                      glareEnable
-                      glareMaxOpacity={0.10}
-                      scale={1.04}
-                      className="rounded-xl"
-                    >
-                      <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md border border-gray-200 dark:border-gray-700 transition-all duration-500 hover:shadow-[0_0_30px_rgba(0,200,255,0.18)]">
-                        <div className="relative w-full h-32 sm:h-36">
-                          <Image
-                            src={member.image || '/logo.png'}
-                            alt={member.name}
-                            fill
-                            sizes="(max-width: 640px) 50vw, 25vw"
-                            className="object-cover"
-                          />
-
-                          {/* ✅ زر تكبير صورة العضو */}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setLb({
-                                open: true,
-                                src: member.image || '/logo.png',
-                                name: member.name,
-                                role: member.role,
-                              })
-                            }
-                            className="absolute top-2 right-2 w-9 h-9 rounded-xl bg-black/45 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm transition"
-                            aria-label="تكبير صورة العضو"
-                            title="تكبير"
-                          >
-                            <FaExpand className="text-[12px]" />
-                          </button>
-                        </div>
-
-                        <div className="p-3">
-                          <p className="font-semibold text-sm text-gray-900 dark:text-white">{member.name}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-300">{member.role}</p>
-                        </div>
-                      </div>
-                    </Tilt>
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                      <Icon />
+                    </div>
+                    <h4 className="text-base font-black text-white">
+                      {item.title}
+                    </h4>
+                    <p className="mt-2 text-sm leading-7 text-white/70">
+                      {item.description}
+                    </p>
                   </motion.div>
-                ))}
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {orderedTeam.length > 0 && (
+          <div className="mt-12">
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                <FaUsers />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black text-white">فريق العمل</h3>
+                <p className="mt-1 text-sm text-white/65">
+                  نخبة من المختصين والفنيين في أعمال التكييف والتبريد
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+              {orderedTeam.map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="glass-card overflow-hidden"
+                >
+                  <div className="relative h-72 bg-slate-900/40">
+                    <Image
+                      src={member.image || '/logo.png'}
+                      alt={member.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+
+                  <div className="p-5">
+                    <h4 className="text-lg font-black text-white">
+                      {member.name}
+                    </h4>
+                    <p className="mt-1 text-sm font-bold text-cyan-300">
+                      {member.role}
+                    </p>
+
+                    {member.bio && (
+                      <p className="mt-3 line-clamp-4 text-sm leading-7 text-white/70">
+                        {member.bio}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         )}
       </div>
-
-      {/* ✅ Lightbox لفريق العمل */}
-      {lb.open && (
-        <div
-          className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-          onMouseDown={() => setLb({ open: false })}
-        >
-          <div
-            className="relative w-full max-w-3xl bg-white/90 dark:bg-gray-900/90 border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/60 dark:border-white/10">
-              <div className="truncate">
-                <div className="text-sm sm:text-base font-bold text-gray-900 dark:text-white">{lb.name || 'عضو'}</div>
-                {lb.role && <div className="text-xs text-gray-600 dark:text-gray-300">{lb.role}</div>}
-              </div>
-              <button
-                type="button"
-                onClick={() => setLb({ open: false })}
-                className="w-10 h-10 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition"
-                aria-label="إغلاق"
-              >
-                <FaTimes />
-              </button>
-            </div>
-
-            <div className="bg-black">
-              <img src={lb.src} alt={lb.name || 'team'} className="w-full max-h-[75vh] object-contain" />
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
