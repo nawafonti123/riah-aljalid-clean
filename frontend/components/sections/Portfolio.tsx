@@ -9,6 +9,8 @@ import { publicApi } from '@/lib/api';
 import img2 from '../imge/2.jpeg';
 import img3 from '../imge/3.jpeg';
 import img4 from '../imge/4.jpeg';
+import img13 from '../imge/13.jpeg';
+import img14 from '../imge/14.jpeg';
 
 type Project = {
   id: string;
@@ -49,6 +51,24 @@ const localProjects: Project[] = [
     image: img4,
     category: 'وحدة تحكم',
     createdAt: '2026-04-01T10:03:00.000Z',
+  },
+  {
+    id: 'local-13',
+    title: 'تركيب وحدة داخلية سبليت',
+    description:
+      'تنفيذ ميداني لأعمال تركيب وحدة تكييف داخلية سبليت مع ضبط التثبيت والتمديدات بشكل مرتب واحترافي داخل الموقع.',
+    image: img13,
+    category: 'تركيب مكيفات سبليت',
+    createdAt: '2026-04-01T10:08:00.000Z',
+  },
+  {
+    id: 'local-14',
+    title: 'تنفيذ وتجهيز وحدات خارجية على السطح',
+    description:
+      'أعمال تجهيز وتركيب عدد من الوحدات الخارجية فوق السطح ضمن مشروع متكامل مع تنظيم ممتاز للموقع وتمديدات التكييف.',
+    image: img14,
+    category: 'وحدات خارجية ومشاريع كبيرة',
+    createdAt: '2026-04-01T10:09:00.000Z',
   },
   {
     id: 'local-video-6',
@@ -153,7 +173,7 @@ export default function Portfolio() {
   ];
 
   return (
-    <section className="relative overflow-hidden px-4 py-16 md:px-8 lg:px-12">
+    <section id="portfolio" className="relative overflow-hidden px-4 py-16 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
@@ -175,8 +195,9 @@ export default function Portfolio() {
                 نماذج من مشاريعنا وتنفيذنا
               </h2>
               <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300 md:text-lg">
-                استعرض جزءًا من أعمالنا في مشاريع التكييف والتركيب والدكت
-                والصيانة، مع عرض مرتب للصور والفيديوهات بشكل أوضح وأجمل.
+                استعرض جزءًا من أعمالنا في مشاريع التكييف والتركيب والدكت والصيانة،
+                مع عرض مرتب للصور والفيديوهات بشكل أوضح وأجمل يعكس جودة تنفيذنا
+                واهتمامنا بالتفاصيل في كل مشروع.
               </p>
             </div>
 
