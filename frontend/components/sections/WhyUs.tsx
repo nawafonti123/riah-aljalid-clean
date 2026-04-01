@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
@@ -11,16 +11,13 @@ import {
   FaClock,
   FaCheckCircle,
 } from 'react-icons/fa';
-import { publicApi } from '@/lib/api';
+
+import whyImage from '../imge/10.jpeg'; // ✅ الصورة الجديدة
 
 type WhyUsItem = {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
-};
-
-type SettingsResponse = {
-  whyUsImage?: string | null;
 };
 
 const whyUsItems: WhyUsItem[] = [
@@ -63,22 +60,6 @@ const whyUsItems: WhyUsItem[] = [
 ];
 
 export default function WhyUs() {
-  const [image, setImage] = useState('/logo.png');
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const settings = (await publicApi.getSettings()) as SettingsResponse | null;
-        const img = settings?.whyUsImage?.trim();
-        setImage(img || '/logo.png');
-      } catch {
-        setImage('/logo.png');
-      }
-    };
-
-    load();
-  }, []);
-
   const highlights = useMemo(
     () => [
       'التزام بالجودة والدقة في كل مرحلة',
@@ -113,6 +94,8 @@ export default function WhyUs() {
         </motion.div>
 
         <div className="grid items-center gap-8 lg:grid-cols-2">
+          
+          {/* 🔥 الصورة الجديدة */}
           <motion.div
             initial={{ opacity: 0, x: 25 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -122,16 +105,16 @@ export default function WhyUs() {
             <div className="overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_15px_45px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/[0.04]">
               <div className="relative aspect-[4/3] w-full">
                 <Image
-                  src={image}
-                  alt="لماذا رياح الجليد"
+                  src={whyImage}
+                  alt="رياح الجليد"
                   fill
                   className="object-cover"
-                  onError={() => setImage('/logo.png')}
                 />
               </div>
             </div>
           </motion.div>
 
+          {/* النص */}
           <motion.div
             initial={{ opacity: 0, x: -25 }}
             whileInView={{ opacity: 1, x: 0 }}
