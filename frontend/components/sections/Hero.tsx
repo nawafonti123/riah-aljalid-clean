@@ -28,14 +28,14 @@ const features = [
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden px-4 pt-10 md:px-8 lg:px-12">
+    <section className="relative overflow-hidden px-4 pt-6 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <div className="grid items-center gap-8 lg:grid-cols-2">
+        <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-8">
           <motion.div
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="order-2 lg:order-1"
+            className="order-1 lg:order-1"
           >
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-700 dark:text-cyan-300">
               <FaSnowflake />
@@ -69,11 +69,11 @@ export default function Hero() {
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <Link
                 href="https://wa.me/966565247407"
                 target="_blank"
-                className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-extrabold text-white shadow-[0_10px_30px_rgba(16,185,129,0.35)] transition hover:scale-[1.02] hover:bg-emerald-400"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-extrabold text-white shadow-[0_10px_30px_rgba(16,185,129,0.35)] transition hover:scale-[1.02] hover:bg-emerald-400"
               >
                 <FaWhatsapp />
                 تواصل واتساب
@@ -81,7 +81,7 @@ export default function Hero() {
 
               <Link
                 href="tel:+966565247407"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
               >
                 <FaPhoneAlt />
                 اتصل الآن
@@ -92,7 +92,7 @@ export default function Hero() {
                   const target = document.getElementById('portfolio');
                   target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
-                className="inline-flex items-center gap-2 rounded-full border border-cyan-300 bg-cyan-50 px-6 py-3 text-sm font-extrabold text-cyan-700 transition hover:bg-cyan-100 dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300 dark:hover:bg-cyan-500/15"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-300 bg-cyan-50 px-6 py-3 text-sm font-extrabold text-cyan-700 transition hover:bg-cyan-100 dark:border-cyan-500/20 dark:bg-cyan-500/10 dark:text-cyan-300 dark:hover:bg-cyan-500/15"
               >
                 شاهد أعمالنا
               </button>
@@ -114,11 +114,11 @@ export default function Hero() {
             initial={{ opacity: 0, y: 35 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, delay: 0.1 }}
-            className="order-1 lg:order-2"
+            className="order-2 lg:order-2"
           >
-            <div className="rounded-[32px] border border-slate-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-white/10 dark:from-[#07121c] dark:via-[#0a1621] dark:to-[#091018] dark:shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
+            <div className="rounded-[32px] border border-slate-200 bg-gradient-to-br from-cyan-50 via-white to-slate-50 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-white/10 dark:from-[#07121c] dark:via-[#0a1621] dark:to-[#091018] dark:shadow-[0_20px_60px_rgba(0,0,0,0.28)] sm:p-5 lg:p-6">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04] sm:p-5">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
                     <FaTools className="text-2xl" />
                   </div>
@@ -130,7 +130,7 @@ export default function Hero() {
                   </p>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04] sm:p-5">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
                     <FaWind className="text-2xl" />
                   </div>
@@ -142,7 +142,7 @@ export default function Hero() {
                   </p>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04] sm:p-5">
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
                     <FaFan className="text-2xl" />
                   </div>
@@ -154,7 +154,7 @@ export default function Hero() {
                   </p>
                 </div>
 
-                <div className="rounded-3xl border border-slate-200 bg-white/90 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+                <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-white/[0.04] sm:p-5">
                   <div className="grid grid-cols-2 gap-3">
                     {stats.map((item) => (
                       <div
