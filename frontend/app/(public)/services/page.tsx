@@ -1,11 +1,7 @@
-'use client';
-
 import type { Metadata } from 'next';
-import { useEffect, useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { publicApi } from '@/lib/api';
-import ServiceCard from '@/components/sections/ServiceCard';
+import Services from '@/components/sections/Services';
 import { FaWrench } from 'react-icons/fa';
 
 export const metadata: Metadata = {
@@ -17,32 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  order: number;
-}
-
 export default function ServicesPage() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    publicApi
-      .getServices()
-      .then((data) => {
-        const sorted = [...data].sort((a: Service, b: Service) => a.order - b.order);
-        setServices(sorted);
-      })
-      .catch((err) => {
-        console.error(err);
-        setServices([]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
   return (
     <>
       <Navbar />
@@ -62,29 +33,16 @@ export default function ServicesPage() {
               </h1>
 
               <p className="mt-6 text-lg leading-9 text-white/80">
-                نقدم حلولًا متكاملة لتلبية احتياجات العملاء في المنازل والشركات
-                والمشاريع، مع الالتزام بالجودة وسرعة التنفيذ وأفضل المعايير الفنية.
+                نقدم حلولًا متكاملة في تركيب وصيانة وتنظيف المكيفات، والتكييف المركزي،
+                والدكت والتهوية، مع الالتزام بالجودة العالية وسرعة التنفيذ وخدمة
+                احترافية للمنازل والشركات والمشاريع.
               </p>
             </div>
           </div>
         </section>
 
         <section className="container-main mt-10">
-          {loading ? (
-            <div className="rounded-[28px] border border-cyan-400/10 bg-[#0b1830] p-10 text-center text-white text-xl font-bold">
-              جاري تحميل الخدمات...
-            </div>
-          ) : services.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {services.map((service) => (
-                <ServiceCard key={service.id} service={service} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-[28px] border border-cyan-400/10 bg-[#0b1830] p-10 text-center text-white/80 text-lg">
-              لا توجد خدمات متاحة حاليًا.
-            </div>
-          )}
+          <Services />
         </section>
 
         <section className="container-main mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
