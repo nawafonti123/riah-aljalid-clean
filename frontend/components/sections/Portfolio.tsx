@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { FaImages, FaPlay, FaTimes, FaExpand } from 'react-icons/fa';
 import { publicApi } from '@/lib/api';
 
-import img1 from '../imge/1.jpeg';
 import img2 from '../imge/2.jpeg';
 import img3 from '../imge/3.jpeg';
 import img4 from '../imge/4.jpeg';
@@ -24,15 +23,6 @@ type Project = {
 type TabType = 'all' | 'images' | 'videos';
 
 const localProjects: Project[] = [
-  {
-    id: 'local-1',
-    title: 'واجهة المعرض والهوية الخارجية',
-    description:
-      'تنفيذ وتجهيز الواجهة الخارجية للمعرض مع هوية بصرية واضحة ولمسات احترافية تعكس جودة أعمال التكييف.',
-    image: img1,
-    category: 'واجهة خارجية',
-    createdAt: '2026-04-01T10:00:00.000Z',
-  },
   {
     id: 'local-2',
     title: 'تنفيذ سقف وفتحات تكييف داخلية',
@@ -59,6 +49,42 @@ const localProjects: Project[] = [
     image: img4,
     category: 'وحدة تحكم',
     createdAt: '2026-04-01T10:03:00.000Z',
+  },
+  {
+    id: 'local-video-6',
+    title: 'فيديو عمل ميداني 1',
+    description:
+      'عرض ميداني لأحد أعمال رياح الجليد في تنفيذ أنظمة التكييف والتركيب داخل المشروع.',
+    video: '/portfolio/6.mp4',
+    category: 'فيديو أعمال',
+    createdAt: '2026-04-01T10:04:00.000Z',
+  },
+  {
+    id: 'local-video-7',
+    title: 'فيديو عمل ميداني 2',
+    description:
+      'لقطات من تنفيذ الأعمال والتجهيزات الخاصة بالتكييف والدكت داخل الموقع.',
+    video: '/portfolio/7.mp4',
+    category: 'فيديو أعمال',
+    createdAt: '2026-04-01T10:05:00.000Z',
+  },
+  {
+    id: 'local-video-11',
+    title: 'فيديو عمل ميداني 3',
+    description:
+      'مشهد إضافي من أعمال التركيب والتنفيذ الاحترافي الخاصة بالمشروع.',
+    video: '/portfolio/11.mp4',
+    category: 'فيديو أعمال',
+    createdAt: '2026-04-01T10:06:00.000Z',
+  },
+  {
+    id: 'local-video-12',
+    title: 'فيديو عمل ميداني 4',
+    description:
+      'استعراض إضافي لأحد المشاريع المنفذة من رياح الجليد بجودة عالية.',
+    video: '/portfolio/12.mp4',
+    category: 'فيديو أعمال',
+    createdAt: '2026-04-01T10:07:00.000Z',
   },
 ];
 
@@ -210,6 +236,7 @@ export default function Portfolio() {
                         className="h-full w-full object-cover"
                         muted
                         playsInline
+                        preload="metadata"
                       />
                       <button
                         onClick={() => setSelectedItem(project)}
@@ -309,6 +336,7 @@ export default function Portfolio() {
                       <video
                         src={selectedItem.video}
                         controls
+                        autoPlay
                         className="h-full w-full object-contain"
                       />
                     ) : (
