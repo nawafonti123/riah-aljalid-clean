@@ -2,8 +2,17 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaRegBuilding, FaWhatsapp, FaTimes } from 'react-icons/fa';
 import Image from 'next/image';
+import {
+  FaMapMarkerAlt,
+  FaPhone,
+  FaEnvelope,
+  FaRegBuilding,
+  FaWhatsapp,
+  FaTimes,
+  FaSnowflake,
+  FaArrowUp,
+} from 'react-icons/fa';
 
 type Settings = {
   address?: string;
@@ -28,246 +37,206 @@ async function fetchSettingsClient(): Promise<Settings | null> {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-
   const [settings, setSettings] = useState<Settings | null>(null);
-
-  // ✅ نافذة اختيار الاتصال
   const [callOpen, setCallOpen] = useState(false);
 
   useEffect(() => {
     fetchSettingsClient().then(setSettings).catch(() => setSettings(null));
   }, []);
 
-  // ESC يغلق
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setCallOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
   const address = settings?.address || 'الرياض - طريق الملك عبدالعزيز';
   const phone = settings?.phone || '+966 56 524 7407';
   const email = settings?.email || 'RiaHaljalid@icloud.com';
   const commercialRegister = settings?.commercialRegister || '1010632725';
-  const footerIceImage = settings?.footerIceImage || '/logo.png';
+  const footerImage = settings?.footerIceImage || '/logo.png';
 
   const digitsPhone = useMemo(() => (phone || '').replace(/[^\d]/g, ''), [phone]);
   const waLink = digitsPhone ? `https://wa.me/${digitsPhone}` : '#';
   const telLink = digitsPhone ? `tel:+${digitsPhone}` : '#';
 
-  const openCallPicker = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!digitsPhone) return;
-    setCallOpen(true);
-  };
-
-  const goWhatsApp = () => {
-    setCallOpen(false);
-    window.open(waLink, '_blank', 'noopener,noreferrer');
-  };
-
-  const goTel = () => {
-    setCallOpen(false);
-    window.location.href = telLink;
-  };
-
   return (
-    <footer className="relative bg-white dark:bg-[#0F2027] text-gray-800 dark:text-white pt-12 pb-6 transition-colors duration-300 overflow-hidden">
-      <div className="pointer-events-none absolute -bottom-10 -left-10 opacity-10 dark:opacity-[0.08]">
-        <div className="relative w-[220px] h-[220px] sm:w-[280px] sm:h-[280px]">
-          <Image
-            src={footerIceImage}
-            alt="رياح الجليد"
-            fill
-            sizes="(max-width: 640px) 220px, 280px"
-            className="object-contain"
-            priority={false}
-          />
-        </div>
-      </div>
+    <>
+      <footer className="relative overflow-hidden border-t border-slate-200/70 bg-slate-950 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.18),transparent_20%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.14),transparent_25%)]" />
 
-      <div className="container mx-auto px-4 sm:px-6 relative">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200/60 dark:border-white/10 bg-white/60 dark:bg-white/5">
-                <Image
-                  src="/logo.png"
-                  alt="رياح الجليد"
-                  fill
-                  sizes="64px"
-                  className="object-cover [mask-image:radial-gradient(circle,#000_62%,transparent_63%)] [-webkit-mask-image:radial-gradient(circle,#000_62%,transparent_63%)]"
-                />
+        <div className="container-main relative py-16">
+          <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr_1fr]">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+              <div className="flex items-center gap-4">
+                <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-white">
+                  <Image
+                    src={footerImage}
+                    alt="رياح الجليد"
+                    fill
+                    className="object-contain p-2"
+                    sizes="64px"
+                  />
+                </div>
+
+                <div>
+                  <h3 className="text-2xl font-extrabold">رياح الجليد</h3>
+                  <p className="mt-1 text-sm text-slate-300">
+                    حلول احترافية في التكييف المركزي والسبليت والتهوية والدكت.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gradient-primary">رياح الجليد</h3>
-            </div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
-              شركة سعودية متخصصة في تركيب وصيانة أنظمة التكييف المركزي والتهوية والتبريد باستخدام أحدث التقنيات.
-            </p>
-          </div>
 
-          <div>
-            <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">روابط سريعة</h4>
-            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>
-                <Link href="/" className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition">
+              <p className="mt-6 leading-8 text-slate-300">
+                شركة متخصصة في تركيب وصيانة أنظمة التكييف والتبريد للمنازل والشركات
+                والمشاريع، مع التزام بالجودة والسرعة والدقة في التنفيذ.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary"
+                >
+                  <FaWhatsapp className="ml-2" />
+                  واتساب
+                </a>
+
+                <button onClick={() => setCallOpen(true)} className="btn-secondary">
+                  <FaPhone className="ml-2" />
+                  اتصال
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+              <h4 className="text-xl font-bold">روابط سريعة</h4>
+
+              <div className="mt-5 space-y-3 text-slate-300">
+                <Link href="/" className="block transition hover:text-cyan-300">
                   الرئيسية
                 </Link>
-              </li>
-              <li>
-                <Link href="#about" className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition">
+                <a href="/#about" className="block transition hover:text-cyan-300">
                   عن الشركة
-                </Link>
-              </li>
-              <li>
-                <Link href="#services" className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition">
-                  الخدمات
-                </Link>
-              </li>
-              <li>
-                <Link href="#portfolio" className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition">
-                  أعمالنا
-                </Link>
-              </li>
-              <li>
-                <Link href="#contact" className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition">
-                  اتصل بنا
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">خدماتنا</h4>
-            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-              <li>تكييف مركزي</li>
-              <li>صيانة دورية</li>
-              <li>توريد وتركيب</li>
-              <li>تهوية وتبريد</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold mb-4 text-[#01AEBE] dark:text-[#00c6ff]">تواصل</h4>
-            <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
-              <li className="flex items-start gap-2">
-                <FaMapMarkerAlt className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
-                <span>{address}</span>
-              </li>
-
-              {/* ✅ نفس نافذة اختيار الاتصال */}
-              <li className="flex items-start gap-2">
-                <FaPhone className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
-                <button
-                  type="button"
-                  onClick={openCallPicker}
-                  className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition text-left"
-                >
-                  <span dir="ltr">{phone}</span>
-                </button>
-              </li>
-
-              <li className="flex items-start gap-2">
-                <FaEnvelope className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
-                <a
-                  href={`mailto:${email}`}
-                  className="hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition"
-                >
-                  {email}
                 </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <FaRegBuilding className="mt-0.5 text-[#01AEBE] dark:text-[#00c6ff]" />
-                <span>سجل: {commercialRegister}</span>
-              </li>
-            </ul>
+                <a href="/#services" className="block transition hover:text-cyan-300">
+                  الخدمات
+                </a>
+                <a href="/#portfolio" className="block transition hover:text-cyan-300">
+                  أعمالنا
+                </a>
+                <a href="/#contact" className="block transition hover:text-cyan-300">
+                  اتصل بنا
+                </a>
+              </div>
+
+              <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="mb-2 flex items-center gap-2 text-cyan-300">
+                  <FaSnowflake />
+                  <span className="font-semibold">خدماتنا</span>
+                </div>
+                <div className="grid gap-2 text-sm text-slate-300">
+                  <span>تكييف مركزي</span>
+                  <span>صيانة دورية</span>
+                  <span>تركيب مكيفات</span>
+                  <span>تصنيع وتركيب دكت</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+              <h4 className="text-xl font-bold">بيانات التواصل</h4>
+
+              <div className="mt-5 space-y-4 text-slate-300">
+                <div className="flex items-start gap-3">
+                  <FaMapMarkerAlt className="mt-1 text-cyan-300" />
+                  <span>{address}</span>
+                </div>
+
+                <button
+                  onClick={() => setCallOpen(true)}
+                  className="flex items-start gap-3 text-right transition hover:text-cyan-300"
+                >
+                  <FaPhone className="mt-1 text-cyan-300" />
+                  <span>{phone}</span>
+                </button>
+
+                <a href={`mailto:${email}`} className="flex items-start gap-3 hover:text-cyan-300">
+                  <FaEnvelope className="mt-1 text-cyan-300" />
+                  <span>{email}</span>
+                </a>
+
+                <div className="flex items-start gap-3">
+                  <FaRegBuilding className="mt-1 text-cyan-300" />
+                  <span>السجل التجاري: {commercialRegister}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</p>
+
+            <div className="flex items-center gap-4">
+              <span>تصميم وتطوير: Team Hawk</span>
+              <a
+                href="#hero"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 hover:bg-white/5"
+              >
+                <FaArrowUp />
+                للأعلى
+              </a>
+            </div>
           </div>
         </div>
+      </footer>
 
-        <div className="flex flex-col sm:flex-row justify-between items-center text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
-          <p>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</p>
-          <div className="flex flex-col items-center gap-1 mt-2 sm:mt-0">
-            <p>
-              تصميم وتطوير: <span className="text-[#01AEBE] dark:text-[#00c6ff] font-semibold">Team Hawk</span>
-            </p>
-            <a
-              href="https://wa.me/96171235414"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-600 dark:text-gray-400 hover:text-[#01AEBE] dark:hover:text-[#00c6ff] transition underline underline-offset-2 text-xs"
-            >
-              <span dir="ltr">+961 71 235 414</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* ✅ مودال اختيار الاتصال */}
       {callOpen && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-          onMouseDown={() => setCallOpen(false)}
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+          onClick={() => setCallOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200/60 dark:border-white/10 shadow-2xl overflow-hidden"
-            onMouseDown={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-3xl bg-white p-6 text-slate-900 shadow-2xl dark:bg-slate-900 dark:text-white"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/60 dark:border-white/10">
-              <div className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">اختر طريقة الاتصال</div>
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold">اختر طريقة الاتصال</h3>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{phone}</p>
+              </div>
+
               <button
-                type="button"
                 onClick={() => setCallOpen(false)}
-                className="w-10 h-10 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center transition"
-                aria-label="إغلاق"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/10"
               >
                 <FaTimes />
               </button>
             </div>
 
-            <div className="p-4 space-y-3">
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                الرقم: <span dir="ltr" className="font-semibold">{phone}</span>
-              </div>
-
-              <button
-                type="button"
-                onClick={goWhatsApp}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 text-gray-900 dark:text-white border border-[#25D366]/20 transition"
+            <div className="grid gap-3">
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-2xl bg-green-500 px-5 py-4 font-bold text-white"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#25D366] text-white flex items-center justify-center">
-                    <FaWhatsapp />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-bold text-sm">واتساب</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-300">فتح محادثة مباشرة</div>
-                  </div>
-                </div>
-                <span className="text-xs opacity-70">فتح</span>
-              </button>
+                <span className="flex items-center gap-3">
+                  <FaWhatsapp />
+                  واتساب
+                </span>
+                <span>فتح</span>
+              </a>
 
-              <button
-                type="button"
-                onClick={goTel}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-[#01AEBE]/10 hover:bg-[#01AEBE]/20 text-gray-900 dark:text-white border border-[#01AEBE]/20 transition"
+              <a
+                href={telLink}
+                className="flex items-center justify-between rounded-2xl bg-cyan-600 px-5 py-4 font-bold text-white"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#01AEBE] text-white flex items-center justify-center">
-                    <FaPhone />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-bold text-sm">اتصال عادي</div>
-                    <div className="text-xs text-gray-600 dark:text-gray-300">فتح تطبيق الهاتف</div>
-                  </div>
-                </div>
-                <span className="text-xs opacity-70">اتصال</span>
-              </button>
+                <span className="flex items-center gap-3">
+                  <FaPhone />
+                  اتصال عادي
+                </span>
+                <span>اتصال</span>
+              </a>
             </div>
           </div>
         </div>
       )}
-    </footer>
+    </>
   );
 }

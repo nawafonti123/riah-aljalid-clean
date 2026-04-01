@@ -1,10 +1,7 @@
-// frontend/app/layout.tsx
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google';
-
 import './globals.css';
 import { Providers } from './providers';
-
 import Loader from '@/components/layout/Loader';
 import FloatingContactButtons from '@/components/FloatingContactButtons';
 
@@ -15,10 +12,10 @@ const cairo = Cairo({
 });
 
 const SITE_NAME = 'رياح الجليد';
-const SITE_URL = 'https://www.riah-aljalid.com'; // ✅ ثبّتنا www لأنه هو المستخدم فعليًا
+const SITE_URL = 'https://www.riah-aljalid.com';
 const DEFAULT_TITLE = 'رياح الجليد | تركيب وصيانة مكيفات وتكييف مركزي بالرياض';
 const DEFAULT_DESC =
-  'رياح الجليد بالرياض لخدمات التكييف: تركيب وصيانة وتنظيف وتعبئة فريون، تكييف سبليت ومركزي، للمنازل والشركات مع جودة عالية ومواعيد سريعة وضمان.';
+  'رياح الجليد بالرياض لخدمات التكييف: تركيب وصيانة وتنظيف وتعبئة فريون، وتكييف سبليت ومركزي، للمنازل والشركات مع جودة عالية ومواعيد سريعة وضمان.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -28,32 +25,28 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESC,
   applicationName: SITE_NAME,
-
+  category: 'HVAC',
   keywords: [
     'رياح الجليد',
-    'تكييف مركزي',
-    'تكييف سبليت',
+    'شركة تكييف بالرياض',
     'تركيب مكيفات بالرياض',
     'صيانة مكيفات بالرياض',
     'تنظيف مكيفات بالرياض',
     'تعبئة فريون بالرياض',
     'فني مكيفات بالرياض',
-    'شركة تكييف بالرياض',
+    'تكييف مركزي بالرياض',
     'مجاري الهواء دكت',
     'توريد وتركيب دكت',
     'تهوية وتبريد',
   ],
-
   alternates: {
     canonical: '/',
   },
-
   icons: {
     icon: '/icon.png',
     shortcut: '/icon.png',
     apple: '/icon.png',
   },
-
   openGraph: {
     type: 'website',
     url: SITE_URL,
@@ -63,21 +56,19 @@ export const metadata: Metadata = {
     locale: 'ar_SA',
     images: [
       {
-        url: '/logo.png', // ✅ عندك موجودة في public
+        url: '/logo.png',
         width: 1200,
         height: 630,
         alt: DEFAULT_TITLE,
       },
     ],
   },
-
   twitter: {
     card: 'summary_large_image',
     title: DEFAULT_TITLE,
     description: DEFAULT_DESC,
     images: ['/logo.png'],
   },
-
   robots: {
     index: true,
     follow: true,
@@ -89,9 +80,7 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
-
   verification: {
-    // ✅ اتركه إذا أنت فعلًا حاط كود التحقق هذا في Search Console
     google: '-sHiWCngfdbyUPZjlEABGG5vtF2fjjH_QQPKFXzqx6w',
   },
 };
@@ -101,11 +90,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // ✅ Schema قوي (LocalBusiness + WebSite)
   const jsonLd = [
     {
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
+      '@id': `${SITE_URL}/#business`,
       name: SITE_NAME,
       url: SITE_URL,
       description: DEFAULT_DESC,
@@ -120,6 +109,7 @@ export default function RootLayout({
         addressCountry: 'SA',
       },
       areaServed: ['Riyadh', 'الرياض'],
+      priceRange: '$$',
       serviceType: [
         'تركيب مكيفات',
         'صيانة مكيفات',
@@ -130,38 +120,31 @@ export default function RootLayout({
         'تهوية وتبريد',
         'تصنيع وتركيب الدكت',
       ],
-      sameAs: [
-        'https://www.riah-aljalid.com/',
-      ],
+      sameAs: [SITE_URL],
     },
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
       name: SITE_NAME,
       url: SITE_URL,
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${SITE_URL}/?q={search_term_string}`,
-        'query-input': 'required name=search_term_string',
-      },
+      inLanguage: 'ar-SA',
     },
   ];
 
   return (
-    <html lang="ar" dir="rtl">
-      <head>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <body className={`${cairo.variable} font-sans bg-white text-slate-900 antialiased`}>
+        <Providers>
+          <Loader />
+          <FloatingContactButtons />
+          {children}
+        </Providers>
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-
-      <body className={`${cairo.variable} font-sans`}>
-        <Providers>
-          <Loader />
-          {children}
-        </Providers>
-        <FloatingContactButtons />
       </body>
     </html>
   );

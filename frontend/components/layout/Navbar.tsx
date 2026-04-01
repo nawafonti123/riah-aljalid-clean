@@ -1,11 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaBars, FaTimes, FaSun, FaMoon, FaHome, FaInfoCircle, FaWrench, FaImages, FaEnvelope } from 'react-icons/fa';
-import { useTheme } from 'next-themes';
 import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  FaBars,
+  FaTimes,
+  FaSun,
+  FaMoon,
+  FaHome,
+  FaInfoCircle,
+  FaWrench,
+  FaImages,
+  FaEnvelope,
+  FaPhoneAlt,
+} from 'react-icons/fa';
+import { useTheme } from 'next-themes';
 
 const navLinks = [
   { href: '/', label: 'الرئيسية', icon: FaHome, section: 'hero' },
@@ -16,164 +27,217 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      const sections = navLinks.map((link) => link.section);
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(section);
-            break;
-          }
+      setScrolled(window.scrollY > 15);
+
+      for (const item of navLinks) {
+        const element = document.getElementById(item.section);
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+        if (rect.top <= 120 && rect.bottom >= 120) {
+          setActiveSection(item.section);
+          break;
         }
       }
     };
 
+    handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : 'unset';
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [menuOpen]);
 
   const scrollToSection = (sectionId: string) => {
     setMenuOpen(false);
     const element = document.getElementById(sectionId);
-    if (element) element.scrollIntoView({ behavior: 'smooth' });
+    if (element) element.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   if (!mounted) return null;
 
   return (
     <>
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? 'backdrop-blur-xl bg-white/90 dark:bg-[#0F2027]/90 shadow-lg py-2'
-            : 'bg-transparent py-4'
+      <motion.header
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+          scrolled ? 'py-3' : 'py-5'
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 group" onClick={() => scrollToSection('hero')}>
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#01AEBE] dark:border-[#00c6ff] group-hover:scale-110 transition-transform duration-300 bg-white/70 dark:bg-white/5">
+        <div className="container-main">
+          <div
+            className={`mx-auto flex items-center justify-between rounded-2xl border px-4 sm:px-5 py-3 transition-all duration-300 ${
+              scrolled
+                ? 'border-white/20 bg-white/80 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/70'
+                : 'border-transparent bg-white/55 backdrop-blur-md dark:bg-slate-950/35'
+            }`}
+          >
+            <button
+              onClick={() => scrollToSection('hero')}
+              className="flex items-center gap-3"
+              aria-label="الذهاب إلى الرئيسية"
+            >
+              <div className="relative h-11 w-11 overflow-hidden rounded-2xl border border-cyan-500/20 bg-white shadow-sm">
                 <Image
                   src="/logo.png"
                   alt="رياح الجليد"
                   fill
-                  sizes="40px"
-                  // ✅ Mask دائري على نفس الصورة (يحذف أي خلفية/حدود مربعة)
-                  className="object-cover [mask-image:radial-gradient(circle,#000_62%,transparent_63%)] [-webkit-mask-image:radial-gradient(circle,#000_62%,transparent_63%)]"
+                  className="object-contain p-1.5"
+                  sizes="44px"
+                  priority
                 />
               </div>
 
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#01AEBE] to-[#9DCC40] dark:from-[#00c6ff] dark:to-[#2C5364] bg-clip-text text-transparent">
-                رياح الجليد
-              </span>
-            </Link>
+              <div className="text-right">
+                <div className="text-sm font-bold text-slate-900 dark:text-white">
+                  رياح الجليد
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-300">
+                  تكييف • تبريد • دكت
+                </div>
+              </div>
+            </button>
 
-            <div className="hidden md:flex items-center gap-2">
+            <nav className="hidden lg:flex items-center gap-2">
               {navLinks.map((link) => {
                 const Icon = link.icon;
+                const active = activeSection === link.section;
+
                 return (
                   <button
                     key={link.section}
                     onClick={() => scrollToSection(link.section)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 ${
-                      activeSection === link.section
-                        ? 'bg-[#01AEBE] dark:bg-[#00c6ff] text-white shadow-md'
-                        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10'
+                    className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+                      active
+                        ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/20'
+                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10'
                     }`}
                   >
                     <Icon className="text-sm" />
-                    <span className="text-sm font-medium">{link.label}</span>
+                    {link.label}
                   </button>
                 );
               })}
+            </nav>
+
+            <div className="hidden lg:flex items-center gap-2">
+              <a href="#contact" onClick={() => scrollToSection('contact')} className="btn-primary">
+                <FaPhoneAlt className="ml-2" />
+                اطلب الخدمة الآن
+              </a>
 
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="ml-2 w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-white/10 hover:scale-110 transition-transform duration-300"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:scale-105 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                aria-label="تبديل الوضع"
               >
-                {theme === 'dark' ? <FaSun className="text-yellow-300" /> : <FaMoon className="text-gray-700" />}
+                {theme === 'dark' ? <FaSun /> : <FaMoon />}
               </button>
             </div>
 
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-white/10"
-            >
-              {menuOpen ? <FaTimes /> : <FaBars />}
-            </button>
+            <div className="flex lg:hidden items-center gap-2">
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                aria-label="تبديل الوضع"
+              >
+                {theme === 'dark' ? <FaSun /> : <FaMoon />}
+              </button>
+
+              <button
+                onClick={() => setMenuOpen(true)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-cyan-600 text-white shadow-lg shadow-cyan-500/20"
+                aria-label="فتح القائمة"
+              >
+                <FaBars />
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
+      </motion.header>
 
       <AnimatePresence>
         {menuOpen && (
           <motion.div
+            className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-sm lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden"
             onClick={() => setMenuOpen(false)}
           >
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="absolute top-0 right-0 h-full w-80 bg-white dark:bg-[#0F2027] p-6"
+            <motion.aside
+              initial={{ x: 80, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 80, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="mr-auto flex h-full w-full max-w-sm flex-col bg-white p-5 dark:bg-slate-950"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-2">
-                  <FaImages className="text-[#01AEBE] dark:text-[#00c6ff]" />
-                  <span className="font-bold text-gray-900 dark:text-white">القائمة</span>
+              <div className="mb-6 flex items-center justify-between">
+                <div className="text-right">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">القائمة</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-300">
+                    تنقّل بسرعة داخل الموقع
+                  </p>
                 </div>
-                <button onClick={() => setMenuOpen(false)} className="text-gray-600 dark:text-gray-300">
+
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-white"
+                  aria-label="إغلاق القائمة"
+                >
                   <FaTimes />
                 </button>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
+                  const active = activeSection === link.section;
+
                   return (
                     <button
                       key={link.section}
                       onClick={() => scrollToSection(link.section)}
-                      className="w-full flex items-center gap-3 p-4 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition"
+                      className={`flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-right transition ${
+                        active
+                          ? 'bg-cyan-600 text-white'
+                          : 'bg-slate-50 text-slate-800 hover:bg-slate-100 dark:bg-white/5 dark:text-white dark:hover:bg-white/10'
+                      }`}
                     >
                       <Icon />
-                      <span className="font-medium">{link.label}</span>
+                      <span className="font-semibold">{link.label}</span>
                     </button>
                   );
                 })}
               </div>
 
-              <div className="mt-6">
-                <button
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="w-full flex items-center justify-center gap-2 p-4 rounded-xl bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200"
+              <div className="mt-auto pt-6">
+                <a
+                  href="tel:+966565247407"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-600 px-4 py-4 font-bold text-white shadow-lg shadow-cyan-500/20"
                 >
-                  {theme === 'dark' ? <FaSun className="text-yellow-300" /> : <FaMoon />}
-                  <span>{theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}</span>
-                </button>
+                  <FaPhoneAlt />
+                  اتصال مباشر
+                </a>
               </div>
-            </motion.div>
+            </motion.aside>
           </motion.div>
         )}
       </AnimatePresence>
