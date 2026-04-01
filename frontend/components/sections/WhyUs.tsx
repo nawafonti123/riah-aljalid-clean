@@ -1,161 +1,172 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { publicApi } from '@/lib/api';
-import { FaHeadset, FaUsers, FaShieldAlt, FaStar } from 'react-icons/fa';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import Tilt from 'react-parallax-tilt';
+import { motion } from 'framer-motion';
+import {
+  FaBolt,
+  FaShieldAlt,
+  FaTools,
+  FaUserTie,
+  FaClock,
+  FaCheckCircle,
+} from 'react-icons/fa';
+import { publicApi } from '@/lib/api';
 
-interface SiteSettings {
+type WhyUsItem = {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+};
+
+type SettingsResponse = {
   whyUsImage?: string | null;
-}
+};
 
-const reasons = [
+const whyUsItems: WhyUsItem[] = [
   {
-    icon: FaHeadset,
-    title: 'الدعم المستمر',
-    description: 'نحرص على توفير دعم فني متواصل لعملائنا قبل وبعد التركيب والصيانة لضمان أفضل تجربة ممكنة.',
+    icon: FaUserTie,
+    title: 'فريق احترافي',
+    description:
+      'طاقم فني وإداري لديه خبرة عملية في تنفيذ أعمال التكييف والتبريد بمختلف أنواعها.',
   },
   {
-    icon: FaUsers,
-    title: 'الخبرة',
-    description: 'فريق متخصص يتمتع بخبرة طويلة في مجال التكييف والتبريد وتقديم الحلول المبتكرة.',
+    icon: FaBolt,
+    title: 'سرعة في الإنجاز',
+    description:
+      'ننجز الأعمال بسرعة عالية مع المحافظة على الجودة والترتيب والدقة في التنفيذ.',
+  },
+  {
+    icon: FaTools,
+    title: 'حلول متكاملة',
+    description:
+      'من التوريد إلى التركيب والصيانة والتهوية والدكت، نوفر خدمة متكاملة في مكان واحد.',
   },
   {
     icon: FaShieldAlt,
-    title: 'الضمان',
-    description: 'نقدم ضمانات حقيقية على منتجاتنا وخدماتنا مع دعم فني متكامل.',
+    title: 'جودة واعتمادية',
+    description:
+      'نهتم بالخامات وجودة التشطيب وكفاءة التشغيل لضمان أفضل أداء على المدى الطويل.',
   },
   {
-    icon: FaStar,
-    title: 'الجودة',
-    description: 'نلتزم بأعلى معايير الجودة في المواد والخدمات لضمان رضا عملائنا.',
+    icon: FaClock,
+    title: 'التزام بالمواعيد',
+    description:
+      'نلتزم بجدولة واضحة وتنفيذ منظم ومتابعة مستمرة حتى تسليم العمل بالصورة المطلوبة.',
+  },
+  {
+    icon: FaCheckCircle,
+    title: 'رضا العميل أولاً',
+    description:
+      'نركز على راحتك وجودة الخدمة والحلول المناسبة لميزانيتك وطبيعة مشروعك.',
   },
 ];
 
 export default function WhyUs() {
-  const [imageUrl, setImageUrl] = useState<string>('/logo.png');
-  const [imgReady, setImgReady] = useState(false);
-
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, amount: 0.2 });
+  const [image, setImage] = useState('/logo.png');
 
   useEffect(() => {
-    const run = async () => {
-      const settings = (await publicApi.getSettings().catch(() => null)) as SiteSettings | null;
-      const url = (settings?.whyUsImage || '').trim();
-      setImageUrl(url ? url : '/logo.png');
-      setImgReady(true);
+    const load = async () => {
+      try {
+        const settings = (await publicApi.getSettings()) as SettingsResponse | null;
+        const img = settings?.whyUsImage?.trim();
+        setImage(img || '/logo.png');
+      } catch {
+        setImage('/logo.png');
+      }
     };
-    run();
+
+    load();
   }, []);
 
-  return (
-    <section
-      ref={ref}
-      className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-[#0F2027] overflow-x-clip"
-    >
-      <div className="container mx-auto px-4 max-w-full overflow-x-clip">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8 sm:mb-12"
-        >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-            لماذا تختار رياح الجليد؟
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            أسباب تجعلنا خيارك الأفضل في التكييف والتبريد
-          </p>
-        </motion.div>
+  const highlights = useMemo(
+    () => [
+      'التزام بالجودة والدقة في كل مرحلة',
+      'تنفيذ أنيق ومنظم للمشاريع السكنية والتجارية',
+      'خدمة سريعة مع متابعة واهتمام بالتفاصيل',
+    ],
+    []
+  );
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start lg:items-center">
-          {/* الكروت 3D */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            {reasons.map((reason, index) => {
-              const Icon = reason.icon;
+  return (
+    <section id="why-us" className="section-shell">
+      <div className="container">
+        <div className="mb-10 max-w-3xl">
+          <span className="mb-4 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-black text-cyan-300">
+            لماذا نحن
+          </span>
+          <h2 className="section-title">لماذا يختارنا العملاء؟</h2>
+          <p className="section-subtitle">
+            لأننا نجمع بين الجودة والسرعة والخبرة والتنفيذ المنظم، ونقدّم تجربة
+            خدمة أكثر احترافية ووضوحًا من البداية حتى التسليم.
+          </p>
+        </div>
+
+        <div className="grid items-center gap-8 xl:grid-cols-[0.95fr_1.05fr]">
+          <motion.div
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.45 }}
+            className="glass-card overflow-hidden p-3"
+          >
+            <div className="relative min-h-[340px] overflow-hidden rounded-[24px] bg-slate-900/40 md:min-h-[520px]">
+              <Image
+                src={image}
+                alt="لماذا رياح الجليد"
+                fill
+                className="object-cover"
+                onError={() => setImage('/logo.png')}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
+
+              <div className="absolute inset-x-4 bottom-4 rounded-[24px] border border-white/10 bg-slate-950/45 p-5 backdrop-blur-md">
+                <h3 className="text-xl font-black text-white">
+                  تنفيذ مرتب وخدمة موثوقة
+                </h3>
+
+                <div className="mt-4 grid gap-3">
+                  {highlights.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+                    >
+                      <FaCheckCircle className="mt-1 shrink-0 text-cyan-300" />
+                      <span className="text-sm font-bold leading-7 text-white/80">
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="grid gap-5 sm:grid-cols-2">
+            {whyUsItems.map((item, index) => {
+              const Icon = item.icon;
 
               return (
                 <motion.div
-                  key={reason.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.45, delay: 0.08 + index * 0.06 }}
-                  className="max-w-full"
+                  key={item.title}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="soft-card p-6"
                 >
-                  <div className="max-w-full overflow-hidden rounded-2xl">
-                    <Tilt
-                      tiltMaxAngleX={10}
-                      tiltMaxAngleY={10}
-                      perspective={1100}
-                      transitionSpeed={900}
-                      glareEnable
-                      glareMaxOpacity={0.12}
-                      scale={1.0}
-                      className="rounded-2xl w-full"
-                    >
-                      {/* ✅ تصغير على الجوال + تكبير لطيف على الديسكتوب */}
-                      <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-white/10 transition-all duration-500 hover:shadow-[0_0_45px_rgba(0,200,255,0.18)] lg:hover:scale-[1.02]">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#01AEBE]/10 dark:bg-[#00c6ff]/10 flex items-center justify-center mb-3 sm:mb-4">
-                          <Icon className="text-[#01AEBE] dark:text-[#00c6ff] text-lg sm:text-xl" />
-                        </div>
-
-                        <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-base sm:text-lg">
-                          {reason.title}
-                        </h3>
-
-                        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                          {reason.description}
-                        </p>
-                      </div>
-                    </Tilt>
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-300">
+                    <Icon className="text-xl" />
                   </div>
+
+                  <h3 className="text-lg font-black text-white">{item.title}</h3>
+                  <p className="mt-3 text-sm leading-8 text-white/70">
+                    {item.description}
+                  </p>
                 </motion.div>
               );
             })}
           </div>
-
-          {/* الصورة */}
-          <motion.div
-            initial={{ opacity: 0, x: 22 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="max-w-full"
-          >
-            <div className="max-w-full overflow-hidden rounded-3xl">
-              <Tilt
-                tiltMaxAngleX={6}
-                tiltMaxAngleY={6}
-                perspective={1500}
-                transitionSpeed={900}
-                glareEnable
-                glareMaxOpacity={0.08}
-                scale={1.0}
-              >
-                {/* ✅ نستخدم fill + min-height عشان تضمن ظهورها */}
-                <div className="relative rounded-3xl overflow-hidden shadow-xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-white/5 min-h-[220px] sm:min-h-[320px] lg:min-h-[400px]">
-                  {/* لو الرابط خربان، نرجع للّوجو */}
-                  <Image
-                    src={imageUrl}
-                    alt="لماذا تختار رياح الجليد"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 520px"
-                    className="object-cover"
-                    onError={() => setImageUrl('/logo.png')}
-                    priority={false}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-transparent" />
-                  {!imgReady && (
-                    <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500 dark:text-gray-300">
-                      جاري تحميل الصورة...
-                    </div>
-                  )}
-                </div>
-              </Tilt>
-            </div>
-          </motion.div>
         </div>
       </div>
     </section>
