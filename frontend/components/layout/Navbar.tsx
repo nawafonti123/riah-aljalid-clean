@@ -19,7 +19,14 @@ import {
 import { useTheme } from 'next-themes';
 import { usePathname, useRouter } from 'next/navigation';
 
-const sections = [
+type NavItem = {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  page: string;
+};
+
+const sections: NavItem[] = [
   { id: 'hero', label: 'الرئيسية', icon: FaHome, page: '/' },
   { id: 'about', label: 'عن الشركة', icon: FaInfoCircle, page: '/about' },
   { id: 'services', label: 'الخدمات', icon: FaWrench, page: '/services' },
@@ -39,11 +46,13 @@ export default function Navbar() {
 
   const isHome = pathname === '/';
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 16);
+      setScrolled(window.scrollY > 18);
 
       if (!isHome) return;
 
@@ -73,17 +82,22 @@ export default function Navbar() {
 
   const activePath = useMemo(() => {
     if (isHome) return activeSection;
-    const current = sections.find((s) => s.page === pathname);
+    const current = sections.find((item) => item.page === pathname);
     return current?.id ?? '';
-  }, [isHome, pathname, activeSection]);
+  }, [activeSection, isHome, pathname]);
 
-  const goTo = (item: (typeof sections)[number]) => {
+  const handleNavigate = (item: NavItem) => {
     setMenuOpen(false);
 
     if (isHome) {
-      const el = document.getElementById(item.id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (item.id === 'hero') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      const section = document.getElementById(item.id);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
     }
@@ -95,37 +109,35 @@ export default function Navbar() {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -24, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4"
+      <header
+        className={`site-header ${scrolled ? 'site-header-scrolled' : ''}`}
       >
-        <div
-          className={`mx-auto max-w-7xl rounded-[28px] border transition-all duration-300 ${
-            scrolled
-              ? 'border-cyan-400/15 bg-[#051120]/88 shadow-[0_18px_40px_rgba(0,0,0,0.28)] backdrop-blur-xl'
-              : 'border-cyan-400/10 bg-[#051120]/76 backdrop-blur-xl'
-          }`}
-        >
-          <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-5">
-            <button onClick={() => goTo(sections[0])} className="flex items-center gap-3 shrink-0">
-              <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-cyan-400/20 bg-white">
+        <div className="container">
+          <div className="navbar-shell">
+            <button
+              type="button"
+              onClick={() => handleNavigate(sections[0])}
+              className="brand-button"
+              aria-label="العودة للرئيسية"
+            >
+              <div className="brand-logo-wrap">
                 <Image
                   src="/logo.png"
                   alt="رياح الجليد"
-                  fill
-                  className="object-contain p-1.5"
+                  width={54}
+                  height={54}
+                  className="brand-logo"
                   priority
                 />
               </div>
 
-              <div className="text-right leading-tight">
-                <div className="text-xl font-extrabold text-white">رياح الجليد</div>
-                <div className="text-sm text-cyan-300">تكييف • تبريد • دكت</div>
+              <div className="brand-copy">
+                <span className="brand-title">رياح الجليد</span>
+                <span className="brand-subtitle">تكييف • تبريد • دكت</span>
               </div>
             </button>
 
-            <nav className="hidden lg:flex items-center gap-2">
+            <nav className="desktop-nav" aria-label="التنقل الرئيسي">
               {sections.map((item) => {
                 const Icon = item.icon;
                 const active = activePath === item.id;
@@ -133,87 +145,90 @@ export default function Navbar() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => goTo(item)}
-                    className={`flex items-center gap-2 rounded-full px-5 py-3 text-sm font-extrabold transition-all duration-300 ${
-                      active
-                        ? 'bg-[#01AEBE] text-white shadow-[0_10px_30px_rgba(1,174,190,0.38)]'
-                        : 'text-white/90 hover:bg-white/8 hover:text-cyan-300'
-                    }`}
+                    type="button"
+                    onClick={() => handleNavigate(item)}
+                    className={`nav-pill ${active ? 'nav-pill-active' : ''}`}
                   >
                     <Icon className="text-sm" />
-                    {item.label}
+                    <span>{item.label}</span>
                   </button>
                 );
               })}
             </nav>
 
-            <div className="hidden lg:flex items-center gap-3">
-              <a
-                href="tel:+966565247407"
-                className="flex items-center gap-2 rounded-full bg-[#01AEBE] px-6 py-3 font-extrabold text-white shadow-[0_10px_30px_rgba(1,174,190,0.35)] transition hover:scale-[1.02]"
-              >
+            <div className="nav-actions">
+              <Link href="/contact" className="cta-button desktop-only">
                 <FaPhoneAlt />
-                اطلب الخدمة الآن
-              </a>
+                <span>اطلب الخدمة الآن</span>
+              </Link>
 
               <button
+                type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/8 text-white transition hover:bg-white/12"
-                aria-label="toggle theme"
-              >
-                {theme === 'dark' ? <FaSun /> : <FaMoon />}
-              </button>
-            </div>
-
-            <div className="flex lg:hidden items-center gap-2">
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white"
-                aria-label="toggle theme"
+                className="icon-button desktop-only"
+                aria-label="تغيير الثيم"
               >
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
               </button>
 
               <button
+                type="button"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="icon-button mobile-only"
+                aria-label="تغيير الثيم"
+              >
+                {theme === 'dark' ? <FaSun /> : <FaMoon />}
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setMenuOpen(true)}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#01AEBE] text-white"
-                aria-label="open menu"
+                className="menu-button mobile-only"
+                aria-label="فتح القائمة"
               >
                 <FaBars />
               </button>
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden"
+            className="mobile-menu-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMenuOpen(false)}
           >
-            <motion.aside
-              initial={{ x: 70, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 70, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="mr-auto h-full w-full max-w-sm border-l border-cyan-400/10 bg-[#071223] p-5"
+            <motion.div
+              className="mobile-menu-panel"
+              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.98 }}
+              transition={{ duration: 0.22 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-xl font-extrabold text-white">القائمة</h3>
+              <div className="mobile-menu-header">
+                <div>
+                  <h3 className="mobile-menu-title">القائمة</h3>
+                  <p className="mobile-menu-subtitle">
+                    تنقل سريع ومنظم داخل الموقع
+                  </p>
+                </div>
+
                 <button
+                  type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white"
+                  className="icon-button"
+                  aria-label="إغلاق القائمة"
                 >
                   <FaTimes />
                 </button>
               </div>
 
-              <div className="space-y-3">
+              <div className="mobile-menu-links">
                 {sections.map((item) => {
                   const Icon = item.icon;
                   const active = activePath === item.id;
@@ -221,28 +236,30 @@ export default function Navbar() {
                   return (
                     <button
                       key={item.id}
-                      onClick={() => goTo(item)}
-                      className={`flex w-full items-center gap-3 rounded-2xl p-4 text-right transition ${
-                        active
-                          ? 'bg-[#01AEBE] text-white'
-                          : 'bg-white/5 text-white/90 hover:bg-white/10'
+                      type="button"
+                      onClick={() => handleNavigate(item)}
+                      className={`mobile-nav-item ${
+                        active ? 'mobile-nav-item-active' : ''
                       }`}
                     >
-                      <Icon />
-                      <span className="font-bold">{item.label}</span>
+                      <div className="mobile-nav-icon">
+                        <Icon />
+                      </div>
+                      <span>{item.label}</span>
                     </button>
                   );
                 })}
               </div>
 
-              <a
-                href="tel:+966565247407"
-                className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-[#01AEBE] p-4 font-extrabold text-white"
+              <Link
+                href="/contact"
+                className="cta-button mobile-cta"
+                onClick={() => setMenuOpen(false)}
               >
                 <FaPhoneAlt />
-                اطلب الخدمة الآن
-              </a>
-            </motion.aside>
+                <span>اطلب الخدمة الآن</span>
+              </Link>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -134,17 +134,24 @@ export default function RootLayout({
 
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body className={`${cairo.variable} font-sans bg-white text-slate-900 antialiased`}>
+      <body className={`${cairo.variable} site-body`}>
         <Providers>
           <Loader />
-          <FloatingContactButtons />
-          {children}
-        </Providers>
+          <div className="site-shell">
+            {children}
+            <FloatingContactButtons />
+          </div>
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+          {jsonLd.map((item, index) => (
+            <script
+              key={index}
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify(item),
+              }}
+            />
+          ))}
+        </Providers>
       </body>
     </html>
   );

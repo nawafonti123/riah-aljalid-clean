@@ -12,128 +12,160 @@ import {
   FaSnowflake,
 } from 'react-icons/fa';
 
+const quickLinks = [
+  { href: '/', label: 'الرئيسية' },
+  { href: '/about', label: 'عن الشركة' },
+  { href: '/services', label: 'الخدمات' },
+  { href: '/portfolio', label: 'أعمالنا' },
+  { href: '/contact', label: 'اتصل بنا' },
+];
+
+const serviceLinks = [
+  'تكييف مركزي',
+  'صيانة دورية',
+  'تركيب مكيفات',
+  'تصنيع وتركيب دكت',
+];
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-cyan-400/10 bg-[#030b18] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,198,255,0.16),transparent_22%),radial-gradient(circle_at_bottom_left,rgba(1,174,190,0.12),transparent_24%)]" />
-
-      <div className="container-main relative py-14">
-        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.9fr_1fr]">
-          <div className="rounded-[28px] border border-cyan-400/10 bg-white/5 p-6 backdrop-blur-xl">
-            <div className="flex items-center gap-4">
-              <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-white">
-                <Image src="/logo.png" alt="رياح الجليد" fill className="object-contain p-2" />
+    <footer className="site-footer">
+      <div className="container">
+        <div className="footer-grid">
+          <div className="footer-card footer-brand-card">
+            <div className="footer-brand-top">
+              <div className="footer-logo-wrap">
+                <Image
+                  src="/logo.png"
+                  alt="رياح الجليد"
+                  width={72}
+                  height={72}
+                  className="footer-logo"
+                />
               </div>
 
               <div>
-                <h3 className="text-3xl font-extrabold">رياح الجليد</h3>
-                <p className="mt-1 text-sm text-white/70">
+                <h3 className="footer-brand-title">رياح الجليد</h3>
+                <p className="footer-brand-subtitle">
                   حلول احترافية في التكييف المركزي والسبليت والتهوية والدكت.
                 </p>
               </div>
             </div>
 
-            <p className="mt-6 leading-8 text-white/75">
-              شركة متخصصة في تركيب وصيانة أنظمة التكييف والتبريد للمنازل والشركات
-              والمشاريع، مع التزام بالجودة والسرعة والدقة في التنفيذ.
+            <p className="footer-description">
+              شركة متخصصة في تركيب وصيانة أنظمة التكييف والتبريد للمنازل
+              والشركات والمشاريع، مع التزام بالجودة والسرعة والدقة في التنفيذ.
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="footer-actions">
               <a
                 href="https://wa.me/966565247407"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-[#01AEBE] px-5 py-3 font-bold text-white shadow-[0_10px_28px_rgba(1,174,190,0.3)]"
+                className="footer-action-button footer-action-primary"
               >
                 <FaWhatsapp />
-                واتساب
+                <span>واتساب</span>
               </a>
 
-              <a
-                href="tel:+966565247407"
-                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/5 px-5 py-3 font-bold text-white"
-              >
+              <a href="tel:+966565247407" className="footer-action-button">
                 <FaPhone />
-                اتصال
+                <span>اتصال</span>
               </a>
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-cyan-400/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h4 className="text-2xl font-extrabold">روابط سريعة</h4>
-
-            <div className="mt-5 space-y-3 text-lg text-white/75">
-              <Link href="/" className="block hover:text-cyan-300">الرئيسية</Link>
-              <Link href="/about" className="block hover:text-cyan-300">عن الشركة</Link>
-              <Link href="/services" className="block hover:text-cyan-300">الخدمات</Link>
-              <Link href="/portfolio" className="block hover:text-cyan-300">أعمالنا</Link>
-              <Link href="/contact" className="block hover:text-cyan-300">اتصل بنا</Link>
-            </div>
-
-            <div className="mt-8 rounded-[24px] border border-white/8 bg-white/5 p-4">
-              <div className="mb-3 flex items-center gap-2 text-cyan-300">
-                <FaSnowflake />
-                <span className="font-extrabold">خدماتنا</span>
-              </div>
-
-              <div className="space-y-2 text-white/75">
-                <div>تكييف مركزي</div>
-                <div>صيانة دورية</div>
-                <div>تركيب مكيفات</div>
-                <div>تصنيع وتركيب دكت</div>
-              </div>
-            </div>
+          <div className="footer-card">
+            <h4 className="footer-heading">روابط سريعة</h4>
+            <ul className="footer-list">
+              {quickLinks.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="footer-link">
+                    <span className="footer-link-bullet" />
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="rounded-[28px] border border-cyan-400/10 bg-white/5 p-6 backdrop-blur-xl">
-            <h4 className="text-2xl font-extrabold">بيانات التواصل</h4>
+          <div className="footer-card">
+            <h4 className="footer-heading">خدماتنا</h4>
+            <ul className="footer-list">
+              {serviceLinks.map((item) => (
+                <li key={item} className="footer-static-item">
+                  <span className="footer-link-bullet" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <div className="mt-5 space-y-4 text-white/75">
-              <div className="flex items-start gap-3">
-                <FaMapMarkerAlt className="mt-1 text-cyan-300" />
+          <div className="footer-card">
+            <h4 className="footer-heading">بيانات التواصل</h4>
+
+            <div className="footer-contact-list">
+              <div className="footer-contact-item">
+                <div className="footer-contact-icon">
+                  <FaMapMarkerAlt />
+                </div>
                 <span>الرياض - طريق الملك عبدالعزيز</span>
               </div>
 
-              <a href="tel:+966565247407" className="flex items-start gap-3 hover:text-cyan-300">
-                <FaPhone className="mt-1 text-cyan-300" />
+              <a href="tel:+966565247407" className="footer-contact-item">
+                <div className="footer-contact-icon">
+                  <FaPhone />
+                </div>
                 <span>+966 56 524 7407</span>
               </a>
 
               <a
                 href="mailto:RiaHaljalid@icloud.com"
-                className="flex items-start gap-3 hover:text-cyan-300"
+                className="footer-contact-item"
               >
-                <FaEnvelope className="mt-1 text-cyan-300" />
+                <div className="footer-contact-icon">
+                  <FaEnvelope />
+                </div>
                 <span>RiaHaljalid@icloud.com</span>
               </a>
 
-              <div className="flex items-start gap-3">
-                <FaRegBuilding className="mt-1 text-cyan-300" />
+              <div className="footer-contact-item">
+                <div className="footer-contact-icon">
+                  <FaRegBuilding />
+                </div>
                 <span>السجل التجاري: 1010632725</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-4 border-t border-white/8 pt-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</p>
+        <div className="footer-bottom">
+          <div className="footer-bottom-left">
+            <div className="footer-copy">
+              <FaSnowflake className="footer-copy-icon" />
+              <span>© {currentYear} رياح الجليد. جميع الحقوق محفوظة.</span>
+            </div>
 
-          <div className="flex items-center gap-5">
-            <span>تصميم وتطوير: Team Hawk</span>
-            <a
-              href="#top"
-              onClick={(e) => {
-                e.preventDefault();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 hover:bg-white/5"
-            >
-              <FaArrowUp />
-              للأعلى
-            </a>
+            <div className="footer-dev">
+              تصميم وتطوير: <span>Team Hawk</span>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+              })
+            }
+            className="back-to-top"
+          >
+            <FaArrowUp />
+            <span>للأعلى</span>
+          </button>
         </div>
       </div>
     </footer>
