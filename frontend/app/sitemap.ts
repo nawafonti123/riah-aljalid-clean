@@ -1,16 +1,40 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = 'https://www.riah-aljalid.com';
+const SITE_URL = 'https://riah-aljalid.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const routes = ['/', '/about', '/services', '/contact'];
-
-  return routes.map((path) => ({
-    url: `${SITE_URL}${path}`,
-    lastModified: now,
-    changeFrequency: path === '/' ? 'weekly' : 'monthly',
-    priority: path === '/' ? 1 : 0.85,
-  }));
+  return [
+    {
+      url: `${SITE_URL}/`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 1,
+    },
+    {
+      url: `${SITE_URL}/about`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/services`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.95,
+    },
+    {
+      url: `${SITE_URL}/portfolio`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/contact`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+  ];
 }
