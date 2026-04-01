@@ -1,103 +1,73 @@
+import type { Metadata } from 'next';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import ContactSection from '@/components/sections/ContactSection';
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaBuilding } from 'react-icons/fa';
+
+export const metadata: Metadata = {
+  title: 'اتصل بنا',
+  description:
+    'تواصل مع مؤسسة رياح الجليد في الرياض لخدمات التكييف والتبريد والتهوية والدكت.',
+  alternates: {
+    canonical: '/contact',
+  },
+};
+
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0F2027] to-[#2C5364] text-white">
-      {/* الهيدر */}
-      <div className="relative h-[300px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-black/50 z-10"></div>
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[url('/images/contact-bg.jpg')] bg-cover bg-center"></div>
-        </div>
-        <h1 className="relative z-20 text-5xl md:text-6xl font-bold text-center">اتصل بنا</h1>
-      </div>
+    <>
+      <Navbar />
 
-      <div className="container mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* معلومات الاتصال */}
-          <div>
-            <h2 className="text-3xl font-bold mb-8 text-[#00c6ff]">معلومات الاتصال</h2>
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="text-2xl">📍</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">العنوان</h3>
-                  <p className="text-gray-300">المملكة العربية السعودية - الرياض - طريق الملك عبدالعزيز</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="text-2xl">📞</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">الهاتف</h3>
-                  <p className="text-gray-300">055 223 8222</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="text-2xl">✉️</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">البريد الإلكتروني</h3>
-                  <p className="text-gray-300">RiaHaljalid@icloud.com</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="text-2xl">🏢</div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">السجل التجاري</h3>
-                  <p className="text-gray-300">1010632725</p>
-                </div>
-              </div>
-            </div>
+      <main className="min-h-screen pt-32 pb-20">
+        <section className="container-main">
+          <div className="rounded-[32px] border border-cyan-400/10 bg-[#081427]/90 p-8 sm:p-10 shadow-[0_15px_50px_rgba(0,0,0,0.25)]">
+            <div className="max-w-4xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-cyan-300 font-bold text-sm">
+                اتصل بنا
+              </span>
 
-            {/* الخريطة أو صورة الموقع */}
-            <div className="mt-8 glass-card p-4 rounded-xl h-64">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.171407678913!2d46.675476315001!3d24.713555584118!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f0388d9c9a8b7%3A0x8e8e8e8e8e8e8e8e!2sRiyadh%2C%20Saudi%20Arabia!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                className="rounded-lg"
-              ></iframe>
+              <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold text-white leading-tight">
+                جاهزون لخدمتك
+                <span className="block text-cyan-400">في أي وقت</span>
+              </h1>
+
+              <p className="mt-6 text-lg leading-9 text-white/80">
+                يمكنك التواصل معنا للاستفسار أو طلب خدمة تركيب أو صيانة أو معاينة،
+                وسنكون سعداء بخدمتك بأسرع وقت ممكن.
+              </p>
             </div>
           </div>
+        </section>
 
-          {/* نموذج الاتصال */}
-          <div className="glass-card p-8 rounded-2xl">
-            <h2 className="text-2xl font-bold mb-6 text-[#00c6ff]">أرسل لنا رسالة</h2>
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">الاسم</label>
-                <input
-                  type="text"
-                  className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:border-[#00c6ff] focus:outline-none"
-                  placeholder="أدخل اسمك"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">البريد الإلكتروني</label>
-                <input
-                  type="email"
-                  className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:border-[#00c6ff] focus:outline-none"
-                  placeholder="أدخل بريدك الإلكتروني"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">الرسالة</label>
-                <textarea
-                  rows={5}
-                  className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:border-[#00c6ff] focus:outline-none"
-                  placeholder="أكتب رسالتك هنا..."
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                className="w-full py-3 px-4 bg-[#00c6ff] text-white font-bold rounded-lg hover:bg-[#00a0cc] transition"
+        <section className="container-main mt-10 grid gap-6 lg:grid-cols-4">
+          {[
+            { icon: FaMapMarkerAlt, title: 'العنوان', value: 'الرياض - طريق الملك عبدالعزيز' },
+            { icon: FaPhoneAlt, title: 'الهاتف', value: '+966 56 524 7407' },
+            { icon: FaEnvelope, title: 'البريد الإلكتروني', value: 'RiaHaljalid@icloud.com' },
+            { icon: FaBuilding, title: 'السجل التجاري', value: '1010632725' },
+          ].map((item, index) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={index}
+                className="rounded-[28px] border border-cyan-400/10 bg-[#0b1830] p-6 text-white"
               >
-                إرسال الرسالة
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+                <div className="w-14 h-14 rounded-2xl bg-cyan-400/10 text-cyan-300 flex items-center justify-center text-xl">
+                  <Icon />
+                </div>
+                <h2 className="mt-4 text-xl font-extrabold">{item.title}</h2>
+                <p className="mt-3 text-white/75 leading-8">{item.value}</p>
+              </div>
+            );
+          })}
+        </section>
+
+        <section className="container-main mt-10">
+          <ContactSection />
+        </section>
+      </main>
+
+      <Footer />
+    </>
   );
 }
