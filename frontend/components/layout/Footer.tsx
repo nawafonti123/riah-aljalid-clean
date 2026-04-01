@@ -1,4 +1,3 @@
-// frontend/components/layout/Footer.tsx
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -69,7 +68,7 @@ export default function Footer() {
                     src={footerImage}
                     alt="رياح الجليد"
                     fill
-                    className="object-contain p-2"
+                    className="object-cover"
                   />
                 </div>
                 <div>
