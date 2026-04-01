@@ -63,7 +63,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const updateActiveSection = () => {
-      setScrolled(window.scrollY > 18);
+      setScrolled(window.scrollY > 14);
 
       if (!isHome) return;
 
@@ -109,9 +109,7 @@ export default function Navbar() {
 
   const activePath = useMemo(() => {
     if (isHome) return activeSection;
-
-    const hash = typeof window !== 'undefined' ? window.location.hash.replace('#', '') : '';
-    return hash || '';
+    return '';
   }, [activeSection, isHome]);
 
   const handleScrollTo = (id: string) => {
@@ -143,24 +141,24 @@ export default function Navbar() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
-          scrolled ? 'py-3' : 'py-5'
+          scrolled ? 'py-2 sm:py-3' : 'py-3 sm:py-5'
         }`}
       >
-        <div className="mx-auto w-[min(1400px,92%)]">
+        <div className="mx-auto w-[min(1400px,94%)] sm:w-[min(1400px,92%)]">
           <div
-            className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 backdrop-blur-xl transition-all duration-300 md:px-6 ${
+            className={`flex items-center justify-between gap-2 rounded-[22px] border px-3 py-2.5 backdrop-blur-xl transition-all duration-300 sm:gap-3 sm:px-4 sm:py-3 md:px-6 ${
               scrolled
-                ? 'border-white/15 bg-black/55 shadow-[0_10px_40px_rgba(0,0,0,0.22)]'
-                : 'border-white/10 bg-black/35 shadow-[0_8px_30px_rgba(0,0,0,0.16)]'
-            } dark:border-white/10 dark:bg-black/35`}
+                ? 'border-slate-300/60 bg-white/90 shadow-[0_10px_40px_rgba(15,23,42,0.12)] dark:border-white/15 dark:bg-black/55 dark:shadow-[0_10px_40px_rgba(0,0,0,0.22)]'
+                : 'border-slate-300/50 bg-white/80 shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-black/35 dark:shadow-[0_8px_30px_rgba(0,0,0,0.16)]'
+            }`}
           >
             <button
               onClick={() => handleScrollTo('hero')}
-              className="flex min-w-0 items-center gap-3 text-right"
+              className="flex min-w-0 items-center gap-2 text-right sm:gap-3"
               aria-label="العودة للرئيسية"
               type="button"
             >
-              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-white/10">
+              <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-white/10 sm:h-12 sm:w-12">
                 <Image
                   src="/logo.png"
                   alt="رياح الجليد"
@@ -170,11 +168,11 @@ export default function Navbar() {
                 />
               </div>
 
-              <div className="hidden min-w-0 sm:block">
-                <div className="truncate text-sm font-extrabold text-white dark:text-white">
+              <div className="min-w-0">
+                <div className="truncate text-sm font-extrabold text-slate-900 dark:text-white sm:text-[15px]">
                   رياح الجليد
                 </div>
-                <div className="truncate text-xs text-white/70 dark:text-white/70">
+                <div className="hidden truncate text-xs text-slate-500 dark:text-white/70 sm:block">
                   تكييف • تبريد • دكت
                 </div>
               </div>
@@ -193,7 +191,7 @@ export default function Navbar() {
                     className={`group inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ${
                       active
                         ? 'bg-emerald-500 text-white shadow-[0_8px_24px_rgba(16,185,129,0.35)]'
-                        : 'bg-white/7 text-white/85 hover:bg-white/12 hover:text-white dark:bg-white/7 dark:text-white/85'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-white/7 dark:text-white/85 dark:hover:bg-white/12 dark:hover:text-white'
                     }`}
                   >
                     <Icon className="text-xs" />
@@ -203,7 +201,7 @@ export default function Navbar() {
               })}
             </nav>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Link
                 href="/#contact"
                 onClick={() => setMenuOpen(false)}
@@ -216,7 +214,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white transition-all duration-300 hover:bg-white/15 lg:flex"
+                className="hidden h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-all duration-300 hover:bg-slate-100 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/15 lg:flex"
                 aria-label="تغيير الثيم"
               >
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
@@ -225,7 +223,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white transition-all duration-300 hover:bg-white/15 lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-all duration-300 hover:bg-slate-100 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/15 lg:hidden"
                 aria-label="تغيير الثيم"
               >
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
@@ -234,7 +232,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white transition-all duration-300 hover:bg-white/15 lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-all duration-300 hover:bg-slate-100 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/15 lg:hidden"
                 aria-label="فتح القائمة"
               >
                 <FaBars />
@@ -254,23 +252,27 @@ export default function Navbar() {
             onClick={() => setMenuOpen(false)}
           >
             <motion.div
-              className="absolute right-0 top-0 h-full w-[88%] max-w-sm border-l border-white/10 bg-neutral-950 p-5 shadow-2xl"
+              className="absolute right-0 top-0 h-full w-[86%] max-w-[340px] border-l border-slate-200 bg-white p-4 shadow-2xl dark:border-white/10 dark:bg-neutral-950 sm:w-[82%] sm:p-5"
               initial={{ x: 80, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 80, opacity: 0 }}
               transition={{ duration: 0.25 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-5 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-extrabold text-white">القائمة</h3>
-                  <p className="mt-1 text-sm text-white/60">تنقل سريع داخل الصفحة</p>
+                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                    القائمة
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-white/60">
+                    تنقل سريع داخل الصفحة
+                  </p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/10 dark:text-white"
                   aria-label="إغلاق القائمة"
                 >
                   <FaTimes />
@@ -290,10 +292,10 @@ export default function Navbar() {
                       className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-right transition-all duration-300 ${
                         active
                           ? 'bg-emerald-500 text-white'
-                          : 'bg-white/5 text-white/85 hover:bg-white/10'
+                          : 'bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-white/5 dark:text-white/85 dark:hover:bg-white/10'
                       }`}
                     >
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/70 dark:bg-white/10">
                         <Icon className="text-sm" />
                       </span>
                       <span className="text-sm font-bold">{item.label}</span>
