@@ -1,77 +1,51 @@
+// frontend/components/layout/Navbar.tsx
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   FaBars,
-  FaTimes,
-  FaSun,
-  FaMoon,
-  FaHome,
-  FaInfoCircle,
-  FaWrench,
-  FaImages,
   FaEnvelope,
+  FaHome,
+  FaImages,
+  FaInfoCircle,
+  FaMoon,
   FaPhoneAlt,
+  FaSun,
+  FaTimes,
+  FaWrench,
 } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
-type NavItem = {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  page: string;
-};
-
-const sections: NavItem[] = [
-  { id: 'hero', label: 'الرئيسية', icon: FaHome, page: '/' },
-  { id: 'about', label: 'عن الشركة', icon: FaInfoCircle, page: '/about' },
-  { id: 'services', label: 'الخدمات', icon: FaWrench, page: '/services' },
-  { id: 'portfolio', label: 'أعمالنا', icon: FaImages, page: '/portfolio' },
-  { id: 'contact', label: 'اتصل بنا', icon: FaEnvelope, page: '/contact' },
+const navLinks = [
+  { href: '/', label: 'الرئيسية', icon: FaHome },
+  { href: '/about', label: 'عن الشركة', icon: FaInfoCircle },
+  { href: '/services', label: 'الخدمات', icon: FaWrench },
+  { href: '/portfolio', label: 'أعمالنا', icon: FaImages },
+  { href: '/contact', label: 'اتصل بنا', icon: FaEnvelope },
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { theme, setTheme } = useTheme();
-
-  const [mounted, setMounted] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const isHome = pathname === '/';
+  const { theme, setTheme } = useTheme();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 18);
-
-      if (!isHome) return;
-
-      for (const item of sections) {
-        const el = document.getElementById(item.id);
-        if (!el) continue;
-
-        const rect = el.getBoundingClientRect();
-        if (rect.top <= 140 && rect.bottom >= 140) {
-          setActiveSection(item.id);
-          break;
-        }
-      }
-    };
-
+    const onScroll = () => setScrolled(window.scrollY > 16);
     onScroll();
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
-  }, [isHome]);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
@@ -80,102 +54,84 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  const activePath = useMemo(() => {
-    if (isHome) return activeSection;
-    const current = sections.find((item) => item.page === pathname);
-    return current?.id ?? '';
-  }, [activeSection, isHome, pathname]);
-
-  const handleNavigate = (item: NavItem) => {
-    setMenuOpen(false);
-
-    if (isHome) {
-      if (item.id === 'hero') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
-
-      const section = document.getElementById(item.id);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        return;
-      }
-    }
-
-    router.push(item.page);
-  };
-
   if (!mounted) return null;
 
   return (
     <>
-      <header
-        className={`site-header ${scrolled ? 'site-header-scrolled' : ''}`}
-      >
-        <div className="container">
-          <div className="navbar-shell">
-            <button
-              type="button"
-              onClick={() => handleNavigate(sections[0])}
-              className="brand-button"
-              aria-label="العودة للرئيسية"
+      <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4">
+        <div
+          className={`section-container transition-all duration-300 ${
+            scrolled ? 'max-w-6xl' : 'max-w-7xl'
+          }`}
+        >
+          <div
+            className={`mx-auto flex items-center justify-between gap-3 rounded-[28px] border px-3 py-3 shadow-lg backdrop-blur-xl transition-all duration-300 sm:px-4 ${
+              scrolled
+                ? 'border-black/10 bg-white/88 dark:border-white/10 dark:bg-[#08141f]/88'
+                : 'border-black/5 bg-white/72 dark:border-white/10 dark:bg-[#08141f]/72'
+            }`}
+          >
+            <Link
+              href="/"
+              className="flex min-w-0 items-center gap-3"
+              aria-label="الانتقال للرئيسية"
             >
-              <div className="brand-logo-wrap">
+              <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl border border-black/10 bg-white dark:border-white/10 dark:bg-white/10">
                 <Image
                   src="/logo.png"
                   alt="رياح الجليد"
-                  width={54}
-                  height={54}
-                  className="brand-logo"
+                  fill
+                  className="object-contain p-1.5"
                   priority
                 />
               </div>
 
-              <div className="brand-copy">
-                <span className="brand-title">رياح الجليد</span>
-                <span className="brand-subtitle">تكييف • تبريد • دكت</span>
+              <div className="min-w-0">
+                <div className="truncate text-sm font-extrabold text-slate-900 dark:text-white sm:text-base">
+                  رياح الجليد
+                </div>
+                <div className="truncate text-[11px] text-slate-500 dark:text-white/60 sm:text-xs">
+                  تكييف • تبريد • دكت
+                </div>
               </div>
-            </button>
+            </Link>
 
-            <nav className="desktop-nav" aria-label="التنقل الرئيسي">
-              {sections.map((item) => {
-                const Icon = item.icon;
-                const active = activePath === item.id;
+            <nav className="hidden items-center gap-2 lg:flex">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const active = pathname === link.href;
 
                 return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleNavigate(item)}
-                    className={`nav-pill ${active ? 'nav-pill-active' : ''}`}
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition ${
+                      active
+                        ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
+                        : 'text-slate-700 hover:bg-slate-100 dark:text-white/85 dark:hover:bg-white/10'
+                    }`}
                   >
                     <Icon className="text-sm" />
-                    <span>{item.label}</span>
-                  </button>
+                    {link.label}
+                  </Link>
                 );
               })}
             </nav>
 
-            <div className="nav-actions">
-              <Link href="/contact" className="cta-button desktop-only">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/contact"
+                className="hidden items-center gap-2 rounded-2xl bg-cyan-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-cyan-600 lg:inline-flex"
+              >
                 <FaPhoneAlt />
-                <span>اطلب الخدمة الآن</span>
+                اطلب الخدمة الآن
               </Link>
 
               <button
                 type="button"
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="icon-button desktop-only"
-                aria-label="تغيير الثيم"
-              >
-                {theme === 'dark' ? <FaSun /> : <FaMoon />}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="icon-button mobile-only"
-                aria-label="تغيير الثيم"
+                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-black/10 bg-slate-100 text-slate-800 transition hover:bg-slate-200 dark:border-white/10 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                aria-label="تبديل الوضع"
               >
                 {theme === 'dark' ? <FaSun /> : <FaMoon />}
               </button>
@@ -183,7 +139,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
-                className="menu-button mobile-only"
+                className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-500 text-white transition hover:bg-cyan-600 lg:hidden"
                 aria-label="فتح القائمة"
               >
                 <FaBars />
@@ -193,73 +149,83 @@ export default function Navbar() {
         </div>
       </header>
 
+      <div className="h-[88px] sm:h-[96px]" />
+
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="mobile-menu-overlay"
+            className="fixed inset-0 z-[70] bg-slate-950/50 backdrop-blur-sm lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setMenuOpen(false)}
           >
-            <motion.div
-              className="mobile-menu-panel"
-              initial={{ opacity: 0, y: 24, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.98 }}
-              transition={{ duration: 0.22 }}
+            <motion.aside
+              className="absolute inset-y-0 right-0 flex w-[88%] max-w-[360px] flex-col border-l border-white/10 bg-[#07111b] p-4 text-white shadow-2xl"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="mobile-menu-header">
-                <div>
-                  <h3 className="mobile-menu-title">القائمة</h3>
-                  <p className="mobile-menu-subtitle">
-                    تنقل سريع ومنظم داخل الموقع
-                  </p>
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="relative h-11 w-11 overflow-hidden rounded-2xl bg-white">
+                    <Image
+                      src="/logo.png"
+                      alt="رياح الجليد"
+                      fill
+                      className="object-contain p-1.5"
+                    />
+                  </div>
+                  <div>
+                    <div className="font-extrabold">القائمة</div>
+                    <div className="text-xs text-white/60">تصفح الموقع بسهولة</div>
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setMenuOpen(false)}
-                  className="icon-button"
+                  className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white"
                   aria-label="إغلاق القائمة"
                 >
                   <FaTimes />
                 </button>
               </div>
 
-              <div className="mobile-menu-links">
-                {sections.map((item) => {
-                  const Icon = item.icon;
-                  const active = activePath === item.id;
+              <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  const active = pathname === link.href;
 
                   return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => handleNavigate(item)}
-                      className={`mobile-nav-item ${
-                        active ? 'mobile-nav-item-active' : ''
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className={`flex items-center gap-3 rounded-2xl px-4 py-4 text-sm font-bold transition ${
+                        active
+                          ? 'bg-cyan-500 text-white'
+                          : 'bg-white/5 text-white/90 hover:bg-white/10'
                       }`}
                     >
-                      <div className="mobile-nav-icon">
-                        <Icon />
-                      </div>
-                      <span>{item.label}</span>
-                    </button>
+                      <Icon className="text-base" />
+                      {link.label}
+                    </Link>
                   );
                 })}
               </div>
 
               <Link
                 href="/contact"
-                className="cta-button mobile-cta"
                 onClick={() => setMenuOpen(false)}
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-4 py-3 text-sm font-bold text-white"
               >
                 <FaPhoneAlt />
-                <span>اطلب الخدمة الآن</span>
+                اطلب الخدمة الآن
               </Link>
-            </motion.div>
+            </motion.aside>
           </motion.div>
         )}
       </AnimatePresence>

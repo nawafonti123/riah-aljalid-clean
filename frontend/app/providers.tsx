@@ -10,19 +10,22 @@ import { useEffect } from 'react';
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      duration: 1.1,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
 
-    function raf(time: number) {
+    let frameId = 0;
+
+    const raf = (time: number) => {
       lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
+      frameId = requestAnimationFrame(raf);
+    };
+
+    frameId = requestAnimationFrame(raf);
 
     return () => {
-      // تنظيف بسيط
+      cancelAnimationFrame(frameId);
       // @ts-ignore
       lenis?.destroy?.();
     };
@@ -32,13 +35,23 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <ThemeProvider
         attribute="class"
-        defaultTheme="light"     // ✅ الافتراضي فاتح
-        enableSystem={false}     // ✅ لا يتبع نظام الجهاز
-        themes={['light', 'dark']}
-        storageKey="riah-theme"  // ✅ يحفظ اختيار المستخدم
+        defaultTheme="dark"
+        enableSystem={false}
+        disableTransitionOnChange
       >
-        <Toaster position="top-center" reverseOrder={false} />
         {children}
+
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 3500,
+            style: {
+              borderRadius: '14px',
+              padding: '12px 14px',
+              fontFamily: 'var(--font-cairo)',
+            },
+          }}
+        />
       </ThemeProvider>
     </SessionProvider>
   );

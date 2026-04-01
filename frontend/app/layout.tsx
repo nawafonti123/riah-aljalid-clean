@@ -1,3 +1,4 @@
+// frontend/app/layout.tsx
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google';
 import './globals.css';
@@ -134,24 +135,19 @@ export default function RootLayout({
 
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body className={`${cairo.variable} site-body`}>
+      <body
+        className={`${cairo.variable} min-h-screen bg-background text-foreground antialiased`}
+      >
         <Providers>
           <Loader />
-          <div className="site-shell">
-            {children}
-            <FloatingContactButtons />
-          </div>
-
-          {jsonLd.map((item, index) => (
-            <script
-              key={index}
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{
-                __html: JSON.stringify(item),
-              }}
-            />
-          ))}
+          {children}
+          <FloatingContactButtons />
         </Providers>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </body>
     </html>
   );
