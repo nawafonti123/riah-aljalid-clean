@@ -106,6 +106,24 @@ const localProjects: Project[] = [
     category: 'فيديو أعمال',
     createdAt: '2026-04-01T10:07:00.000Z',
   },
+  {
+    id: 'local-video-13',
+    title: 'فيديو عمل ميداني 5',
+    description:
+      'فيديو جديد من أعمال شركة رياح الجليد يوضح جودة التنفيذ والتركيب داخل الموقع.',
+    video: '/portfolio/13.mp4',
+    category: 'فيديو أعمال',
+    createdAt: '2026-04-01T10:10:00.000Z',
+  },
+  {
+    id: 'local-video-14',
+    title: 'فيديو عمل ميداني 6',
+    description:
+      'لقطات إضافية من مشاريع شركة رياح الجليد في أعمال التكييف والدكت والتركيبات.',
+    video: '/portfolio/14.mp4',
+    category: 'فيديو أعمال',
+    createdAt: '2026-04-01T10:11:00.000Z',
+  },
 ];
 
 export default function Portfolio() {
