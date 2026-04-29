@@ -12,7 +12,7 @@ import ContactSection from '@/components/sections/ContactSection';
 export const metadata: Metadata = {
   title: 'اتصل بنا',
   description:
-    'تواصل مع مؤسسة رياح الجليد في الرياض لخدمات التكييف والتبريد والتهوية والدكت.',
+    'تواصل مع شركة رياح الجليد في الرياض لخدمات التكييف والتبريد والتهوية والدكت.',
   alternates: {
     canonical: '/contact',
   },

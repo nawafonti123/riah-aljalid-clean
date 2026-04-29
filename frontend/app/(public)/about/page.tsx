@@ -8,7 +8,7 @@ import Achievements from '@/components/sections/Achievements';
 export const metadata: Metadata = {
   title: 'عن الشركة',
   description:
-    'تعرف على مؤسسة رياح الجليد المتخصصة في تركيب وصيانة أنظمة التكييف والتبريد والتهوية في الرياض.',
+    'تعرف على شركة رياح الجليد المتخصصة في تركيب وصيانة أنظمة التكييف والتبريد والتهوية في الرياض.',
   alternates: {
     canonical: '/about',
   },
